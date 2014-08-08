@@ -29,13 +29,16 @@ Supports the following Items:
 ---Blackfire Torch
 ---Blade of the Ruined King
 ---Deathfire Grasp
+---Dervish Blade
 ---Entropy
 ---Face of the Mountain
 ---Frost Queens Claim
 ---Guardians Horn
 ---Hextech Gunblade
 ---Locket of Solari
+---Mercurial Scimitar
 ---Odyns Veil
+---Quicksilver Sash
 ---Randuins Omen
 ---Ravenous Hydra
 ---Seraphs Embrace
@@ -54,6 +57,7 @@ Supports the following Potions:
 Supports the following Summoner Spells:
 ---Barrier
 ---Clarity
+---Cleanse
 ---Heal
 ---Exhaust (the % option is what % of your health to cast)
 ---Ignite (also takes into account targets health regen... not including regen from items)
