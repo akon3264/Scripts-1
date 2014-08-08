@@ -70,6 +70,7 @@ Press Delete to toggle on or off AutoItems instead of having to go through menu(
 Code:
 Change Log:
 v2.9 - Added Support for Cleanse, QuickSilver Sash, Dervish Blade, and  Mercurial Scimitar.  Only known problem is IsBuffed() returns true if particle is within 150 of your champ.. because of this if you walk over/extremely near another champ that is CC'd it might use your cleanse/QSS items. 
+---Also added support for yupdate.py
 
 v2.8 - autokool will not be integrating yayo for the time being, however I have better enabled the use of autokool with anyscript to include your yayo scripts. 
 ---Split the items into Offensive/Defensive sections.  
