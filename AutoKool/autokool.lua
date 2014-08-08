@@ -2,7 +2,7 @@ local ScriptName = 'autokool'
 local Version = '2.9'
 local Author = Koolkaracter
 
--- yupdate = * 2.9 https://raw.githubusercontent.com/koolkaracter/Scripts/AutoKool/AutoKool/autokool.lua http://pastebin.com/raw.php?i=ptZMiq2v
+-- yupdate = * 2.9 https://raw.githubusercontent.com/koolkaracter/Scripts/AutoKool/AutoKool/autokool.lua https://raw.githubusercontent.com/koolkaracter/Scripts/AutoKool/AutoKool/AutoKoolVersion.lua
 
 
 --[[      
