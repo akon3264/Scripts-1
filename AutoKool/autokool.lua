@@ -3,7 +3,7 @@ local Version = '2.9'
 local Author = Koolkaracter
 
 -- yupdate = * 2.9 https://raw.githubusercontent.com/koolkaracter/Scripts/AutoKool/AutoKool/autokool.lua https://raw.githubusercontent.com/koolkaracter/Scripts/AutoKool/AutoKool/AutoKoolVersion.lua
-
+--!!!!!!!!!!!THE ABOVE IS FOR THE yUpdate.py !!!!!!!!!!!!!!DO NOT CHANGE ANYTHING ABOVE THIS LINE!!!!!!!!!!!!!!!!!!
 
 --[[      
  ____  __.            .__   __                               __                 /\                
