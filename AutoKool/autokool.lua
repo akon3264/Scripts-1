@@ -633,7 +633,7 @@ function ShouldCleanse()
 	local shouldCleanse = false
 	local i = 1
 	while BadCC[i] ~= nil do
-		if IsBuffed(myHero, BadCC[i]) == true then 
+		if IsBuffed(myHero, BadCC[i], 50) == true then 
 			shouldCleanse = true
 		end
 		i = i + 1
