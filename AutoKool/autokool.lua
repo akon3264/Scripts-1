@@ -286,6 +286,8 @@ submenuSummoners.slider('AutoHealValue', 'Auto Heal Value', 0, 100, 15)
 
 menu.checkbutton('ShowPHP', 'Show % of HP', true)
 menu.checkbutton('CircleTarget', 'Highlight Target', true)
+menu.label('lb01', ' ')
+menu.label('lb02', 'AutoKool Version '..tostring(Version) ..' by KoolKaracter')
 --End of Config Menu
 
 function MainRun()
