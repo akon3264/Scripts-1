@@ -1,7 +1,7 @@
 local ScriptName = 'UrgotIsKool'
 local Version = '2.0'
 local Author = Koolkaracter
---yupdate = * 2.0 
+--yupdate = * 2.0 https://github.com/koolkaracter/Scripts/blob/AutoKool/Champs/UrgotIsKool.lua 
 
 if myHero.name ~= 'Urgot' then return end
 require 'Utils'
