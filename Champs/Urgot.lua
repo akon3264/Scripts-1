@@ -1,3 +1,8 @@
+local ScriptName = 'UrgotIsKool'
+local Version = '2.0'
+local Author = Koolkaracter
+--yupdate = * 2.0 
+
 if myHero.name ~= 'Urgot' then return end
 require 'Utils'
 require 'vals_lib'
