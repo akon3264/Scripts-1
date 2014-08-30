@@ -1,8 +1,8 @@
 local ScriptName = 'autokool'
-local Version = '2.9'
+local Version = '2.10'
 local Author = Koolkaracter
 
--- yupdate = * 2.9 https://raw.githubusercontent.com/koolkaracter/Scripts/AutoKool/AutoKool/autokool.lua https://raw.githubusercontent.com/koolkaracter/Scripts/AutoKool/AutoKool/AutoKoolVersion.lua
+-- yupdate = * 2.10 https://raw.githubusercontent.com/koolkaracter/Scripts/AutoKool/AutoKool/autokool.lua https://raw.githubusercontent.com/koolkaracter/Scripts/AutoKool/AutoKool/AutoKoolVersion.lua
 --!!!!!!!!!!!THE ABOVE IS FOR THE yUpdate.py !!!!!!!!!!!!!!DO NOT CHANGE ANYTHING ABOVE THIS LINE!!!!!!!!!!!!!!!!!!
 
 --[[      
@@ -73,6 +73,8 @@ Press Delete to toggle on or off AutoItems instead of having to go through menu(
  
 Code:
 Change Log:
+v2.10 - Fixed summoners for new summoner name bug with latest patch. All summoners should work.  (thanks to yonder, I used what was in his utils  just updated names). 
+
 v2.9 - Added Support for Cleanse, QuickSilver Sash, Dervish Blade, and  Mercurial Scimitar.  Only known problem is IsBuffed() returns true if particle is within 150 of your champ.. because of this if you walk over/extremely near another champ that is CC'd it might use your cleanse/QSS items. 
 ---Also added support for yupdate.py
 
@@ -290,8 +292,9 @@ menu.label('lb01', ' ')
 menu.label('lb02', 'AutoKool Version '..tostring(Version) ..' by KoolKaracter')
 --End of Config Menu
 
+
 function MainRun()
-        if IsLolActive() and IsChatOpen() == 0 then
+	        if IsLolActive() and IsChatOpen() == 0 then
                 if IsBuffed(myHero, 'TeleportHome') ~= true then
 					KoolExternalChampScriptCheck()
 	                if CfgKoolSettings['1. Kool Offensive Items'].Kool_Offensive_Items_ON then 
@@ -496,6 +499,25 @@ end
 --End of Use Potions functions
  
 ---Summoner Spell functions
+local Summoners =
+                {
+                    Ignite = {Key = nil, Name = 'summonerdot'},
+                    Exhaust = {Key = nil, Name = 'summonerexhaust'},
+                    Heal = {Key = nil, Name = 'summonerheal'},
+                    Clarity = {Key = nil, Name = 'summonermana'},
+                    Barrier = {Key = nil, Name = 'summonerbarrier'},
+                }
+
+if myHero ~= nil then
+    for _, Summoner in pairs(Summoners) do
+        if myHero.SummonerD == Summoner.Name then
+            Summoner.Key = "D"
+        elseif myHero.SummonerF == Summoner.Name then
+            Summoner.Key = "F"
+        end
+    end
+end
+
 function AutoSummoners()
         if CfgKoolSettings['4. Kool Summoners'].Auto_Ignite_ON then SummonerIgnite() end
         if CfgKoolSettings['4. Kool Summoners'].Auto_Barrier_ON then SummonerBarrier() end
@@ -514,8 +536,8 @@ natural health regen. This does not yet take into account health
 regen from items... Some day perhaps!
 ]]--	
 
-	if myHero.SummonerD == 'SummonerDot'  or myHero.SummonerF == 'SummonerDot' then --Dont waist time/energy if you dont have ignite 
-		if myHero.SummonerD == 'SummonerDot' then 
+	if myHero.SummonerD == 'summonerdot'  or myHero.SummonerF == 'summonerdot' then --Dont waist time/energy if you dont have ignite 
+		if myHero.SummonerD == 'summonerdot' then 
 			ignKey = Keys.D
 		else 
 			ignKey = Keys.F
@@ -542,10 +564,10 @@ regen from items... Some day perhaps!
 							targCircle = 0
 						end
 					
-						if targCircle == 2 and KeyDown(ignKey) then CastSummonerIgnite(targetIgnite) end --Cast ignite on killable target when ignite key is pressed
+						if targCircle == 2 and KeyDown(ignKey) then CastSummonerIgn(targetIgnite) end --Cast ignite on killable target when ignite key is pressed
 					end
 				else
-					if targetIgnite.health < ignDamageAfterRegen and GetDistance(myHero, targetIgnite) < 600 then CastSummonerIgnite(targetIgnite) end
+					if targetIgnite.health < ignDamageAfterRegen and GetDistance(myHero, targetIgnite) < 600 then CastSummonerIgn(targetIgnite) end
 
 				end 				                   		
 			end
@@ -555,27 +577,27 @@ end
  
  
 function SummonerBarrier()
-                if myHero.SummonerD == 'SummonerBarrier' or myHero.SummonerF == 'SummonerBarrier' then
+                if myHero.SummonerD == 'summonerbarrier' or myHero.SummonerF == 'summonerbarrier' then
                         if myHero.health < myHero.maxHealth*(CfgKoolSettings['4. Kool Summoners'].AutoBarrierValue / 100) then
-                                CastSummonerBarrier()
+                                CastSummonerBar()
                         end
                 end
 end
  
 function SummonerHeal()
-        if myHero.SummonerD == 'SummonerHeal' or myHero.SummonerF == 'SummonerHeal' then
+        if myHero.SummonerD == 'summonerheal' or myHero.SummonerF == 'summonerheal' then
                 if CfgKoolSettings['4. Kool Summoners'].Auto_HealAlly_ON then --will activate when alley within range is below X%
                         for h = 1, objManager:GetMaxHeroes() do
                                         local allyH = objManager:GetHero(h)
                                         if (allyH ~= nil and allyH.team == myHero.team and allyH.visible == 1 and GetDistance(myHero, allyH) < 700) or allyH == myHero then
                                                         if allyH.health <= (allyH.maxHealth*(CfgKoolSettings['4. Kool Summoners'].AutoHealValue / 100)) then --If health is below the slider % value
-															CastSummonerHeal()                            
+															CastSummonerHea()                            
                                                         end
                                         end
                         end
                 else --HealAlly not on, will just activate on self
                         if myHero.health < myHero.maxHealth*(CfgKoolSettings['4. Kool Summoners'].AutoHealValue / 100) then
-                                CastSummonerHeal()
+                                CastSummonerHea()
                         end
                 end
         end
@@ -583,10 +605,10 @@ end
  
 function SummonerExhaust()
         if target ~= nil then
-                if myHero.SummonerD == 'SummonerExhaust' or myHero.SummonerF == 'SummonerExhaust' then
+                if myHero.SummonerD == 'summonerexhaust' or myHero.SummonerF == 'summonerexhaust' then
                         if myHero.health < myHero.maxHealth*(CfgKoolSettings['4. Kool Summoners'].AutoExhaustValue / 100) and GetDistance(myHero, target) < 650 then
                                 if myHero.health < target.health then
-                                        CastSummonerExhaust(target)
+                                        CastSummonerExh(target)
                                 end
                         end
                 end
@@ -594,21 +616,66 @@ function SummonerExhaust()
 end
  
 function SummonerClarity()
-                if myHero.SummonerD == 'SummonerMana' or myHero.SummonerF == 'SummonerMana' then
+                if myHero.SummonerD == 'summonermana' or myHero.SummonerF == 'summonermana' then
                         if myHero.mana < myHero.maxMana*(CfgKoolSettings['4. Kool Summoners'].AutoClarityValue / 100) then
-                                CastSummonerClarity()
+                                CastSummonerCla()
                         end
                 end
 end
 
 
 function SummonerCleanse()
-	if myHero.SummonerD == 'SummonerBoost'or myHero.SummonerF == 'SummonerBoost' then
+	if myHero.SummonerD == 'summonerboost'or myHero.SummonerF == 'summonerboost' then
 		if ShouldCleanse() then
 			UseQSSOrCleanse()
 		end
 	end
 end
+
+function CastSummonerIgn(target)
+    if ValidTarget(target) and Summoners.Ignite.Key ~= nil then
+        CastSpellTarget(Summoners.Ignite.Key, target)
+    end
+end
+
+function CastSummonerExh(target)
+    if ValidTarget(target) and Summoners.Exhaust.Key ~= nil then
+        CastSpellTarget(Summoners.Exhaust.Key, target)
+    end
+end
+
+-- heal is now xyz targetted, defaults to myHero pos, accepts unit as first param or manual x,y,z
+function CastSummonerHea(x, y, z)
+    local unit
+    if x == nil then
+        unit = myHero
+    elseif type(x) ~= 'number' then
+        unit = x        
+    end
+    if unit then
+        x, y, z = unit.x, unit.y, unit.z
+    end
+    if Summoners.Heal.Key ~= nil then
+        --CastSpellTarget(Summoners.Heal.Key, myHero)
+        CastSpellXYZ(Summoners.Heal.Key, x, y, z)
+    end
+end
+
+function CastSummonerCla()
+    if Summoners.Clarity.Key ~= nil then
+        CastSpellTarget(Summoners.Clarity.Key, myHero)
+    end
+end
+
+function CastSummonerBar()
+    if Summoners.Barrier.Key ~= nil then
+        CastSpellTarget(Summoners.Barrier.Key, myHero)
+    end
+end
+
+
+
+
 
 --End of Summoner Spell functions
  
@@ -700,8 +767,8 @@ function QSSItemRdy()
 end
 
 function CleanseRdy()
-	if myHero.SummonerD == 'SummonerBoost'or myHero.SummonerF == 'SummonerBoost' then
-		if myHero.SummonerD == 'SummonerBoost' then
+	if myHero.SummonerD == 'summonerboost'or myHero.SummonerF == 'summonerboost' then
+		if myHero.SummonerD == 'summonerboost' then
 
 			if myHero.SpellTimeD > 1 then 
 				return true 
@@ -731,7 +798,7 @@ function UseQSSOrCleanse()
 			UseItemOnTarget(3140, myHero) -- Quicksilver Sash
 		elseif CleanseRdy() then
 
-			if myHero.SummonerD == 'SummonerBoost' then
+			if myHero.SummonerD == 'summonerboost' then
 				CastSpellTarget('D',myHero)
 			else
 				CastSpellTarget('F',myHero)
@@ -750,7 +817,7 @@ function UseQSSOrCleanse()
 	elseif CfgKoolSettings['4. Kool Summoners'].Kool_Summoner_Spells_ON and CfgKoolSettings['4. Kool Summoners'].Auto_Cleanse_ON then
 		if CleanseRdy() then
 
-			if myHero.SummonerD == 'SummonerBoost' then
+			if myHero.SummonerD == 'summonerboost' then
 				CastSpellTarget('D',myHero)
 			else
 				CastSpellTarget('F',myHero)
