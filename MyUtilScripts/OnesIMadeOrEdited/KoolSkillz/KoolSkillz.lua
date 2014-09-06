@@ -14,7 +14,7 @@ __________          ____  __.            .__   ____  __.                        
         \/ \/              \/                         \/    \/           \/     \/          \/       
 ]]--
 
-local ScriptName = 'autokool'
+local ScriptName = 'KoolSkillz'
 local Version = '.5'
 local Author = Koolkaracter
 
