@@ -1,3 +1,4 @@
+if myHero.name == "Elise" or  myHero.name == "Jayce" or  myHero.name == "Leblanc" or  myHero.name == "Khazix" or  myHero.name == "Nidalee" then return end --Currently not supported champions. 
 --[[
  ____  __.            .__      ___________   .__.__  .__                                             
 |    |/ _|____   ____ |  |    /   _____/  | _|__|  | |  | ________                                   
@@ -26,7 +27,7 @@ Elise
 Jayce
 Leblanc
 Khazix
-Nidalle
+Nidalee
 ]]--
 
 --[[
@@ -62,7 +63,6 @@ QInfo = {range = nil, width = nil, speed = nil, delay = nil, dmgType = nil}
 WInfo = {range = nil, width = nil, speed = nil, delay = nil, dmgType = nil}
 EInfo = {range = nil, width = nil, speed = nil, delay = nil, dmgType = nil}
 RInfo = {range = nil, width = nil, speed = nil, delay = nil, dmgType = nil}
-
 
 ------------------------------------------------------------
 ------------------Champion Information Table----------------
