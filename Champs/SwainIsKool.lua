@@ -1,8 +1,17 @@
 local ScriptName = 'SwainIsKool'
 local Version = '1.0'
 local Author = 'Koolkaracter'
+--[[____              _         _____       _  __           _ 
+  / ____|            (_)       |_   _|     | |/ /          | |
+ | (_____      ____ _ _ _ __     | |  ___  | ' / ___   ___ | |
+  \___ \ \ /\ / / _` | | '_ \    | | / __| |  < / _ \ / _ \| |
+  ____) \ V  V / (_| | | | | |  _| |_\__ \ | . \ (_) | (_) | |
+ |_____/ \_/\_/ \__,_|_|_| |_| |_____|___/ |_|\_\___/ \___/|_|
+]]==
+
 
 require 'yprediction'
+require 'spell_damage'
 local yayo = require 'yayo'
 local uiconfig = require 'uiconfig'
 local YP = YPrediction()
@@ -93,7 +102,6 @@ submenu.checkbox('KSIGN', 'KS with Ignite', true)
 
 local submenu = menu.submenu('8. Misc Options', 300)
 submenu.checkbox('ShowPHP', 'Show Your % of HP', true)
-
 
 menu.label('lb01', ' ')
 menu.label('lb02', 'SwainIsKool Version '..tostring(Version) ..' by KoolKaracter')
@@ -422,7 +430,6 @@ function CastSummonerHea(x, y, z)
         x, y, z = unit.x, unit.y, unit.z
     end
     if Summoners.Heal.Key ~= nil then
-        --CastSpellTarget(Summoners.Heal.Key, myHero)
         CastSpellXYZ(Summoners.Heal.Key, x, y, z)
     end
 end
