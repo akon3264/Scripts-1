@@ -193,7 +193,9 @@ end
 ------------------------------------------------------------
 function TargetSelector()
 	if Cfg['2. Target Selector'].TS_ON == false then
-			target = nil
+		target = GetWeakEnemy('MAGIC', 1000)
+	elseif GetDistance(target, myHero) > 1500 then 
+		target = nil	
 	else
 		if target == nil then
 				target = GetWeakEnemy('MAGIC', 1000)
