@@ -1,4 +1,4 @@
-if myHero.name == "Elise" or  myHero.name == "Jayce" or  myHero.name == "Leblanc" or  myHero.name == "Khazix" or  myHero.name == "Nidalee" then return end --Currently not supported champions. 
+if myHero.name == "Elise" or  myHero.name == "Jayce" or myHero.name == "Nidalee" then return end --Currently not supported champions. 
 --[[
  ____  __.            .__      ___________   .__.__  .__                                             
 |    |/ _|____   ____ |  |    /   _____/  | _|__|  | |  | ________                                   
@@ -15,43 +15,47 @@ __________          ____  __.            .__   ____  __.                        
 ]]--
 
 local ScriptName = 'KoolSkillz'
-local Version = '.5'
+local Version = '1.0'
 local Author = Koolkaracter
 
--- yupdate = * .5 https://raw.githubusercontent.com/koolkaracter/Scripts/AutoKool/MyUtilScripts/OnesIMadeOrEdited/KoolSkillz/KoolSkillz.lua https://raw.githubusercontent.com/koolkaracter/Scripts/AutoKool/MyUtilScripts/OnesIMadeOrEdited/KoolItems/KoolItemsVersion.lua
+-- yupdate = * 1.0 https://raw.githubusercontent.com/koolkaracter/Scripts/AutoKool/MyUtilScripts/OnesIMadeOrEdited/KoolSkillz/KoolSkillz.lua https://raw.githubusercontent.com/koolkaracter/Scripts/AutoKool/MyUtilScripts/OnesIMadeOrEdited/KoolItems/KoolItemsVersion.lua
 
 --[[
 Champion that currently are not supported at all:
-Any Champion that doesn't have abilities that you cast directly on a target (i.e. enemycast)... So champs that are all skillshots/self cast (this will change with skillshot update, v 1.0
+Any Champion that doesn't have abilities that you cast directly on a target (i.e. enemyCast)... So champs that are all skillShots/self cast (this will change with skillShot update, v 1.0
 Elise
 Jayce
-Leblanc
-Khazix
 Nidalee
 ]]--
 
 --[[
 Champions that are partially supported:
-None Yet (this will change at the beginning phase of the skill shot section, when I have to have different changes in ranges and such. 
+Fizz - His E currently is not jumping toward the enemy.. not sure why will look into this later. 
+Leblanc - Her ablities work, however the R is currently wont double shackle...  Also, her W will auto teleport back if you hold it instead of quickly taping, since the skill is so fast.. will re-attack this later. 
+Yasuo -  His Q currently not supported(will have to work on this a bit since has 2 differ ranges). 
+Xerath - All of his skills work except the Q,  something wrong with it trying to cast when you press Q because its charging... will re-attack this later. 
+Urgot - Currently doesn't support his longer range Q.  
+Khazix - Currently only supports his shorter ranges... will add rest later. 
+Lulu - Her E is currenlty only set to attack the enemy...So if target is in range it will cast on him/her instead of shielding.  thinking about adding an option to determine which you want. 
 ]]--
 
 --[[
 ToDo List:
---Complete table with skillshot type(AOE, Line, Cone... )
---Complete table with skillshot collision
---Add Skillshot yPred functions for all champs with skillshots
+--Ensure Table items are correct(apparently the table I got this from had ALOT of incorrect table info... so if something doesn't work let me know an I can check data for that champ)
 --Add Ally Selector
 --Add Ally Cast on Ally Selected
---Add full support for champs with multiple versions of spells(Elise, LeeSin, Jayce, leblanc, Urgot(q range), Fizz(E), Khazix(range changes), Nidalee, Shyvanna(e), yasuo(Q range changes)) 
---Add Supt for EveryCast(Jax's Q, Katarina's E)
+--Add full support for champs with multiple versions of spells(Elise, Jayce, leblanc, Urgot(q range), Fizz(E), Khazix(range changes), Nidalee, Shyvanna(e), yasuo(Q range changes)) 
+--Add Supt for EveryCast(Jax's Q, Katarina's E, Sorakas, lulu)
 --Add Supt for SelfEnemyCast(Lissandra's Ult)
---Add Supt for Teemo's shrooms to just drop in plance not try to walk to enemy. 
+--Add Supt for Teemo's shrooms to just drop in place not try to walk to enemy, same with shaco traps/heimers turrets. . 
 --Add Supt to cast on lowest % health Ally
 --Add Range Indicator Option
+--Add Option to MAX RANGE fizz R. 
+--Possibly add wall toward enemy for yasuo. 
+--Possible Full combo on yayo autocarry.. might have to set up some type of table for each champ to determine order
 ]]--
 
 require 'yprediction'
-
 local yayo = require 'yayo'
 local uiconfig = require 'uiconfig'
 local YP = YPrediction()
@@ -59,10 +63,10 @@ local champName = myHero.name
 local qSupported, wSupported, eSupported, rSupported = false, false, false, false
 local target = nil
 print(champName)
-QInfo = {range = nil, width = nil, speed = nil, delay = nil, dmgType = nil}
-WInfo = {range = nil, width = nil, speed = nil, delay = nil, dmgType = nil}
-EInfo = {range = nil, width = nil, speed = nil, delay = nil, dmgType = nil}
-RInfo = {range = nil, width = nil, speed = nil, delay = nil, dmgType = nil}
+QInfo = {range = nil, width = nil, speed = nil, delay = nil, collision = nil, ssType = nil}
+WInfo = {range = nil, width = nil, speed = nil, delay = nil, collision = nil, ssType = nil}
+EInfo = {range = nil, width = nil, speed = nil, delay = nil, collision = nil, ssType = nil}
+RInfo = {range = nil, width = nil, speed = nil, delay = nil, collision = nil, ssType = nil}
 
 ------------------------------------------------------------
 ------------------Champion Information Table----------------
@@ -73,13 +77,14 @@ ChampInfo = {
     charName = 'Aatrox',
     spellSlot = 'Q',
     range = 650,
-    width = 0,
+    width = 200,
     speed = 20,
     delay = 0.5,
     spellType = 'skillShot',
     riskLevel = 'kill',
     cc = true,
-    hitLineCheck = false
+    collision = false,
+	ssType = 'Circular'
 	},
 	W = {
     charName = 'Aatrox',
@@ -91,9 +96,9 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
-	E = {
+	E = { 
     charName = 'Aatrox',
     spellSlot = 'E',
     range = 1000,
@@ -103,7 +108,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = true
+    collision = true,
+	ssType = 'LineAOE'
 	},
 	R = {
     charName = 'Aatrox',
@@ -115,7 +121,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	}
   },
   Ahri = {
@@ -129,7 +135,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = true
+    collision = true,
+	ssType = 'LineAOE'
 	},
 	W = {
     charName = 'Ahri',
@@ -141,7 +148,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	E = {
     charName = 'Ahri',
@@ -153,7 +160,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = true
+    collision = true,
+	ssType = 'Line'
 	},
 	R = {
     charName = 'Ahri',
@@ -162,10 +170,10 @@ ChampInfo = {
     width = 0,
     speed = 2200,
     delay = 0.5,
-    spellType = 'skillshot',
+    spellType = 'notSupported',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	}
   },
   Akali = {
@@ -179,7 +187,7 @@ ChampInfo = {
     spellType = 'enemyCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	W = {
     charName = 'Akali',
@@ -191,7 +199,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'dangerous',
     cc = true,
-    hitLineCheck = false
+    collision = false,
+	ssType = 'Circular'
 	},
 	E = {
     charName = 'Akali',
@@ -203,7 +212,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	R = {
     charName = 'Akali',
@@ -215,7 +224,7 @@ ChampInfo = {
     spellType = 'enemyCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	}
   },
   Alistar = {
@@ -229,7 +238,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = false
+    collision = false
 	},
 	W = {
     charName = 'Alistar',
@@ -241,7 +250,7 @@ ChampInfo = {
     spellType = 'enemyCast',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = true
+    collision = true
 	},
 	E = {
     charName = 'Alistar',
@@ -253,7 +262,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false,
+    collision = false,
     healSlot = _E
 	},
 	R = {
@@ -266,7 +275,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false,
+    collision = false,
     qssSlot = _R
 	}
   },
@@ -281,7 +290,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = true
+    collision = true,
+	ssType = 'Line'
 	},
 	W = {
     charName = 'Amumu',
@@ -293,7 +303,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	E = {
     charName = 'Amumu',
@@ -305,7 +315,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	R = {
     charName = 'Amumu',
@@ -317,7 +327,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = false,
+    collision = false,
     timer = 0
 	}
   },
@@ -332,7 +342,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = true
+    collision = true,
+	ssType = 'Line'
 	},
 	W = {
     charName = 'Anivia',	
@@ -341,10 +352,10 @@ ChampInfo = {
     width = 400,
     speed = 1600,
     delay = 0.5,
-    spellType = 'skillShot',
+    spellType = 'notSupported',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false
+    collision = false,
 	},
 	E = {
     charName = 'Anivia',
@@ -356,7 +367,7 @@ ChampInfo = {
     spellType = 'enemyCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false,
 	},
 	R = {
     charName = 'Anivia',
@@ -368,7 +379,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = false
+    collision = false,
+	ssType = 'Circular'
 	}
   },
   Annie = {
@@ -382,7 +394,7 @@ ChampInfo = {
     spellType = 'enemyCast',
     riskLevel = 'Kill',
     cc = false,
-    hitLineCheck = false
+    collision = false,
 	},
 	W = {
     charName = 'Annie',
@@ -391,10 +403,11 @@ ChampInfo = {
     width = 0,
     speed = 0,
     delay = 0.5,
-    spellType = 'enemyCast',
+    spellType = 'skillShot',
     riskLevel = 'Kill',
     cc = false,
-    hitLineCheck = true
+    collision = true,
+	ssType = 'ConeAOE'
 	},
 	E = {
     charName = 'Annie',
@@ -406,7 +419,7 @@ ChampInfo = {
     spellType = 'selfCast',
     rickLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false,
+    collision = false,
     aaShieldSlot = _E
 	},
 	R = {
@@ -418,8 +431,9 @@ ChampInfo = {
     spellType = 'skillShot',
     risklevel = 'Kill',
     cc = false,
-    hitLineCheck = true,
-    timer = 0
+    collision = true,
+    timer = 0,
+	ssType = 'Circular'
 	}
   },
   Ashe = {
@@ -433,7 +447,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	W = {
     charName = 'Ashe',
@@ -445,31 +459,33 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = true
+    collision = true
 	},
 	E = {
     charName = 'Ashe',
     spellSlot = 'E',
     range = 2500,
-    width = 0,
+    width = 110,
     speed = 1400,
     delay = 0.5,
     spellType = 'skillShot',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false
+    collision = false,
+	ssType = 'Line'
 	},
 	R = {
     charName = 'Ashe',
     spellSlot = 'R',
     range = 50000,
-    width = 130,
+    width = 120,
     speed = 1600,
     delay = 0.5,
     spellType = 'skillShot',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = true
+    collision = true,
+	ssType = 'LineAOE'
 	}
   },
   Blitzcrank = {
@@ -483,7 +499,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = true
+    collision = true,
+	ssType = 'Line'
 	},
 	W = {
     charName = 'Blitzcrank',
@@ -495,7 +512,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	E = {
     charName = 'Blitzcrank',
@@ -507,7 +524,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = false
+    collision = false
 	},
 	R = {
     charName = 'Blitzcrank',
@@ -519,7 +536,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = false
+    collision = false
 	}
   },
   Brand = {
@@ -533,43 +550,45 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = true
+    collision = true,
+	ssType = 'Line'
 	},
 	W = {
     charName = 'Brand',
     spellSlot = 'W',
-    range = 240,
-    width = 0,
+    range = 900,
+    width = 250,
     speed = 20,
     delay = 0.5,
     spellType = 'skillShot',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false,
+	ssType = 'Circular'
 	},
 	E = {
     charName = 'Brand',
     spellSlot = 'E',
-    range = 0,
+    range = 625,
     width = 0,
     speed = 1800,
     delay = 0,
     spellType = 'enemyCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	R = {
     charName = 'Brand',
     spellSlot = 'R',
-    range = 0,
+    range = 750,
     width = 0,
     speed = 1000,
     delay = 0,
     spellType = 'enemyCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false,
+    collision = false,
     timer = 230 - GetLatency()
 	}
   },
@@ -584,7 +603,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'extremeq',
     cc = true,
-    hitLineCheck = true
+    collision = true,
+	ssType = 'Line'
 	},
 	W = {
     charName = 'Braum',
@@ -596,7 +616,7 @@ ChampInfo = {
     spellType = 'allyCast',
     riskLevel = 'noDmgr',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	E = {
     charName = 'Braum',
@@ -605,10 +625,10 @@ ChampInfo = {
     width = 0,
     speed = math.huge,
     delay = 0,
-    spellType = 'skillshot',
+    spellType = 'notSupported',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	R = {
     charName = 'Braum',
@@ -617,10 +637,11 @@ ChampInfo = {
     width = 180,
     speed = 1200,
     delay = 0,
-    spellType = 'skillshot',
+    spellType = 'skillShot',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = true
+    collision = false,
+	ssType = 'LineAOE'
 	}
   },
   Caitlyn = {
@@ -634,7 +655,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = true
+    collision = false,
+	ssType = 'LineAOE'
 	},
 	W = {
     charName = 'Caitlyn',
@@ -646,7 +668,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = false
+    collision = false,
+	ssType = 'Circular'
 	},
 	E = {
     charName = 'Caitlyn',
@@ -658,7 +681,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = true
+    collision = true,
+	ssType = 'Line'
 	},
 	R = {
     charName = 'Caitlyn',
@@ -670,7 +694,7 @@ ChampInfo = {
     spellType = 'enemyCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false,
+    collision = false,
     timer = 1350 - GetLatency()
 	}
   },
@@ -685,7 +709,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false,
+	ssType = 'Circular'
 	},
 	W = {
     charName = 'Cassiopeia',
@@ -697,7 +722,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = false
+    collision = false,
+	ssType = 'Circular'
 	},
 	E = {
     charName = 'Cassiopeia',
@@ -709,7 +735,7 @@ ChampInfo = {
     spellType = 'enemyCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false,
 	},
 	R = {
     charName = 'Cassiopeia',
@@ -721,8 +747,9 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = true,
-    timer = 0
+    collision = false,
+    timer = 0,
+	ssType = 'ConeAOE'
 	}
   },
   Chogath = {
@@ -736,7 +763,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = false
+    collision = false,
+	ssType = 'Circular'
 	},
 	W = {
     charName = 'Chogath',
@@ -748,7 +776,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = true
+    collision = true,
+	ssType = 'ConeAOE'
 	},
 	E = {
     charName = 'Chogath',
@@ -757,10 +786,10 @@ ChampInfo = {
     width = 170,
     speed = 347,
     delay = 0,
-    spellType = 'enemyCast',
+    spellType = 'selfCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	R = {
     charName = 'Chogath',
@@ -772,7 +801,7 @@ ChampInfo = {
     spellType = 'enemyCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	}
   },
   Corki = {
@@ -786,7 +815,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false,
+	ssType = 'Circular'
 	},
 	W = {
     charName = 'Corki',
@@ -798,7 +828,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = true
+    collision = false,
+	ssType = 'LineAOE'	
 	},
 	E = {
     charName = 'Corki',
@@ -807,10 +838,10 @@ ChampInfo = {
     width = 100,
     speed = 902,
     delay = 0,
-    spellType = 'skillShot',
+    spellType = 'selfCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = true
+    collision = false
 	},
 	R = {
     charName = 'Corki',
@@ -822,7 +853,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = true
+    collision = true,
+	ssType = 'Line'
 	}
   },
   Darius = {
@@ -833,10 +865,10 @@ ChampInfo = {
     width = 0,
     speed = 0,
     delay = 0.5,
-    spellType = 'skillShot',
+    spellType = 'selfCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false,
 	},
 	W = {
     charName = 'Darius',
@@ -848,19 +880,20 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	E = {
     charName = 'Darius',
     spellSlot = 'E',
     range = 540,
-    width = 0,
+    width = 45,
     speed = 1500,
     delay = 0.5,
     spellType = 'skillShot',
     riskLevel = 'dangerous',
     cc = true,
-    hitLineCheck = true
+    collision = false,
+	ssType = 'ConeAOE'
 	},
 	R = {
     charName = 'Darius',
@@ -872,7 +905,7 @@ ChampInfo = {
     spellType = 'enemyCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	}
   },
   Diana = {
@@ -886,7 +919,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'kill',
     cc = true,
-    hitLineCheck = true
+    collision = false,
+	ssType = 'Line'
 	},
 	W = {
     charName = 'Diana',
@@ -898,7 +932,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = false,
+    collision = false,
     shieldSlot = _W
 	},
 	E = {
@@ -911,7 +945,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'dangerous',
     cc = true,
-    hitLineCheck = false
+    collision = false
 	},
 	R = {
     charName = 'Diana',
@@ -923,7 +957,7 @@ ChampInfo = {
     spellType = 'enemyCast',
     riskLevel = 'kill',
     cc = true,
-    hitLineCheck = false
+    collision = false
 	}
   },
   DrMundo = {
@@ -937,7 +971,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = true
+    collision = true,
+	ssType = 'Line'
 	},
 	W = {
     charName = 'DrMundo',
@@ -949,7 +984,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	E = {
     charName = 'DrMundo',
@@ -961,7 +996,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	R = {
     charName = 'DrMundo',
@@ -973,7 +1008,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	}
   },
   Draven = {
@@ -987,7 +1022,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	W = {
     charName = 'Draven',
@@ -999,7 +1034,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	E = {
     charName = 'Draven',
@@ -1011,7 +1046,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = true
+    collision = false,
+	ssType = 'LineAOE'
 	},
 	R = {
     charName = 'Draven',
@@ -1023,7 +1059,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = true
+    collision = false,
+	ssType = 'LineAOE'
 	}
   },
   Elise = {          -- Need to add Support for her different versions. 
@@ -1037,7 +1074,7 @@ ChampInfo = {
     spellType = 'enemyCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	W1 = {
     charName = 'Elise',
@@ -1049,7 +1086,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = true,
+	ssType = 'Line'
 	},
 	E1 = {
     charName = 'Elise',
@@ -1061,7 +1099,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'dangerous',
     cc = true,
-    hitLineCheck = true
+    collision = true,
+	ssType = 'Line'
 	},
 	R1 = {
     charName = 'Elise',
@@ -1073,7 +1112,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	Q2 = {
     charName = 'Elise',
@@ -1085,7 +1124,7 @@ ChampInfo = {
     spellType = 'enemyCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	W2 = {
     charName = 'Elise',
@@ -1097,7 +1136,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	E2 = {
     charName = 'Elise',
@@ -1109,7 +1148,7 @@ ChampInfo = {
     spellType = 'enemyCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	R2 = {
     charName = 'Elise',
@@ -1121,7 +1160,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	}
   },
   Evelynn = {
@@ -1135,7 +1174,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	W = {
     charName = 'Evelynn',
@@ -1147,7 +1186,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false,
+    collision = false,
     slowSlot = _W
 	},
 	E = {
@@ -1160,7 +1199,7 @@ ChampInfo = {
     spellType = 'enemyCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	R = {
     charName = 'Evelynn',
@@ -1172,7 +1211,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = false
+    collision = false,
+	ssType = 'Circular'
 	}
   },
   Ezreal = {
@@ -1186,7 +1226,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = true
+    collision = true,
+	ssType = 'Line'
 	},
 	W = {
     charName = 'Ezreal',
@@ -1198,7 +1239,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = true
+    collision = false,
+	ssType = 'LineAOE'
 	},
 	E = {
     charName = 'Ezreal',
@@ -1207,10 +1249,10 @@ ChampInfo = {
     width = 0,
     speed = math.huge,
     delay = 0.5,
-    spellType = 'enemyCast',
+    spellType = 'notSupported',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	R = {
     charName = 'Ezreal',
@@ -1222,7 +1264,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = true
+    collision = false,
+	ssType = 'LineAOE'
 	}
   },
   FiddleSticks = {
@@ -1236,7 +1279,7 @@ ChampInfo = {
     spellType = 'enemyCast',
     riskLevel = 'dangerous',
     cc = true,
-    hitLineCheck = false
+    collision = false
 	},
 	W = {
     charName = 'FiddleSticks',
@@ -1248,7 +1291,7 @@ ChampInfo = {
     spellType = 'enemyCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false
    },
 	E = {
     charName = 'FiddleSticks',
@@ -1257,10 +1300,10 @@ ChampInfo = {
     width = 0,
     speed = 1100,
     delay = 0.5,
-    spellType = 'skillShot',
+    spellType = 'enemyCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	R = {
     charName = 'FiddleSticks',
@@ -1269,11 +1312,12 @@ ChampInfo = {
     width = 600,
     speed = math.huge,
     delay = 0.5,
-    spellType = 'enemyCast',
+    spellType = 'skillShot',
     riskLevel = 'dangerous',
     cc = true,
-    hitLineCheck = false,
-    timer = 0
+    collision = false,
+    timer = 0,
+	ssType = 'Circular'
 	}
   },
   Fiora = {
@@ -1287,7 +1331,7 @@ ChampInfo = {
     spellType = 'enemyCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	W = {
     charName = 'Fiora',
@@ -1299,7 +1343,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false,
+    collision = false,
     aaShieldSlot = _W
 	},
 	E = {
@@ -1312,7 +1356,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	R = {
     charName = 'Fiora',
@@ -1324,7 +1368,7 @@ ChampInfo = {
     spellType = 'enemyCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false,
+    collision = false,
     timer = 280 - GetLatency()
 	}
   },
@@ -1339,7 +1383,7 @@ ChampInfo = {
     spellType = 'enemyCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	W = {
     charName = 'Fizz',
@@ -1351,7 +1395,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 --[[E1 = {
     charName = 'Fizz',
@@ -1363,7 +1407,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = false,
+    collision = false,
     shieldSlot = _E
 	},                     ]] --  Check if this is needed for the E or if I can just use 2nd E(below)
 	E = {
@@ -1376,7 +1420,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = false
+    collision = false,
+	ssType = 'CircularAOE'
 	},
 	R = { 						--Look into making this always max range
     charName = 'Fizz',
@@ -1388,7 +1433,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = false
+    collision = false,
+	ssType = 'line'
 	}
   },
   Galio = {
@@ -1402,7 +1448,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = false
+    collision = false,
+	ssType = 'Circular'
 	},
 	W = {
     charName = 'Galio',
@@ -1414,7 +1461,7 @@ ChampInfo = {
     spellType = 'allyCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false,
+    collision = false,
     shieldSlot = _W
 	},
 	E = {
@@ -1427,7 +1474,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = true
+    collision = true,
+	ssType = 'LineAOE'
 	},
 	R = {
     charName = 'Galio',
@@ -1439,7 +1487,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = false,
+    collision = false,
     timer = 0
 	}
   },
@@ -1454,7 +1502,7 @@ ChampInfo = {
     spellType = 'enemyCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	W = {
     charName = 'Gangplank',
@@ -1466,7 +1514,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false,
+    collision = false,
     healSlot = _W,
     qssSlot = _W
 	},
@@ -1480,7 +1528,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	R = {
     charName = 'Gangplank',
@@ -1492,7 +1540,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'kill',
     cc = true,
-    hitLineCheck = false
+    collision = false,
+	ssType = 'Circular'
 	}
   },
   Garen = {
@@ -1506,7 +1555,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false,
+    collision = false,
     slowSlot = _Q
 	},
 	W = {
@@ -1519,7 +1568,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false,
+    collision = false,
     shieldSlot = _W
 	},
 	E = {
@@ -1532,7 +1581,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	R = {
     charName = 'Garen',
@@ -1544,7 +1593,7 @@ ChampInfo = {
     spellType = 'enemyCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	}
   },
   Gragas = {
@@ -1558,7 +1607,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false,
+	ssType = 'Circular'
 	},
 	W = {
     charName = 'Gragas',
@@ -1570,7 +1620,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	E = {
     charName = 'Gragas',
@@ -1582,7 +1632,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = true
+    collision = true,
+	ssType = 'Line'
 	},
 	R = {
     charName = 'Gragas',
@@ -1594,7 +1645,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = false
+    collision = false,
+	ssType = 'Circular'
 	}
   },
   Graves = {
@@ -1608,7 +1660,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = true
+    collision = true,
+	ssType = 'Line'
 	},
 	W = {
     charName = 'Graves',
@@ -1620,7 +1673,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = false
+    collision = false,
+	ssType = 'Circular'
 	},
 	E = {
     charName = 'Graves',
@@ -1629,10 +1683,10 @@ ChampInfo = {
     width = 50,
     speed = 1000,
     delay = 0.3,
-    spellType = 'skillShot',
+    spellType = 'notSupported',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	R = {
     charName = 'Graves',
@@ -1644,7 +1698,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = true
+    collision = false,
+	ssType = 'LineAOE'
 	}
   },
   Hecarim = {
@@ -1658,7 +1713,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	W = {
     charName = 'Hecarim',
@@ -1670,7 +1725,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	E = {
     charName = 'Hecarim',
@@ -1682,7 +1737,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	R = {
     charName = 'Hecarim',
@@ -1694,7 +1749,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = true
+    collision = false,
+	ssType = 'LineAOE'
 	}
   },
   Heimerdinger = {
@@ -1705,10 +1761,10 @@ ChampInfo = {
     width = 0,
     speed = math.huge,
     delay = 0.5,
-    spellType = 'skillShot',
+    spellType = 'notSupported',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	W = {
     charName = 'Heimerdinger',
@@ -1720,7 +1776,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = true
+    collision = true,
+	ssType = 'Line'
 	},
 	E = {
     charName = 'Heimerdinger',
@@ -1732,7 +1789,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = false
+    collision = false,
+	ssType = 'Circular'
 	},
 	R = {
     charName = 'Heimerdinger',
@@ -1744,7 +1802,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	}
   },
   Irelia = {
@@ -1758,7 +1816,7 @@ ChampInfo = {
     spellType = 'enemyCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	W = {
     charName = 'Irelia',
@@ -1770,7 +1828,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	E = {
     charName = 'Irelia',
@@ -1782,19 +1840,20 @@ ChampInfo = {
     spellType = 'enemyCast',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = false
+    collision = false
 	},
 	R = {
     charName = 'Irelia',
     spellSlot = 'R',
     range = 1200,
-    width = 0,
+    width = 20,
     speed = 779,
     delay = 0.5,
     spellType = 'skillShot',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false,
+	ssType = 'LineAOE'
 	}
   },
   Janna = {
@@ -1808,7 +1867,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = true
+    collision = false,
+	ssType = 'LineAOE'
 	},
 	W = {
     charName = 'Janna',
@@ -1820,7 +1880,7 @@ ChampInfo = {
     spellType = 'enemyCast',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = true
+    collision = true
 	},
 	E = {
     charName = 'Janna',
@@ -1832,7 +1892,7 @@ ChampInfo = {
     spellType = 'allyCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false,
+    collision = false,
     shieldSlot = _E
 	},
 	R = {
@@ -1845,7 +1905,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'noDmg',
     cc = true,
-    hitLineCheck = false
+    collision = false
 	}
   },
   JarvanIV = {
@@ -1859,7 +1919,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = true
+    collision = false,
+	ssType = 'Line'
 	},
 	W = {
     charName = 'JarvanIV',
@@ -1871,7 +1932,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'dangerous',
     cc = true,
-    hitLineCheck = false,
+    collision = false,
     shieldSlot = _W
 	},
 	E = {
@@ -1884,7 +1945,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false,
+	ssType = 'Circular'
 	},
 	R = {
     charName = 'JarvanIV',
@@ -1893,10 +1955,10 @@ ChampInfo = {
     width = 325,
     speed = 0,
     delay = 0.5,
-    spellType = 'skillShot',
+    spellType = 'enemyCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	}
   },
   Jax = {
@@ -1910,7 +1972,7 @@ ChampInfo = {
     spellType = 'enemyCast',   --Everycast.. check this out on what to do with it.? probably disable
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	W = {
     charName = 'Jax',
@@ -1922,7 +1984,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	E = {
     charName = 'Jax',
@@ -1934,7 +1996,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = true
+    collision = true
 	},
 	R = {
     charName = 'Jax',
@@ -1946,7 +2008,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	}
   },
   Jayce = {
@@ -1960,7 +2022,7 @@ ChampInfo = {
     spellType = 'enemyCast',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = false
+    collision = false
 	},
 	W1 = {
     charName = 'Jayce',
@@ -1972,7 +2034,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	E1 = {
     charName = 'Jayce',
@@ -1984,7 +2046,7 @@ ChampInfo = {
     spellType = 'enemyCast',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = false
+    collision = false
 	},
 	R1 = {
     charName = 'Jayce',
@@ -1996,7 +2058,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	Q2 = {
     charName = 'Jayce',
@@ -2008,7 +2070,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = true,
+	ssType = 'Line'
 	},
 	W2 = {
     charName = 'Jayce',
@@ -2020,7 +2083,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	E2 = {
     charName = 'Jayce',
@@ -2029,10 +2092,10 @@ ChampInfo = {
     width = 0,
     speed = 1600,
     delay = 0.5,
-    spellType = 'skillShot',
+    spellType = 'notSupported',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	R2 = {
     charName = 'Jayce',
@@ -2044,7 +2107,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	}
   },
   Jinx = {
@@ -2058,7 +2121,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	W = {
     charName = 'Jinx',
@@ -2070,7 +2133,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'dangerous',
     cc = true,
-    hitLineCheck = true
+    collision = false,
+	ssType = 'Circular'
 	},
 	E = {
     charName = 'Jinx',
@@ -2082,7 +2146,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = false
+    collision = true,
+	ssType = 'Line'
 	},
 	R = {
     charName = 'Jinx',
@@ -2091,10 +2156,11 @@ ChampInfo = {
     width = 120,
     speed = math.huge,
     delay = 0,
-    spellType = 'skillshot',
+    spellType = 'skillShot',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = true
+    collision = true,
+	ssType = 'Line'
 	}
   },
   Karthus = {
@@ -2108,7 +2174,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false,
+	ssType = 'Circular'
 	},
 	W = {
     charName = 'Karthus',
@@ -2120,7 +2187,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'dangerous',
     cc = true,
-    hitLineCheck = false
+    collision = false,
+	ssType = 'Circular'
 	},
 	W = {
     charName = 'Karthus',
@@ -2132,7 +2200,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	R = {
     charName = 'Karthus',
@@ -2144,7 +2212,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false,
+    collision = false,
     timer = 2200
 	}
   },
@@ -2159,7 +2227,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = true
+    collision = true,
+	ssType = 'Line'
 	},
 	W = {
     charName = 'Karma',
@@ -2171,7 +2240,7 @@ ChampInfo = {
     spellType = 'enemyCast',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = false
+    collision = false
 	},
 	E = {
     charName = 'Karma',
@@ -2183,7 +2252,7 @@ ChampInfo = {
     spellType = 'allyCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false,
+    collision = false,
     shieldSlot = _E
 	},
 	R = {
@@ -2196,7 +2265,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	}
   },
   Kassadin = {
@@ -2210,7 +2279,7 @@ ChampInfo = {
     spellType = 'enemyCast',
     riskLevel = 'extreme',
     cc = trueww,
-    hitLineCheck = false
+    collision = false
 	},
 	W = {
     charName = 'Kassadin',
@@ -2222,7 +2291,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	E = {
     charName = 'Kassadin',
@@ -2234,7 +2303,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = true
+    collision = true,
+	ssType = 'ConeAOE'
 	},
 	R = {
     charName = 'Kassadin',
@@ -2246,7 +2316,7 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	}
   },
   Katarina = { 
@@ -2260,7 +2330,7 @@ ChampInfo = {
     spellType = 'enemyCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	W = {
     charName = 'Katarina',
@@ -2272,7 +2342,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	E = {
     charName = 'Katarina',
@@ -2284,7 +2354,7 @@ ChampInfo = {
     spellType = 'enemyCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	R = {
     charName = 'Katarina',
@@ -2296,7 +2366,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	}
   },
   Kayle = {
@@ -2310,7 +2380,7 @@ ChampInfo = {
     spellType = 'enemyCast',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = false
+    collision = false
 	},
 	W = {
     charName = 'Kayle',
@@ -2322,7 +2392,7 @@ ChampInfo = {
     spellType = 'allyCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false,
+    collision = false,
     healSlot = _W
 	},
 	E = {
@@ -2335,7 +2405,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	R = {
     charName = 'Kayle',
@@ -2347,7 +2417,7 @@ ChampInfo = {
     spellType = 'allyCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false,
+    collision = false,
     ultSlot = _R
 	}
   },
@@ -2362,7 +2432,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = true
+    collision = true,
+	ssType = 'Line'
 	},
 	W = {
     charName = 'Kennen',
@@ -2374,7 +2445,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	E = {
     charName = 'Kennen',
@@ -2386,7 +2457,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	R = {
     charName = 'Kennen',
@@ -2398,11 +2469,11 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	}
   },
   Khazix = {			-- handle Khas Range changes...
-	Q1 = {
+	Q = {
     charName = 'Khazix',
     spellSlot = 'Q',
     range = 325,
@@ -2412,7 +2483,7 @@ ChampInfo = {
     spellType = 'enemyCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	W = {
     charName = 'Khazix',
@@ -2424,9 +2495,10 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = true
+    collision = true,
+	ssType = 'Line'
 	},
-	E1 = {
+	E = {
     charName = 'Khazix',
     spellSlot = 'E',
     range = 600,
@@ -2436,7 +2508,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false,
+	ssType = 'Circular'
 	},
 	R = {
     charName = 'Khazix',
@@ -2448,8 +2521,8 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false
-	},
+    collision = false
+	}--[[,
 	Q2 = {
     charName = 'Khazix',
     spellSlot = 'Q',
@@ -2460,7 +2533,7 @@ ChampInfo = {
     spellType = 'enemyCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	E2 = {
     charName = 'Khazix',
@@ -2472,8 +2545,9 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
-	}
+    collision = false,
+	ssType = 'Circular'
+	}]]
   },
   KogMaw = {
 	Q = {
@@ -2486,7 +2560,7 @@ ChampInfo = {
     spellType = 'enemyCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	W = {
     charName = 'KogMaw',
@@ -2498,7 +2572,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	E = {
     charName = 'KogMaw',
@@ -2510,7 +2584,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = true
+    collision = false,
+	ssType = 'Line'
 	},
 	R = {
     charName = 'KogMaw',
@@ -2522,7 +2597,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false,
+	ssType = 'Circular'
 	}
   },
   Leblanc = {     -- Possible method for getting Leblancs R range.. 
@@ -2536,7 +2612,7 @@ ChampInfo = {
     spellType = 'enemyCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	W = {
     charName = 'Leblanc',
@@ -2548,7 +2624,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false,
+	ssType = 'Circular'
 	},
 	E = {
     charName = 'Leblanc',
@@ -2560,9 +2637,10 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = true
+    collision = true,
+	ssType = 'Line'
 	},
-	R1 = {
+	R = {
     charName = 'Leblanc',
     spellSlot = 'R',
     range = 700,
@@ -2572,8 +2650,8 @@ ChampInfo = {
     spellType = 'enemyCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
-	},
+    collision = false
+	}--[[,
 	R2 = {
     charName = 'Leblanc',
     spellSlot = 'R',
@@ -2584,7 +2662,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false,
+	ssType = 'Circular'
 	},
 	R3 = {
     charName = 'Leblanc',
@@ -2596,8 +2675,9 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = true
-	}
+    collision = true,
+	ssType = 'Line'
+	}]]--
   },
   LeeSin = { 
 	Q = {
@@ -2610,7 +2690,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = true
+    collision = true,
+	ssType = 'Line'
 	},
 	W = {
     charName = 'LeeSin',
@@ -2622,7 +2703,7 @@ ChampInfo = {
     spellType = 'allyCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false,
+    collision = false,
     shieldSlot = _W
 	},
 	E = {
@@ -2635,7 +2716,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	R = {
     charName = 'LeeSin',
@@ -2647,7 +2728,7 @@ ChampInfo = {
     spellType = 'enemyCast',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = false
+    collision = false
 	}
   },
   Leona = {
@@ -2661,7 +2742,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'noDmg',
     cc = true,
-    hitLineCheck = false
+    collision = false
 	},
 	W = {
     charName = 'Leona',
@@ -2673,7 +2754,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'noDmg',
     cc = true,
-    hitLineCheck = false
+    collision = false
 	},
 	E = {
     charName = 'Leona',
@@ -2685,7 +2766,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = true
+    collision = false,
+	ssType = 'Line'
 	},
 	R = {
     charName = 'Leona',
@@ -2697,7 +2779,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = false
+    collision = false,
+	ssType = 'Circular'
 	}
   },
   Lissandra = {
@@ -2711,7 +2794,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = true
+    collision = false,
+	ssType = 'Line'
 	},
 	W = {
     charName = 'Lissandra',
@@ -2723,7 +2807,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = false
+    collision = false
 	},
 	E = {
     charName = 'Lissandra',
@@ -2735,7 +2819,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = true
+    collision = false,
+	ssType = 'Line'
 	},
 	R = {
     charName = 'Lissandra',
@@ -2747,7 +2832,7 @@ ChampInfo = {
     spellType = 'enemyCast',    -- selfEnemyCast   Will need to fix this for option possibly. 
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = false,
+    collision = false,
     timer = 0,
     zhonyaSlot = _R
 	}
@@ -2763,7 +2848,7 @@ ChampInfo = {
     spellType = 'enemyCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	W = {
     charName = 'Lucian',
@@ -2775,7 +2860,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = true
+    collision = true,
+	ssType = 'Line'
 	},
 	E = {
     charName = 'Lucian',
@@ -2784,10 +2870,10 @@ ChampInfo = {
     width = 50,
     speed = math.huge,
     delay = 0.5,
-    spellType = 'skillShot',
+    spellType = 'notSupported',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	R = {
     charName = 'Lucian',
@@ -2796,10 +2882,11 @@ ChampInfo = {
     width = 60,
     speed = math.huge,
     delay = 0.5,
-    spellType = 'allyCast',
+    spellType = 'skillShot',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = true
+    collision = true,
+	ssType = 'Line'
 	}
   },
   Lulu = { 
@@ -2813,7 +2900,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = true
+    collision = false,
+	ssType = 'Line'
 	},
 	W = {
     charName = 'Lulu',
@@ -2825,7 +2913,7 @@ ChampInfo = {
     spellType = 'enemyCast',
     riskLevel = 'dangerous',
     cc = true,
-    hitLineCheck = false
+    collision = false
 	},
 	E = {
     charName = 'Lulu',
@@ -2834,10 +2922,10 @@ ChampInfo = {
     width = 0,
     speed = math.huge,
     delay = 0.64,
-    spellType = 'everyCast',
+    spellType = 'enemyCast',   --Can be an everycast 
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false,
+    collision = false,
     shieldSlot = _E
 	},
 	R = {
@@ -2850,7 +2938,7 @@ ChampInfo = {
     spellType = 'allyCast',
     riskLevel = 'dangerous',
     cc = true,
-    hitLineCheck = false,
+    collision = false,
     ultSlot = _R
 	}
   },
@@ -2865,7 +2953,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = true
+    collision = true,
+	ssType = 'Line'
 	},
 	W = {
     charName = 'Lux',
@@ -2874,11 +2963,12 @@ ChampInfo = {
     width = 150,
     speed = 1200,
     delay = 0.5,
-    spellType = 'skillShot',
+    spellType = 'allyCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false,
-    shieldSlot = _W
+    collision = false,
+    shieldSlot = _W,
+	ssType = 'Line'
 	},
 	E = {
     charName = 'Lux',
@@ -2890,7 +2980,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'dangerous',
     cc = true,
-    hitLineCheck = false
+    collision = false,
+	ssType = 'Circular'
 	},
 	R = {
     charName = 'Lux',
@@ -2902,7 +2993,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false,
+	ssType = 'Line'
 	}
   },
   Malphite = {
@@ -2916,7 +3008,7 @@ ChampInfo = {
     spellType = 'enemyCast',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = false
+    collision = false
 	},
 	W = {
     charName = 'Malphite',
@@ -2928,7 +3020,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	E = {
     charName = 'Malphite',
@@ -2940,7 +3032,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	R = {
     charName = 'Malphite',
@@ -2952,8 +3044,9 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = false,
-    timer = 0
+    collision = false,
+    timer = 0,
+	ssType = 'Circular'
 	}
   },
   Malzahar = {
@@ -2961,13 +3054,14 @@ ChampInfo = {
     charName = 'Malzahar',
     spellSlot = 'Q',
     range = 900,
-    width = 110,
+    width = 20,
     speed = math.huge,
     delay = 0.5,
     spellType = 'skillShot',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = false
+    collision = false,
+	ssType = 'Circular'
 	},
 	W = {
     charName = 'Malzahar',
@@ -2979,7 +3073,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false,
+	ssType = 'Circular'
 	},
 	E = {
     charName = 'Malzahar',
@@ -2991,7 +3086,7 @@ ChampInfo = {
     spellType = 'enemyCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	R = {
     charName = 'Malzahar',
@@ -3003,7 +3098,7 @@ ChampInfo = {
     spellType = 'enemyCast',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = false
+    collision = false
 	}
   },
   Maokai = {
@@ -3017,7 +3112,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = true
+    collision = false,
+	ssType = 'Line'
 	},
 	W = {
     charName = 'Maokai',
@@ -3029,7 +3125,7 @@ ChampInfo = {
     spellType = 'enemyCast',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = false
+    collision = false
 	},
 	E = {
     charName = 'Maokai',
@@ -3041,7 +3137,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false,
+	ssType = 'CircularAOE'
 	},
 	R = {
     charName = 'Maokai',
@@ -3053,7 +3150,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	}
   },
   MasterYi = {
@@ -3067,7 +3164,7 @@ ChampInfo = {
     spellType = 'enemyCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	W = {
     charName = 'MasterYi',
@@ -3079,7 +3176,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	E = {
     charName = 'MasterYi',
@@ -3091,7 +3188,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	R = {
     charName = 'MasterYi',
@@ -3103,7 +3200,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false,
+    collision = false,
     slowSlot = _R
 	}
   },
@@ -3118,7 +3215,7 @@ ChampInfo = {
     spellType = 'enemyCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	W = {
     charName = 'MissFortune',
@@ -3130,7 +3227,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	E = {
     charName = 'MissFortune',
@@ -3142,7 +3239,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = false
+    collision = false,
+	ssType = 'Circular'
 	},
 	R = {
     charName = 'MissFortune',
@@ -3154,7 +3252,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'extreme',
     cc = false,
-    hitLineCheck = true
+    collision = true,
+	ssType = 'ConeAOE'
 	}
   },
   Mordekaiser = {
@@ -3168,7 +3267,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	W = {
     charName = 'Mordekaiser',
@@ -3180,19 +3279,20 @@ ChampInfo = {
     spellType = 'allyCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	E = {
     charName = 'Mordekaiser',
     spellSlot = 'E',
     range = 700,
-    width = 0,
+    width = 50,
     speed = 1500,
     delay = 0.5,
     spellType = 'skillShot',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = true
+    collision = false,
+	ssType = 'ConeAOE'
 	},
 	R = {
     charName = 'Mordekaiser',
@@ -3204,7 +3304,7 @@ ChampInfo = {
     spellType = 'enemyCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	}
   },
   Morgana = {
@@ -3218,7 +3318,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = true
+    collision = true,
+	ssType = 'Line'
 	},
 	W = {
     charName = 'Morgana',
@@ -3230,7 +3331,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false,
+	ssType = 'Circular'
 	},
 	E = {
     charName = 'Morgana',
@@ -3242,7 +3344,7 @@ ChampInfo = {
     spellType = 'allyCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false,
+    collision = false,
     shieldSlot = _E
 	},
 	R = {
@@ -3255,7 +3357,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = true,
+    collision = true,
     timer = 2800
 	}
   },
@@ -3270,7 +3372,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = false
+    collision = false,
+	ssType = 'Circular'
 	},
 	W = {
     charName = 'Nami',
@@ -3282,7 +3385,7 @@ ChampInfo = {
     spellType = 'everyCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false,
+    collision = false,
     healSlot = _W
 	},
 	E = {
@@ -3295,7 +3398,7 @@ ChampInfo = {
     spellType = 'allyCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	R = {
     charName = 'Nami',
@@ -3307,7 +3410,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = true
+    collision = false,
+	ssType = 'Line'
 	}
   },
   Nasus = {
@@ -3321,7 +3425,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	W = {
     charName = 'Nasus',
@@ -3333,7 +3437,7 @@ ChampInfo = {
     spellType = 'enemyCast',
     riskLevel = 'noDmg',
     cc = true,
-    hitLineCheck = false
+    collision = false
 	},
 	E = {
     charName = 'Nasus',
@@ -3345,7 +3449,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false,
+	ssType = 'Circular'
 	},
 	R = {
     charName = 'Nasus',
@@ -3354,10 +3459,10 @@ ChampInfo = {
     width = 350,
     speed = math.huge,
     delay = 0.5,
-    spellType = 'skillShot',
+    spellType = 'selfCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	}
   },
   Nautilus = {
@@ -3371,7 +3476,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = true
+    collision = true,
+	ssType = 'Line'
 	},
 	W = {
     charName = 'Nautilus',
@@ -3383,7 +3489,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false,
+    collision = false,
     shieldSlot = _W
 	},
 	E = {
@@ -3396,7 +3502,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = false
+    collision = false
 	},
 	R = {
     charName = 'Nautilus',
@@ -3408,7 +3514,7 @@ ChampInfo = {
     spellType = 'enemyCast',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = false,
+    collision = false,
     timer = 450 - GetLatency()
 	}
   },
@@ -3423,7 +3529,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = true
+    collision = true,
+	ssType = 'Line'
 	},
 	W1 = {
     charName = 'Nidalee',
@@ -3435,7 +3542,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false,
+	ssType = 'Circular'
 	},
 	E1 = {
     charName = 'Nidalee',
@@ -3447,7 +3555,7 @@ ChampInfo = {
     spellType = 'allyCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false,
+    collision = false,
     healSlot = _E
 	},
 	R = {    -- Only 1 R
@@ -3460,7 +3568,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	Q2 = {
     charName = 'Nidalee',
@@ -3472,19 +3580,20 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	W2 = {
     charName = 'Nidalee',
     spellSlot = 'WM',
     range = 375,
-    width = 150,
+    width = 100,
     speed = 1500,
     delay = 0.5,
     spellType = 'skillShot',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false,
+	ssType = 'Circular'
 	},
 	E2 = {
     charName = 'Nidalee',
@@ -3496,7 +3605,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false,
+	ssType = 'Line'
 	}
   },
   Nocturne = {
@@ -3510,7 +3620,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = true
+    collision = false,
+	ssType = 'Line'
 	},
 	W = {
     charName = 'Nocturne',
@@ -3522,7 +3633,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false,
+    collision = false,
     shieldSlot = _W
 	},
 	E = {
@@ -3535,7 +3646,7 @@ ChampInfo = {
     spellType = 'enemyCast',
     riskLevel = 'noDmg',
     cc = true,
-    hitLineCheck = false
+    collision = false
 	},
 	R = {          --Requires hitting button 2 times. 
     charName = 'Nocturne',
@@ -3547,7 +3658,7 @@ ChampInfo = {
     spellType = 'enemyCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	}
   },
   Nunu = {
@@ -3561,7 +3672,7 @@ ChampInfo = {
     spellType = 'enemyCast',
     riskLevel = 'extreme',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	W = {
     charName = 'Nunu',
@@ -3573,7 +3684,7 @@ ChampInfo = {
     spellType = 'allyCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	E = {
     charName = 'Nunu',
@@ -3585,7 +3696,7 @@ ChampInfo = {
     spellType = 'enemyCast',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = false
+    collision = false
 	},
 	R = {
     charName = 'Nunu',
@@ -3597,7 +3708,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = false
+    collision = false
 	}
   },
   Olaf = {
@@ -3611,7 +3722,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = true
+    collision = false,
+	ssType = 'Line'
 	},
 	W = {
     charName = 'Olaf',
@@ -3623,7 +3735,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	E = {
     charName = 'Olaf',
@@ -3635,7 +3747,7 @@ ChampInfo = {
     spellType = 'enemyCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	R = {
     charName = 'Olaf',
@@ -3647,7 +3759,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false,
+    collision = false,
     qssSlot = _R
 	}
   },
@@ -3662,7 +3774,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = true
+    collision = true,
+	ssType = 'Circular'
 	},
 	W = {
     charName = 'Orianna',
@@ -3671,10 +3784,10 @@ ChampInfo = {
     width = 260,
     speed = 1200,
     delay = 0.5,
-    spellType = 'skillShot',
+    spellType = 'selfCast',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = false
+    collision = false
 	},
 	E = {
     charName = 'Orianna',
@@ -3686,7 +3799,7 @@ ChampInfo = {
     spellType = 'allyCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false,
+    collision = false,
     shieldSlot = _E
 	},
 	R = {
@@ -3699,7 +3812,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = false
+    collision = false
 	}
   },
   Pantheon = { 
@@ -3713,7 +3826,7 @@ ChampInfo = {
     spellType = 'enemyCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	W = {
     charName = 'Pantheon',
@@ -3725,7 +3838,7 @@ ChampInfo = {
     spellType = 'enemyCast',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = false
+    collision = false
 	},
 	E = {
     charName = 'Pantheon',
@@ -3737,7 +3850,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = true
+    collision = true,
+	ssType = 'ConeAOE'
 	},
 	R = {
     charName = 'Pantheon',
@@ -3749,7 +3863,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = false
+    collision = false,
+	ssType = 'Circular'
 	}
   },
   Poppy = {
@@ -3763,7 +3878,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	W = {
     charName = 'Poppy',
@@ -3775,7 +3890,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	E = {
     charName = 'Poppy',
@@ -3787,7 +3902,7 @@ ChampInfo = {
     spellType = 'enemyCast',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = false
+    collision = false
 	},
 	R = {
     charName = 'Poppy',
@@ -3799,7 +3914,7 @@ ChampInfo = {
     spellType = 'enemyCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	}
   },
   Quinn = { 
@@ -3813,7 +3928,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = true
+    collision = true,
+	ssType = 'Line'
 	},
 	W = {
     charName = 'Quinn',
@@ -3825,7 +3941,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	E = {
     charName = 'Quinn',
@@ -3837,7 +3953,7 @@ ChampInfo = {
     spellType = 'enemyCast',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = false
+    collision = false
 	},
 	R = {
     charName = 'Quinn',
@@ -3849,7 +3965,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	}
   },
   Rammus = {
@@ -3863,7 +3979,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'extreme',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	W = {
     charName = 'Rammus',
@@ -3875,7 +3991,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false,
+    collision = false,
     aaShieldSlot = _W
 	},
 	E = {
@@ -3888,7 +4004,7 @@ ChampInfo = {
     spellType = 'enemyCast',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = false
+    collision = false
 	},
 	R = {
     charName = 'Rammus',
@@ -3900,7 +4016,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	}
   },
   Renekton = {
@@ -3911,10 +4027,10 @@ ChampInfo = {
     width = 450,
     speed = math.huge,
     delay = 0.5,
-    spellType = 'skillShot',
+    spellType = 'selfCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	W = {
     charName = 'Renekton',
@@ -3926,7 +4042,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	E = {
     charName = 'Renekton',
@@ -3938,7 +4054,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = true
+    collision = false,
+	ssType = 'Line'
 	},
 	R = {
     charName = 'Renekton',
@@ -3947,10 +4064,10 @@ ChampInfo = {
     width = 530,
     speed = 775,
     delay = 0.5,
-    spellType = 'skillShot',
+    spellType = 'SelfCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	}
   },
   Rengar = { 
@@ -3964,7 +4081,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	W = {
     charName = 'Rengar',
@@ -3973,10 +4090,10 @@ ChampInfo = {
     width = 500,
     speed = math.huge,
     delay = 0.5,
-    spellType = 'skillShot',
+    spellType = 'selfCast',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = false
+    collision = false
 	},
 	E = {
     charName = 'Rengar',
@@ -3985,10 +4102,11 @@ ChampInfo = {
     width = 70,
     speed = 1500,
     delay = 0.5,
-    spellType = 'enemyCast',
+    spellType = 'Skillshot',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = false
+    collision = true,
+	ssType = 'Line'
 	},
 	R = {
     charName = 'Rengar',
@@ -4000,7 +4118,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	}
   },
   Riven = {
@@ -4011,10 +4129,10 @@ ChampInfo = {
     width = 0,
     speed = 0,
     delay = 0.5,
-    spellType = 'skillShot',
+    spellType = 'notSupported',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	W = {
     charName = 'Riven',
@@ -4026,7 +4144,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = false
+    collision = false
 	},
 	E = {
     charName = 'Riven',
@@ -4035,10 +4153,10 @@ ChampInfo = {
     width = 0,
     speed = 1450,
     delay = 0,
-    spellType = 'skillShot',
+    spellType = 'notSupported',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false,
+    collision = false,
     shieldSlot = _E
 	},
 	R = {
@@ -4051,7 +4169,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = true
+    collision = false,
+	ssType = 'ConeAOE'
 	}
   },
   Rumble = {
@@ -4059,13 +4178,14 @@ ChampInfo = {
     charName = 'Rumble',
     spellSlot = 'Q',
     range = 600,
-    width = 10,
+    width = 20,
     speed = math.huge,
     delay = 0.5,
     spellType = 'skillShot',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = true
+    collision = false,
+	ssType = 'ConeAOE'
 	},
 	W = {
     charName = 'Rumble',
@@ -4077,7 +4197,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false,
+    collision = false,
     shieldSlot = _W
 	},
 	E = {
@@ -4090,7 +4210,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = true
+    collision = true,
+	ssType = 'Line'
 	},
 	R = { 					-- check if this works... not sure how to cast it. 
     charName = 'Rumble',
@@ -4102,7 +4223,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = true
+    collision = true,
+	ssType = 'Line'
 	}
   },
   Ryze = {
@@ -4116,7 +4238,7 @@ ChampInfo = {
     spellType = 'enemyCast',	
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	W = {
     charName = 'Ryze',
@@ -4128,7 +4250,7 @@ ChampInfo = {
     spellType = 'enemyCast',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = false
+    collision = false
 	},
 	E = {
     charName = 'Ryze',
@@ -4140,7 +4262,7 @@ ChampInfo = {
     spellType = 'enemyCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	R = {
     charName = 'Ryze',
@@ -4152,7 +4274,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = false
+    collision = false
 	}
   },
   Sejuani = {
@@ -4166,7 +4288,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = true
+    collision = false,
+	ssType = 'Line'
 	},
 	W = {
     charName = 'Sejuani',
@@ -4175,10 +4298,10 @@ ChampInfo = {
     width = 350,
     speed = 1500,
     delay = 0.5,
-    spellType = 'skillShot',
+    spellType = 'selfCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	E = {
     charName = 'Sejuani',
@@ -4187,10 +4310,10 @@ ChampInfo = {
     width = 1000,
     speed = 1450,
     delay = 0.5,
-    spellType = 'skillShot',
+    spellType = 'selfCast',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = false
+    collision = false
 	},
 	R = {
     charName = 'Sejuani',
@@ -4202,7 +4325,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = true
+    collision = false, 
+	ssType = 'Line'
 	}
   },
   Shaco = {
@@ -4213,12 +4337,12 @@ ChampInfo = {
     width = 0,
     speed = math.huge,
     delay = 0.5,
-    spellType = 'skillShot',
+    spellType = 'notSupported',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
-	W = {
+	W = {                      
     charName = 'Shaco',
     spellSlot = 'W',
     range = 425,
@@ -4228,7 +4352,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = false
+    collision = false,
+	ssType = 'Circular'
 	},
 	E = {
     charName = 'Shaco',
@@ -4240,7 +4365,7 @@ ChampInfo = {
     spellType = 'enemyCast',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = false
+    collision = false
 	},
 	R = {
     charName = 'Shaco',
@@ -4249,10 +4374,10 @@ ChampInfo = {
     width = 250,
     speed = 395,
     delay = 0.5,
-    spellType = 'skillShot',
+    spellType = 'enemyCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	}
   },
   Shen = {
@@ -4266,7 +4391,7 @@ ChampInfo = {
     spellType = 'enemyCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	W = {
     charName = 'Shen',
@@ -4278,7 +4403,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false,
+    collision = false,
     shieldSlot = _W
 	},
 	E = {
@@ -4291,7 +4416,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = true
+    collision = false,
+	ssType = 'Line'
 	},
 	R = {
     charName = 'Shen',
@@ -4303,7 +4429,7 @@ ChampInfo = {
     spellType = 'allyCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false,
+    collision = false,
     ultSlot = _R
 	}
   },
@@ -4318,7 +4444,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	W = {
     charName = 'Shyvana',
@@ -4330,7 +4456,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	E = {
     charName = 'Shyvana',
@@ -4342,7 +4468,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'dangerous',
     cc = false,
-    hitLineCheck = true
+    collision = true,
+	ssType = 'Line'
 	},
 	R = {
     charName = 'Shyvana',
@@ -4354,7 +4481,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'dangerous',
     cc = true,
-    hitLineCheck = true
+    collision = false,
+	ssType = 'Line'
 	}
   },
   Singed = {
@@ -4368,7 +4496,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	W = {
     charName = 'Singed',
@@ -4380,7 +4508,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'dangerous',
     cc = true,
-    hitLineCheck = false
+    collision = false,
+	ssType = 'Circular'
 	},
 	E = {
     charName = 'Singed',
@@ -4392,7 +4521,7 @@ ChampInfo = {
     spellType = 'enemyCast',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = false
+    collision = false
 	},
 	R = {
     charName = 'Singed',
@@ -4404,7 +4533,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	}
   },
   Sion = {
@@ -4418,7 +4547,7 @@ ChampInfo = {
     spellType = 'enemyCast',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = false
+    collision = false
 	},
 	W = {
     charName = 'Sion',
@@ -4430,7 +4559,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false,
+    collision = false,
     shieldSlot = _W
 	},
 	E = {
@@ -4443,7 +4572,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	R = {
     charName = 'Sion',
@@ -4455,7 +4584,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	}
   },
   Sivir = {
@@ -4466,10 +4595,11 @@ ChampInfo = {
     width = 90,
     speed = 1350,
     delay = 0.5,
-    spellType = 'skillshot',
+    spellType = 'skillShot',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = true
+    collision = false,
+	ssType = 'Line'
 	},
 	W = {
     charName = 'Sivir',
@@ -4481,7 +4611,7 @@ ChampInfo = {
     spellType = 'enemyCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	E = {
     charName = 'Sivir',
@@ -4493,7 +4623,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false,
+    collision = false,
     shieldSlot = _E
 	},
 	R = {
@@ -4506,7 +4636,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	}
   },
   Skarner = {
@@ -4520,7 +4650,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	W = {
     charName = 'Skarner',
@@ -4532,7 +4662,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false,
+    collision = false,
     shieldSlot = _W
 	},
 	E = {
@@ -4545,7 +4675,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = true
+    collision = false,
+	ssType = 'LineAOE'
 	},
 	R = {
     charName = 'Skarner',
@@ -4557,7 +4688,7 @@ ChampInfo = {
     spellType = 'enemyCast',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = false
+    collision = false
 	}
   },
   Sona = {
@@ -4571,7 +4702,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	W = {
     charName = 'Sona',
@@ -4583,7 +4714,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false,
+    collision = false,
     healSlot = _W
 	},
 	E = {
@@ -4596,7 +4727,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	R = {
     charName = 'Sona',
@@ -4608,8 +4739,9 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = true,
-    timer = 0
+    collision = true,
+    timer = 0,
+	ssType = 'ConeAOE'
 	}
   },
   Soraka = {
@@ -4623,7 +4755,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	W = {
     charName = 'Soraka',
@@ -4635,7 +4767,7 @@ ChampInfo = {
     spellType = 'allyCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false,
+    collision = false,
     healSlot = _W
 	},
 	E = {
@@ -4645,10 +4777,10 @@ ChampInfo = {
     width = 0,
     speed = math.huge,
     delay = 0.5,
-    spellType = 'everyCast',
+    spellType = 'enemyCast',  --(everyCast need to have options)
     riskLevel = 'dangerous',
     cc = false,
-    hitLineCheck = false,
+    collision = false,
     claritySlot = _E
 	},
 	R = {
@@ -4661,7 +4793,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false,
+    collision = false,
     ultSlot = _R
 	}
   },
@@ -4676,7 +4808,7 @@ ChampInfo = {
     spellType = 'enemyCast',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = false
+    collision = false
 	},
 	W = {
     charName = 'Swain',
@@ -4688,7 +4820,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = false
+    collision = false,
+	ssType = 'Circular'
 	},
 	E = {
     charName = 'Swain',
@@ -4700,7 +4833,7 @@ ChampInfo = {
     spellType = 'enemyCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	R = {
     charName = 'Swain',
@@ -4712,7 +4845,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	}
   },
   Syndra = {
@@ -4726,7 +4859,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false,
+	ssType = 'Circular'
 	},
 	W = {
     charName = 'Syndra',
@@ -4738,19 +4872,20 @@ ChampInfo = {
     spellType = 'enemyCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	E = {
     charName = 'Syndra',
     spellSlot = 'E',
     range = 700,
-    width = 0,
+    width = 10,
     speed = 902,
     delay = 0.5,
     spellType = 'skillShot',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = true
+    collision = true,
+	ssType = 'Line'
 	},
 	R = {
     charName = 'Syndra',
@@ -4762,7 +4897,7 @@ ChampInfo = {
     spellType = 'enemyCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	}
   },
   Talon = {
@@ -4776,7 +4911,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	W = {
     charName = 'Talon',
@@ -4788,7 +4923,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = true
+    collision = true,
+	ssType = 'ConeAOE'
 	},
 	E = {
     charName = 'Talon',
@@ -4800,7 +4936,7 @@ ChampInfo = {
     spellType = 'enemyCast',
     riskLevel = 'dangerous',
     cc = true,
-    hitLineCheck = false
+    collision = false
 	},
 	R = {
     charName = 'Talon',
@@ -4812,7 +4948,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	}
   },
   Taric = {
@@ -4826,7 +4962,7 @@ ChampInfo = {
     spellType = 'allyCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false,
+    collision = false,
     healSlot = _Q
 	},
 	W = {
@@ -4839,7 +4975,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	E = {
     charName = 'Taric',
@@ -4851,7 +4987,7 @@ ChampInfo = {
     spellType = 'enemyCast',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = false
+    collision = false
 	},
 	R = {
     charName = 'Taric',
@@ -4863,7 +4999,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	}
   },
   Teemo = {
@@ -4877,7 +5013,7 @@ ChampInfo = {
     spellType = 'enemyCast',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = false
+    collision = false
 	},
 	W = {
     charName = 'Teemo',
@@ -4889,7 +5025,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	E = {
     charName = 'Teemo',
@@ -4901,7 +5037,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	R = {            --Might have to add something for shrooms.. so it doesnt walk over and try to put it on someone.  
     charName = 'Teemo',
@@ -4913,7 +5049,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'kill',
     cc = true,
-    hitLineCheck = false
+    collision = false,
+	ssType = 'Circular'
 	}
   },
   Thresh = { 
@@ -4927,7 +5064,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = true
+    collision = true,
+	ssType = 'Line'
 	},
 	W = {
     charName = 'Thresh',
@@ -4936,10 +5074,10 @@ ChampInfo = {
     width = 315,
     speed = math.huge,
     delay = 0.5,
-    spellType = 'skillShot',
+    spellType = 'notSupported',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false,
+    collision = false,
     shieldSlot = _W
 	},
 	E = {
@@ -4949,10 +5087,11 @@ ChampInfo = {
     width = 160,
     speed = math.huge,
     delay = 0.3,
-    spellType = 'skillShot',
+    spellType = 'notSupported',   --Have to make option to pull or push
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = true
+    collision = true,
+	ssType = 'Line'
 	},
 	R = {
     charName = 'Thresh',
@@ -4961,10 +5100,10 @@ ChampInfo = {
     width = 420,
     speed = math.huge,
     delay = 0.3,
-    spellType = 'skillShot',
+    spellType = 'selfCast',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = false
+    collision = false
 	}
   },
   Tristana = {
@@ -4978,7 +5117,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	W = {
     charName = 'Tristana',
@@ -4990,7 +5129,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false,
+	ssType = 'Circular'
 	},
 	E = {
     charName = 'Tristana',
@@ -5002,7 +5142,7 @@ ChampInfo = {
     spellType = 'enemyCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	R = {
     charName = 'Tristana',
@@ -5014,7 +5154,7 @@ ChampInfo = {
     spellType = 'enemyCast',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = false
+    collision = false
 	}
   },
   Trundle = {
@@ -5028,7 +5168,7 @@ ChampInfo = {
     spellType = 'enemyCast',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = false
+    collision = false
 	},
 	W = {
     charName = 'Trundle',
@@ -5037,10 +5177,10 @@ ChampInfo = {
     width = 900,
     speed = math.huge,
     delay = 0.5,
-    spellType = 'skillShot',
+    spellType = 'notSupported',
     riskLevel = 'noDmg',
     cc = true,
-    hitLineCheck = false
+    collision = false
 	},
 	E = {
     charName = 'Trundle',
@@ -5049,10 +5189,10 @@ ChampInfo = {
     width = 188,
     speed = 1600,
     delay = 0.5,
-    spellType = 'skillShot',
+    spellType = 'notSupported',
     riskLevel = 'dangerous',
     cc = true,
-    hitLineCheck = false
+    collision = false
 	},
 	R = {
     charName = 'Trundle',
@@ -5064,7 +5204,7 @@ ChampInfo = {
     spellType = 'enemyCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	}
   },
 	Tryndamere = {
@@ -5078,7 +5218,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	W = {
     charName = 'Tryndamere',
@@ -5087,10 +5227,10 @@ ChampInfo = {
     width = 400,
     speed = 500,
     delay = 0.5,
-    spellType = 'skillShot',
+    spellType = 'selfCast',
     riskLevel = 'dangerous',
     cc = true,
-    hitLineCheck = false
+    collision = false
 	},
 	E = {
     charName = 'Tryndamere',
@@ -5102,7 +5242,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false,
+	ssType = 'Line'
 	},
 	R = {
     charName = 'Tryndamere',
@@ -5114,7 +5255,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false,
+    collision = false,
     ultSlot = _R
 	}
   },
@@ -5129,7 +5270,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = true
+    collision = true,
+	ssType = 'Line'
 	},
 	W = {
     charName = 'TwistedFate',
@@ -5141,19 +5283,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'noDmg',
     cc = true,
-    hitLineCheck = false
-	},
-	E = {
-    charName = 'TwistedFate',
-    spellSlot = 'W',
-    range = 600,
-    width = 0,
-    speed = math.huge,
-    delay = 0.5,
-    spellType = 'enemyCast',
-    riskLevel = 'extreme',
-    cc = true,
-    hitLineCheck = false
+    collision = false
 	},
 	E = {
     charName = 'TwistedFate',
@@ -5165,7 +5295,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	R = {
     charName = 'TwistedFate',
@@ -5174,10 +5304,10 @@ ChampInfo = {
     width = 0,
     speed = math.huge,
     delay = 0.5,
-    spellType = 'skillShot',
+    spellType = 'notSupported',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	}
   },
   Twitch = {
@@ -5191,7 +5321,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	W = {
     charName = 'Twich',
@@ -5203,7 +5333,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = false
+    collision = false,
+	ssType = 'Circular'
 	},
 	E = {
     charName = 'Twich',
@@ -5212,10 +5343,10 @@ ChampInfo = {
     width = 0,
     speed = math.huge,
     delay = 0.5,
-    spellType = 'enemyCast',
+    spellType = 'selfCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	R = {
     charName = 'Twich',
@@ -5224,10 +5355,10 @@ ChampInfo = {
     width = 0,
     speed = 500,
     delay = 0.5,
-    spellType = 'enemyCast',
+    spellType = 'selfCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	}
   },
   Udyr = {
@@ -5241,7 +5372,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	W = {
     charName = 'Udyr',
@@ -5253,7 +5384,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false,
+    collision = false,
     shieldSlot = _W
 	},
 	E = {
@@ -5266,7 +5397,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'noDmg',
     cc = true,
-    hitLineCheck = false
+    collision = false
 	},
 	R = {
     charName = 'Udyr',
@@ -5278,7 +5409,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	}
   },
   Urgot = {                   -- Might need to customiz for Q if E is on them... becase it adds 200 more range
@@ -5292,7 +5423,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = true,
+	ssType = 'Line'
 	},
 	W = {
     charName = 'Urgot',
@@ -5304,7 +5436,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false,
+    collision = false,
     shieldSlot = _W
 	},
 	E = {
@@ -5317,7 +5449,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false,
+	ssType = 'Circular'
 	},
 	R = {
     charName = 'Urgot',
@@ -5329,7 +5462,7 @@ ChampInfo = {
     spellType = 'enemyCast',
     riskLevel = 'dangerous',
     cc = true,
-    hitLineCheck = false
+    collision = false
 	}
   },
   Varus = { 
@@ -5343,7 +5476,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = true
+    collision = false,
+	ssType = 'Line'
 	},
 	W = {
     charName = 'Varus',
@@ -5355,7 +5489,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	E = {
     charName = 'Varus',
@@ -5367,7 +5501,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = false
+    collision = false,
+	ssType = 'Circular'
 	},
 	R = {
     charName = 'Varus',
@@ -5379,7 +5514,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = true
+    collision = true,
+	ssType = 'Line'
 	}
   },
   Vayne = {
@@ -5390,10 +5526,10 @@ ChampInfo = {
     width = 0,
     speed = math.huge,
     delay = 0.5,
-    spellType = 'skillShot',
+    spellType = 'notSupported',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	W = {
     charName = 'Vayne',
@@ -5405,7 +5541,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	E = {
     charName = 'Vayne',
@@ -5417,7 +5553,7 @@ ChampInfo = {
     spellType = 'enemyCast',
     riskLevel = 'dangerous',
     cc = true,
-    hitLineCheck = false
+    collision = false
 	},
 	R = {
     charName = 'Vayne',
@@ -5429,7 +5565,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	}
   },
   Veigar = {
@@ -5443,7 +5579,7 @@ ChampInfo = {
     spellType = 'enemyCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	W = {
     charName = 'Veigar',
@@ -5455,7 +5591,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false,
+	ssType = 'Circular'
 	},
 	E = {
     charName = 'Veigar',
@@ -5467,7 +5604,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'dangerous',
     cc = true,
-    hitLineCheck = false
+    collision = false,
+	ssType = 'Circular'
 	},
 	R = {
     charName = 'Veigar',
@@ -5479,7 +5617,7 @@ ChampInfo = {
     spellType = 'enemyCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false,
+    collision = false,
     timer = 230 - GetLatency()
 	}
   },
@@ -5494,7 +5632,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = true
+    collision = true,
+	ssType = 'Line'
 	},
 	W = {
     charName = 'Velkoz',
@@ -5506,7 +5645,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = true
+    collision = false,
+	ssType = 'Line'
 	},
 	E = {
     charName = 'Velkoz',
@@ -5515,10 +5655,11 @@ ChampInfo = {
     width = 0,
     speed = 500,
     delay = 0,
-    spellType = 'enemyCast',
+    spellType = 'skillShot',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = false
+    collision = false,
+	ssType = 'Circular'
 	},
 	R = {
     charName = 'Velkoz',
@@ -5529,7 +5670,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = true
+    collision = false,
+	ssType = 'Line'
 	}
   },
   Vi = { 
@@ -5540,10 +5682,10 @@ ChampInfo = {
     width = 55,
     speed = 1500,
     delay = 0.5,
-    spellType = 'skillShot',
+    spellType = 'notSupported',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = true
+    collision = true
 	},
 	W = {
     charName = 'Vi',
@@ -5555,7 +5697,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	E = {
     charName = 'Vi',
@@ -5564,10 +5706,10 @@ ChampInfo = {
     width = 0,
     speed = 0,
     delay = 0,
-    spellType = 'skillShot',
+    spellType = 'selfCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = true
+    collision = true
 	},
 	R = {
     charName = 'Vi',
@@ -5579,7 +5721,7 @@ ChampInfo = {
     spellType = 'enemyCast',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = false,
+    collision = false,
     timer = 230 - GetLatency()
 	}
   },
@@ -5594,7 +5736,7 @@ ChampInfo = {
     spellType = 'enemyCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	W = {
     charName = 'Viktor',
@@ -5606,9 +5748,10 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'dangerous',
     cc = true,
-    hitLineCheck = false
+    collision = false,
+	ssType = 'Circular'
 	},
-	E = {                       -- figure out best method to do this skillshot
+	E = {                       -- figure out best method to do this skillShot
     charName = 'Viktor',
     spellSlot = 'E',
     range = 700,
@@ -5618,7 +5761,7 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = true
+    collision = true
 	},
 	R = {
     charName = 'Viktor',
@@ -5630,7 +5773,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = false
+    collision = false,
+	ssType = 'Circular'
 	}
   },
   Vladimir = {
@@ -5644,7 +5788,7 @@ ChampInfo = {
     spellType = 'enemyCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	W = {
     charName = 'Vladimir',
@@ -5656,7 +5800,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = false
+    collision = false
 	},
 	E = {
     charName = 'Vladimir',
@@ -5668,7 +5812,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	R = {
     charName = 'Vladimir',
@@ -5680,7 +5824,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false,
+	ssType = 'Circular'
 	}
   },
   Volibear = { 
@@ -5694,7 +5839,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	W = {
     charName = 'Volibear',
@@ -5706,7 +5851,7 @@ ChampInfo = {
     spellType = 'enemyCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	E = {
     charName = 'Volibear',
@@ -5718,7 +5863,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'noDmg',
     cc = true,
-    hitLineCheck = false
+    collision = false
 	},
 	R = {
     charName = 'Volibear',
@@ -5730,7 +5875,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	}
   },
   Warwick = {
@@ -5744,7 +5889,7 @@ ChampInfo = {
     spellType = 'enemyCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	W = {
     charName = 'Warwick',
@@ -5756,7 +5901,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	E = {
     charName = 'Warwick',
@@ -5768,7 +5913,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	R = {
     charName = 'Warwick',
@@ -5780,7 +5925,7 @@ ChampInfo = {
     spellType = 'enemyCast',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = false
+    collision = false
 	}
   },
   MonkeyKing = {
@@ -5794,7 +5939,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	W = {
     charName = 'MonkeyKing',
@@ -5806,7 +5951,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	E = {
     charName = 'MonkeyKing',
@@ -5818,7 +5963,7 @@ ChampInfo = {
     spellType = 'enemyCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	R = {
     charName = 'MonkeyKing',
@@ -5830,7 +5975,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = false
+    collision = false
 	}
   },
   Xerath = {                      --Only selects champ in 750 range... maybe try something to fix.. 
@@ -5844,7 +5989,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = true
+    collision = false,
+	ssType = 'LineAOE'
 	},
 	W = {
     charName = 'Xerath',
@@ -5856,7 +6002,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = false
+    collision = false,
+	ssType = 'Circular'
 	},
 	E = {
     charName = 'Xerath',
@@ -5865,10 +6012,11 @@ ChampInfo = {
     width = 70,
     speed = 1600,
     delay = 0.5,
-    spellType = 'skillshot',
+    spellType = 'skillShot',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = true
+    collision = true,
+	ssType = 'Line'
 	},
 	R = {
     charName = 'Xerath',
@@ -5880,7 +6028,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false,
+	ssType = 'Circular'
 	}
   },
   Xinzhao = {
@@ -5894,7 +6043,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'extreme',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	W = {
     charName = 'XinZhao',
@@ -5906,7 +6055,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	E = {
     charName = 'XinZhao',
@@ -5918,7 +6067,7 @@ ChampInfo = {
     spellType = 'enemyCast',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = false
+    collision = false
 	},
 	R = {
     charName = 'XinZhao',
@@ -5930,23 +6079,24 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = false
+    collision = false
 	}
   },
   Yasuo = {    
-	Q1 = {			-- might require differ for normal q vs q with knockup
+	Q = {			-- might require differ for normal q vs q with knockup
     charName = 'Yasuo',
     spellSlot = 'Q',
     range = 475,
     width = 55,
     speed = 1500,
     delay = 0.75,
-    spellType = 'skillShot',
+    spellType = 'notSupported',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = true
+    collision = false,
+	ssType = 'Line'
 	},
-	Q2 = {
+--[[Q2 = {			  
     charName = 'Yasuo',
     spellSlot = 'Q',
     range = 1000,
@@ -5956,19 +6106,20 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = true
-	},
-	W1 = {
+    collision = false
+	ssType = 'Line'
+	},]]
+	W = {
     charName = 'Yasuo',
     spellSlot = 'W',
     range = 400,
     width = 0,
     speed = 500,
     delay = 0.5,
-    spellType = 'skillShot',
+    spellType = 'notSupported',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	E = {
     charName = 'Yasuo',
@@ -5980,7 +6131,7 @@ ChampInfo = {
     spellType = 'enemyCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	R = {
     charName = 'Yasuo',
@@ -5992,7 +6143,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	}
   },
   Yorick = {
@@ -6006,7 +6157,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	W = {
     charName = 'Yorick',
@@ -6018,7 +6169,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = false
+    collision = false,
+	ssType = 'Circular'
 	},
 	E = {
     charName = 'Yorick',
@@ -6030,7 +6182,7 @@ ChampInfo = {
     spellType = 'enemyCast',
     riskLevel = 'kill',
     cc = true,
-    hitLineCheck = false
+    collision = false
 	},
 	R = {
     charName = 'Yorick',
@@ -6042,7 +6194,7 @@ ChampInfo = {
     spellType = 'allyCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false,
+    collision = false,
     ultSlot = _R
 	}
   },
@@ -6057,7 +6209,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'dangerous',
     cc = true,
-    hitLineCheck = true
+    collision = false,
+	ssType = 'Line'
 	},
 	W = {
     charName = 'Zac',
@@ -6069,7 +6222,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'extreme',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	E = {
     charName = 'Zac',
@@ -6078,10 +6231,11 @@ ChampInfo = {
     width = 250,
     speed = 1500,
     delay = 0.5,
-    spellType = 'skillshot',
+    spellType = 'skillShot',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = false
+    collision = false,
+	ssType = 'Circular'
 	},
 	R = {
     charName = 'Zac',
@@ -6093,7 +6247,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = false
+    collision = false
 	}
   },
   Zed = {
@@ -6107,7 +6261,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = true
+    collision = false,
+	ssType = 'Line'
 	},
 	W = {
     charName = 'Zed',
@@ -6116,10 +6271,10 @@ ChampInfo = {
     width = 40,
     speed = 1600,
     delay = 0.5,
-    spellType = 'skillShot',
+    spellType = 'notSupported',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	E = {
     charName = 'Zed',
@@ -6131,7 +6286,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'dangerous',
     cc = true,
-    hitLineCheck = false
+    collision = false
 	},
 	R = {
     charName = 'Zed',
@@ -6143,7 +6298,7 @@ ChampInfo = {
     spellType = 'enemyCast',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false,
+    collision = false,
     timer = 2600
 	}
   },
@@ -6158,7 +6313,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = true
+    collision = true,
+	ssType = 'Line'
 	},
 	W = {
     charName = 'Ziggs',
@@ -6170,7 +6326,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'kill',
     cc = true,
-    hitLineCheck = false
+    collision = false,
+	ssType = 'Circular'
 	},
 	E = {
     charName = 'Ziggs',
@@ -6182,7 +6339,8 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = false
+    collision = false,
+	ssType = 'Circular'
 	},
 	R = {
     charName = 'Ziggs',
@@ -6194,8 +6352,9 @@ ChampInfo = {
     spellType = 'skillShot',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false,
-    timer = 950 - GetLatency()
+    collision = false,
+    timer = 950 - GetLatency(),
+	ssType = 'Circular'
 	}
   },
   Zilean = {
@@ -6206,10 +6365,10 @@ ChampInfo = {
     width = 0,
     speed = 1100,
     delay = 0,
-    spellType = 'everyCast',
+    spellType = 'enemyCast',   
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false,
+    collision = false,
     timer = 3000
 	},
 	W = {
@@ -6222,7 +6381,7 @@ ChampInfo = {
     spellType = 'selfCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false
+    collision = false
 	},
 	E = {
     charName = 'Zilean',
@@ -6231,10 +6390,10 @@ ChampInfo = {
     width = 0,
     speed = 1100,
     delay = 0.5,
-    spellType = 'everyCast',
+    spellType = 'enemyCast',   --Have option for enemy vs team akaa everyCast
     riskLevel = 'dangerous',
     cc = true,
-    hitLineCheck = false,
+    collision = false,
     exhaustSlot = _E
 	},
 	R = {
@@ -6247,7 +6406,7 @@ ChampInfo = {
     spellType = 'allyCast',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false,
+    collision = false,
     ultSlot = _R
 	}
   },
@@ -6259,22 +6418,24 @@ ChampInfo = {
     width = 240,
     speed = 1400,
     delay = 0.5,
-    spellType = 'skillshot',
+    spellType = 'skillShot',
     riskLevel = 'kill',
     cc = false,
-    hitLineCheck = false
+    collision = false,
+	ssType = 'Circular'
 	},
 	W = {
     charName = 'Zyra',
     spellSlot = 'W',
     range = 800,
-    width = 0,
+    width = 25,
     speed = 2200,
     delay = 0.5,
-    spellType = 'skillshot',
+    spellType = 'skillShot',
     riskLevel = 'noDmg',
     cc = false,
-    hitLineCheck = false
+    collision = false,
+	ssType = 'Circular'
 	},
 	E = {
     charName = 'Zyra',
@@ -6283,10 +6444,11 @@ ChampInfo = {
     width = 70,
     speed = 1400,
     delay = 0.5,
-    spellType = 'skillshot',
+    spellType = 'skillShot',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = true
+    collision = false,
+	ssType = 'Line'
 	},
 	R = {
     charName = 'Zyra',
@@ -6295,10 +6457,11 @@ ChampInfo = {
     width = 550,
     speed = 20,
     delay = 0.5,
-    spellType = 'skillshot',
+    spellType = 'skillShot',
     riskLevel = 'extreme',
     cc = true,
-    hitLineCheck = false
+    collision = false,
+	ssType = 'Circular'
 	}
   }
 }
@@ -6316,63 +6479,87 @@ local submenu = menu.submenu('1. Skill Options', 150)
 						--Q Option
 submenu.label('lbQ', '------------Q------------')
 if ChampInfo[champName].Q.spellType == 'selfCast' then 
-	submenu.label('lbQ1', 'SelfCast not supported yet')
+	submenu.label('lbQ1', 'selfCast Not Supported')
 elseif	ChampInfo[champName].Q.spellType == 'skillShot' then 
-	submenu.label('lbQ2', 'Skillshots not supported yet')
+	submenu.checkbutton('autoQ', 'Auto Target Q', true)
+	submenu.keydown('Q', 'Q Hotkey', Keys.Q)
+	qSupported = true
 elseif ChampInfo[champName].Q.spellType == 'allyCast' then 
 	submenu.label('lbQ3', 'AllyCast are not supported yet')
 elseif ChampInfo[champName].Q.spellType == 'everyCast' then 
 	submenu.label('lbQ4', 'Every Cast not supported yet')
+elseif ChampInfo[champName].Q.spellType == 'notSupported' then 
+	submenu.label('lbQ5', 'This skill is not supported')
 elseif ChampInfo[champName].Q.spellType == 'enemyCast' then 
 	submenu.checkbutton('autoQ', 'Auto Target Q', true)
 	submenu.keydown('Q', 'Q Hotkey', Keys.Q)
 	qSupported = true
 end
+submenu.checkbox('qRange', 'Show Q Range Indicator', true)
+submenu.slider('qRangeColor', 'Color of Q Indicator?', 1, 6, 1, {"Green","Red", "Aqua", "Light Purple", "Blue", "Dark Purple"})
 						--W Option
 submenu.label('lbW', '------------W------------')
 if ChampInfo[champName].W.spellType == 'selfCast' then 
-	submenu.label('lbW1', 'SelfCast not supported yet')
+	submenu.label('lbW1', 'selfCast Not Supported')
 elseif	ChampInfo[champName].W.spellType == 'skillShot' then 
-	submenu.label('lbW2', 'Skillshots not supported yet')
+	submenu.checkbutton('autoW', 'Auto Target W', true)
+	submenu.keydown('W', 'W Hotkey', Keys.W)
+	wSupported = true
 elseif ChampInfo[champName].W.spellType == 'allyCast' then 
 	submenu.label('lbW3', 'AllyCast are not supported yet')
 elseif ChampInfo[champName].W.spellType == 'everyCast' then 
 	submenu.label('lbW4', 'Every Cast not supported yet')
+elseif ChampInfo[champName].W.spellType == 'notSupported' then 
+	submenu.label('lbW5', 'This skill is not supported')
 elseif ChampInfo[champName].W.spellType == 'enemyCast' then 
 	submenu.checkbutton('autoW', 'Auto Target W', true)
 	submenu.keydown('W', 'W Hotkey', Keys.W)
 	wSupported = true
 end
+submenu.checkbox('wRange', 'Show W Range indicator', true)
+submenu.slider('wRangeColor', 'Color of W Indicator?', 1, 6, 1, {"Green","Red", "Aqua", "Light Purple", "Blue", "Dark Purple"})
 						--E Option
 submenu.label('lbE', '-------------E-------------')
 if ChampInfo[champName].E.spellType == 'selfCast' then 
-	submenu.label('lbE1', 'SelfCast not supported yet')
+	submenu.label('lbE1', 'selfCast Not Supported')
 elseif	ChampInfo[champName].E.spellType == 'skillShot' then 
-	submenu.label('lbE2', 'Skillshots not supported yet')
+	submenu.checkbutton('autoE', 'Auto Target E', true)
+	submenu.keydown('E', 'E Hotkey', Keys.E)
+	eSupported = true
 elseif ChampInfo[champName].E.spellType == 'allyCast' then 
 	submenu.label('lbE3', 'AllyCast are not supported yet')
 elseif ChampInfo[champName].E.spellType == 'everyCast' then 
 	submenu.label('lbE4', 'Every Cast not supported yet')
+elseif ChampInfo[champName].E.spellType == 'notSupported' then 
+	submenu.label('lbE5', 'This skill is not supported')
 elseif ChampInfo[champName].E.spellType == 'enemyCast' then 
 	submenu.checkbutton('autoE', 'Auto Target E', true)
 	submenu.keydown('E', 'E Hotkey', Keys.E)
 	eSupported = true
 end
+submenu.checkbox('eRange', 'Show E Range indicator', true)
+submenu.slider('eRangeColor', 'Color of E Indicator?', 1, 6, 1, {"Green","Red", "Aqua", "Light Purple", "Blue", "Dark Purple"})
 						--R Option
 submenu.label('lbR', '-------------R------------')
 if ChampInfo[champName].R.spellType == 'selfCast' then 
-	submenu.label('lbR1', 'SelfCast not supported yet')
+	submenu.label('lbR1', 'selfCast Not Supported')
 elseif	ChampInfo[champName].R.spellType == 'skillShot' then 
-	submenu.label('lbR2', 'Skillshots not supported yet')
+	submenu.checkbutton('autoR', 'Auto Target R', true)
+	submenu.keydown('R', 'R Hotkey', Keys.R)
+	rSupported = true
 elseif ChampInfo[champName].R.spellType == 'allyCast' then 
 	submenu.label('lbR3', 'AllyCast are not supported yet')
 elseif ChampInfo[champName].R.spellType == 'everyCast' then 
 	submenu.label('lbR4', 'Every Cast not supported yet')
+elseif ChampInfo[champName].R.spellType == 'notSupported' then 
+	submenu.label('lbR5', 'This skill is not supported')
 elseif ChampInfo[champName].R.spellType == 'enemyCast' then 
 	submenu.checkbutton('autoR', 'Auto Target R', true)
 	submenu.keydown('R', 'R Hotkey', Keys.R)
 	rSupported = true
 end
+submenu.checkbox('rRange', 'Show R Range indicator', true)
+submenu.slider('rRangeColor', 'Color of R Indicator?', 1, 6, 1, {"Green","Red", "Aqua", "Light Purple", "Blue", "Dark Purple"})
 
 --Target Selector Menu
 local submenu = menu.submenu('2. Target Selector', 250)
@@ -6390,21 +6577,21 @@ submenu.permashow('TS_ON')
 ------------------------------------------------------------
 function Main()
    TargetSelector()
- --  print(champName)
+   RangeIndicators()
 	if target ~= nil then
-		 if qSupported and Cfg['1. Skill Options'].autoQ and Cfg['1. Skill Options'].Q and GetDistance(target, myHero) <= QInfo.range then
-			CastSpellTarget('Q', target)
-		 end
-		 if wSupported and Cfg['1. Skill Options'].autoW and Cfg['1. Skill Options'].W and GetDistance(target, myHero) <= WInfo.range then
-			CastSpellTarget('W', target)
-		 end
-		 if eSupported and Cfg['1. Skill Options'].autoE and Cfg['1. Skill Options'].E and GetDistance(target, myHero) <= EInfo.range then
-			CastSpellTarget('E', target)
-		 end
-		 if rSupported and Cfg['1. Skill Options'].autoR and Cfg['1. Skill Options'].R and GetDistance(target, myHero) <= RInfo.range then
-			CastSpellTarget('R', target)
-		 end
-	 end
+		if qSupported and Cfg['1. Skill Options'].autoQ and Cfg['1. Skill Options'].Q and GetDistance(target, myHero) <= QInfo.range then
+			UseQ()
+		end
+		if wSupported and Cfg['1. Skill Options'].autoW and Cfg['1. Skill Options'].W and GetDistance(target, myHero) <= WInfo.range then
+			UseW()
+		end
+		if eSupported and Cfg['1. Skill Options'].autoE and Cfg['1. Skill Options'].E and GetDistance(target, myHero) <= EInfo.range then
+			UseE()
+		end
+		if rSupported and Cfg['1. Skill Options'].autoR and Cfg['1. Skill Options'].R and GetDistance(target, myHero) <= RInfo.range then
+			UseR()
+		end
+	end
 end 
 ------------------------------------------------------------  
 --------------------End Of Main Function--------------------
@@ -6419,25 +6606,215 @@ QInfo.range = ChampInfo[champName].Q.range
 QInfo.width = ChampInfo[champName].Q.width
 QInfo.speed = ChampInfo[champName].Q.speed
 QInfo.delay = ChampInfo[champName].Q.delay
---QInfo.dmgType = ChampInfo[champName].Q.dmgType   Not yet implemented
+QInfo.collision = ChampInfo[champName].Q.collision
+QInfo.ssType = ChampInfo[champName].Q.ssType
+
 WInfo.range = ChampInfo[champName].W.range
 WInfo.width = ChampInfo[champName].W.width
 WInfo.speed = ChampInfo[champName].W.speed
 WInfo.delay = ChampInfo[champName].W.delay
---WInfo.dmgType = ChampInfo[champName].W.range   Not yet implemented
+WInfo.collision = ChampInfo[champName].W.collision
+WInfo.ssType = ChampInfo[champName].W.ssType
+
 EInfo.range = ChampInfo[champName].E.range
 EInfo.width = ChampInfo[champName].E.width
 EInfo.speed = ChampInfo[champName].E.speed
 EInfo.delay = ChampInfo[champName].E.delay
---EInfo.dmgType = ChampInfo[champName].E.range   Not yet implemented
+EInfo.collision = ChampInfo[champName].E.collision
+EInfo.ssType = ChampInfo[champName].E.ssType
+
 RInfo.range = ChampInfo[champName].R.range
 RInfo.width = ChampInfo[champName].R.width
 RInfo.speed = ChampInfo[champName].R.speed
 RInfo.delay = ChampInfo[champName].R.delay
---RInfo.dmgType = ChampInfo[champName].R.range   Not yet implemented
+RInfo.collision = ChampInfo[champName].R.collision
+RInfo.ssType = ChampInfo[champName].R.ssType
 end
 ------------------------------------------------------------  
 ----------------End Of Get Skill Information----------------
+------------------------------------------------------------
+
+
+------------------------------------------------------------
+-----------------------Range Indicators---------------------
+------------------------------------------------------------
+function RangeIndicators()
+	--local qColor, wColor, eColor, rColor = GetColors()
+	if Cfg['1. Skill Options'].qRange then
+		DrawCircleObject(myHero, QInfo.range, Cfg['1. Skill Options'].qRangeColor)
+	end
+	if Cfg['1. Skill Options'].wRange then
+		DrawCircleObject(myHero, WInfo.range, Cfg['1. Skill Options'].wRangeColor)
+	end
+	if Cfg['1. Skill Options'].eRange then
+		DrawCircleObject(myHero, EInfo.range, Cfg['1. Skill Options'].eRangeColor)
+	end
+	if Cfg['1. Skill Options'].rRange then
+		DrawCircleObject(myHero, RInfo.range, Cfg['1. Skill Options'].rRangeColor)
+	end
+end
+------------------------------------------------------------
+--------------------End Of Range Indicators-----------------
+------------------------------------------------------------
+
+
+------------------------------------------------------------
+-----------------------Skill Functions----------------------
+------------------------------------------------------------
+function UseQ()
+	if ChampInfo[champName].Q.spellType == 'enemyCast' then
+		CastSpellTarget('Q', target)
+	elseif	ChampInfo[champName].Q.spellType == 'skillShot' then
+		if ChampInfo[champName].Q.ssType == 'Line' then
+				CastPosition,  HitChance,  Position = YP:GetLineCastPosition(target, QInfo.delay, QInfo.width, QInfo.range, QInfo.speed, myHero, QInfo.collision)
+				if CastPosition and HitChance >= 2 then 
+					local x, y, z = CastPosition.x, CastPosition.y, CastPosition.z                
+					CastSpellXYZ('Q', x, y, z)
+				end
+		elseif	ChampInfo[champName].Q.ssType == 'LineAOE' then 
+				CastPosition,  HitChance,  Position = YP:GetLineAOECastPosition(target, QInfo.delay, QInfo.width, QInfo.range, QInfo.speed, myHero)
+				if CastPosition and HitChance >= 2 then 
+					local x, y, z = CastPosition.x, CastPosition.y, CastPosition.z                
+					CastSpellXYZ('Q', x, y, z)
+				end
+		elseif	ChampInfo[champName].Q.ssType == 'Circular' then 
+				CastPosition,  HitChance,  Position = YP:GetCircularCastPosition(target, QInfo.delay, QInfo.width, QInfo.range, QInfo.speed, myHero, QInfo.collision)
+				if CastPosition and HitChance >= 2 then 
+					local x, y, z = CastPosition.x, CastPosition.y, CastPosition.z                
+					CastSpellXYZ('Q', x, y, z)
+				end
+		elseif	ChampInfo[champName].Q.ssType == 'CircularAOE' then 
+				CastPosition,  HitChance,  Position = YP:GetCircularAOECastPosition(target, QInfo.delay, QInfo.width, QInfo.range, QInfo.speed, myHero, QInfo.collision)
+				if CastPosition and HitChance >= 2 then 
+					local x, y, z = CastPosition.x, CastPosition.y, CastPosition.z                
+					CastSpellXYZ('Q', x, y, z)
+				end
+		elseif	ChampInfo[champName].Q.ssType == 'ConeAOE' then 
+				CastPosition,  HitChance,  Position = YP:GetConeAOECastPosition(target, QInfo.delay, QInfo.width, QInfo.range, QInfo.speed, myHero, QInfo.collision)
+				if CastPosition and HitChance >= 2 then 
+					local x, y, z = CastPosition.x, CastPosition.y, CastPosition.z                
+					CastSpellXYZ('Q', x, y, z)
+				end
+		end
+	end
+end
+
+function UseW()
+	if ChampInfo[champName].W.spellType == 'enemyCast' then
+		CastSpellTarget('W', target)
+	elseif	ChampInfo[champName].W.spellType == 'skillShot' then
+		if ChampInfo[champName].W.ssType == 'Line' then
+				CastPosition,  HitChance,  Position = YP:GetLineCastPosition(target, WInfo.delay, WInfo.width, WInfo.range, WInfo.speed, myHero, WInfo.collision)
+				if CastPosition and HitChance >= 2 then 
+					local x, y, z = CastPosition.x, CastPosition.y, CastPosition.z                
+					CastSpellXYZ('W', x, y, z)
+				end
+		elseif	ChampInfo[champName].W.ssType == 'LineAOE' then 
+				CastPosition,  HitChance,  Position = YP:GetLineAOECastPosition(target, WInfo.delay, WInfo.width, WInfo.range, WInfo.speed, myHero)
+				if CastPosition and HitChance >= 2 then  
+					local x, y, z = CastPosition.x, CastPosition.y, CastPosition.z                
+					CastSpellXYZ('W', x, y, z)
+				end
+		elseif	WInfo.ssType == 'Circular' then 
+				CastPosition,  HitChance,  Position = YP:GetCircularCastPosition(target, WInfo.delay, WInfo.width, WInfo.range, WInfo.speed, myHero, WInfo.collision)
+				if CastPosition and HitChance >= 2 then 
+					local x, y, z = CastPosition.x, CastPosition.y, CastPosition.z                
+					CastSpellXYZ('W', x, y, z)
+				end
+		elseif	ChampInfo[champName].W.ssType == 'CircularAOE' then 
+				CastPosition,  HitChance,  Position = YP:GetCircularAOECastPosition(target, WInfo.delay, WInfo.width, WInfo.range, WInfo.speed, myHero, WInfo.collision)
+				if CastPosition and HitChance >= 2 then 
+					local x, y, z = CastPosition.x, CastPosition.y, CastPosition.z                
+						CastSpellXYZ('W', x, y, z)
+				end
+		elseif	ChampInfo[champName].W.ssType == 'ConeAOE' then 
+				CastPosition,  HitChance,  Position = YP:GetConeAOECastPosition(target, WInfo.delay, WInfo.width, WInfo.range, WInfo.speed, myHero, WInfo.collision)
+				if CastPosition and HitChance >= 2 then 
+					local x, y, z = CastPosition.x, CastPosition.y, CastPosition.z                
+					CastSpellXYZ('W', x, y, z)
+				end
+		end
+	end	
+end
+
+function UseE()
+	if ChampInfo[champName].E.spellType == 'enemyCast' then
+		CastSpellTarget('E', target)
+	elseif	ChampInfo[champName].E.spellType == 'skillShot' then
+		if ChampInfo[champName].E.ssType == 'Line' then
+			CastPosition,  HitChance,  Position = YP:GetLineCastPosition(target, EInfo.delay, EInfo.width, EInfo.range, EInfo.speed, myHero, EInfo.collision)
+				if CastPosition and HitChance >= 2 then 
+					local x, y, z = CastPosition.x, CastPosition.y, CastPosition.z                
+					CastSpellXYZ('E', x, y, z)
+				end
+		elseif	ChampInfo[champName].E.ssType == 'LineAOE' then 
+				CastPosition,  HitChance,  Position = YP:GetLineAOECastPosition(target, EInfo.delay, EInfo.width, EInfo.range, EInfo.speed, myHero)
+				if CastPosition and HitChance >= 2 then 
+					local x, y, z = CastPosition.x, CastPosition.y, CastPosition.z                
+					CastSpellXYZ('E', x, y, z)
+				end
+		elseif	ChampInfo[champName].E.ssType == 'Circular' then 
+				CastPosition,  HitChance,  Position = YP:GetCircularCastPosition(target, EInfo.delay, EInfo.width, EInfo.range, EInfo.speed, myHero, EInfo.collision)
+				if CastPosition and HitChance >= 2 then 
+					local x, y, z = CastPosition.x, CastPosition.y, CastPosition.z                
+					CastSpellXYZ('E', x, y, z)
+				end
+		elseif	ChampInfo[champName].E.ssType == 'CircularAOE' then 
+				CastPosition,  HitChance,  Position = YP:GetCircularAOECastPosition(target, EInfo.delay, EInfo.width, EInfo.range, EInfo.speed, myHero, EInfo.collision)
+				if CastPosition and HitChance >= 2 then 
+					local x, y, z = CastPosition.x, CastPosition.y, CastPosition.z                
+					CastSpellXYZ('E', x, y, z)
+				end
+		elseif	ChampInfo[champName].E.ssType == 'ConeAOE' then 
+				CastPosition,  HitChance,  Position = YP:GetConeAOECastPosition(target, EInfo.delay, EInfo.width, EInfo.range, EInfo.speed, myHero, EInfo.collision)
+				if CastPosition and HitChance >= 2 then 
+					local x, y, z = CastPosition.x, CastPosition.y, CastPosition.z                
+					CastSpellXYZ('E', x, y, z)
+				end
+		end
+	end
+end
+
+
+function UseR()
+	if ChampInfo[champName].R.spellType == 'enemyCast' then
+		CastSpellTarget('R', target)
+	elseif	ChampInfo[champName].R.spellType == 'skillShot' then
+		if ChampInfo[champName].R.ssType == 'Line' then
+				CastPosition,  HitChance,  Position = YP:GetLineCastPosition(target, RInfo.delay, RInfo.width, RInfo.range, RInfo.speed, myHero, RInfo.collision)
+				if CastPosition and HitChance >= 2 then 
+					local x, y, z = CastPosition.x, CastPosition.y, CastPosition.z                
+					CastSpellXYZ('R', x, y, z)
+				end
+		elseif	ChampInfo[champName].R.ssType == 'LineAOE' then 
+				CastPosition,  HitChance,  Position = YP:GetLineAOECastPosition(target, RInfo.delay, RInfo.width, RInfo.range, RInfo.speed, myHero)
+				if CastPosition and HitChance >= 2 then 
+					local x, y, z = CastPosition.x, CastPosition.y, CastPosition.z                
+					CastSpellXYZ('R', x, y, z)
+				end
+		elseif	ChampInfo[champName].R.ssType == 'Circular' then 
+				CastPosition,  HitChance,  Position = YP:GetCircularCastPosition(target, RInfo.delay, RInfo.width, RInfo.range, RInfo.speed, myHero, RInfo.collision)
+				if CastPosition and HitChance >= 2 then 
+					local x, y, z = CastPosition.x, CastPosition.y, CastPosition.z                
+					CastSpellXYZ('R', x, y, z)
+				end
+		elseif	ChampInfo[champName].R.ssType == 'CircularAOE' then 
+				CastPosition,  HitChance,  Position = YP:GetCircularAOECastPosition(target, RInfo.delay, RInfo.width, RInfo.range, RInfo.speed, myHero, RInfo.collision)
+				if CastPosition and HitChance >= 2 then 
+					local x, y, z = CastPosition.x, CastPosition.y, CastPosition.z                
+					CastSpellXYZ('R', x, y, z)
+				end
+		elseif	ChampInfo[champName].R.ssType == 'ConeAOE' then 
+				CastPosition,  HitChance,  Position = YP:GetConeAOECastPosition(target, RInfo.delay, RInfo.width, RInfo.range, RInfo.speed, myHero, RInfo.collision)
+				if CastPosition and HitChance >= 2 then 
+					local x, y, z = CastPosition.x, CastPosition.y, CastPosition.z                
+					CastSpellXYZ('R', x, y, z)
+				end
+		end
+	end
+end
+------------------------------------------------------------
+---------------------End Of Skill Functions-----------------
 ------------------------------------------------------------
 
 
@@ -6473,6 +6850,7 @@ function TargetSelector()
 		end 
 	end
 end
+
 ------------------------------------------------------------
 --------------------End Of Target Selector------------------
 ------------------------------------------------------------
