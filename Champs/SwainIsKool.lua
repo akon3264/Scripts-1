@@ -1,5 +1,5 @@
 local ScriptName = 'SwainIsKool'
-local Version = '1.0'
+local Version = '1.1'
 local Author = 'Koolkaracter'
 --[[____              _         _____       _  __           _ 
   / ____|            (_)       |_   _|     | |/ /          | |
@@ -12,10 +12,18 @@ local Author = 'Koolkaracter'
 
 require 'yprediction'
 require 'spell_damage'
+require 'winapi'
+require 'SKeys'
+require 'Utils'
 local yayo = require 'yayo'
 local uiconfig = require 'uiconfig'
+local send = require 'SendInputScheduled'
 local YP = YPrediction()
 local target = nil
+local attempts = 0
+local lastAttempt = 0
+local Q,W,E,R = 'Q','W','E','R'
+local skillOrder = {}
 
 ------------------------------------------------------------  
 ---------------------------Menu-----------------------------
@@ -102,6 +110,9 @@ submenu.checkbox('KSIGN', 'KS with Ignite', true)
 
 local submenu = menu.submenu('8. Misc Options', 300)
 submenu.checkbox('ShowPHP', 'Show Your % of HP', true)
+submenu.label('lbM1', '--Auto Level--')
+submenu.checkbox('ALevel_ON', 'Use Auto Leveler', true)
+submenu.slider('lvlOrder', 'Skill Leveling Order', 1, 6 , 5, {'RQWE', 'RQEW', 'RWQE', 'RWEQ','REQW', 'REWQ'})
 
 menu.label('lb01', ' ')
 menu.label('lb02', 'SwainIsKool Version '..tostring(Version) ..' by KoolKaracter')
@@ -121,6 +132,7 @@ function Main()
 	AutoPots()
 	if Cfg['7. Kill Steal Options'].KillSteal_ON then KillSteal() end
 	if Cfg['8. Misc Options'].ShowPHP then ShowPercentHP() end
+	if Cfg['8. Misc Options'].ALevel_ON then AutoLvl() end
 	
 	if yayo.Config.AutoCarry then 
 		if target ~= nil then 
@@ -523,7 +535,7 @@ end
 
 
 ------------------------------------------------------------
-----------------------Miscellaneous Options-----------------
+--------------------Miscellaneous Functions-----------------
 ------------------------------------------------------------
 function ShowPercentHP()
  
@@ -532,8 +544,58 @@ function ShowPercentHP()
         DrawTextObject(myHP,myHero,Color.White)
        
 end
+
+function Level_Spell(letter)  
+     if letter == Q then send.key_press(0x69)
+     elseif letter == W then send.key_press(0x6a)
+     elseif letter == E then send.key_press(0x6b)
+     elseif letter == R then send.key_press(0x6c) 
+	 end
+end
+
+function GetSkillOrder()
+	if Cfg['8. Misc Options'].lvlOrder == 1 then 
+		skillOrder = {Q,W,Q,E,Q,R,Q,W,Q,W,R,W,W,E,E,R,E,E}
+	end
+	if Cfg['8. Misc Options'].lvlOrder == 2 then 
+		skillOrder = {Q,E,Q,W,Q,R,Q,E,Q,E,R,E,E,W,W,R,W,W}
+	end
+	if Cfg['8. Misc Options'].lvlOrder == 3 then 
+		skillOrder = {W,Q,W,E,W,R,W,Q,W,Q,R,Q,Q,E,E,R,E,E}
+	end	
+	if Cfg['8. Misc Options'].lvlOrder == 4 then 
+		skillOrder = {W,E,W,Q,W,R,W,E,W,E,R,E,E,Q,Q,R,Q,Q}
+	end		
+	if Cfg['8. Misc Options'].lvlOrder == 5 then 
+		skillOrder = {E,Q,E,W,E,R,E,Q,E,Q,R,Q,Q,W,W,R,W,W}
+	end
+	if Cfg['8. Misc Options'].lvlOrder == 6 then 
+		skillOrder = {E,W,E,Q,E,R,E,W,E,W,R,W,W,Q,Q,R,Q,Q}
+	end	
+end
+
+function AutoLvl()
+    if IsChatOpen() == 0 then
+		GetSkillOrder()
+        spellLevelSum = GetSpellLevel(Q) + GetSpellLevel(W) + GetSpellLevel(E) + GetSpellLevel(R)
+
+        if attempts <= 10 or (attempts > 10 and GetTickCount() > lastAttempt+1500) then
+            if spellLevelSum < myHero.selflevel then
+                if lastSpellLevelSum ~= spellLevelSum then attempts = 0 end
+                letter = skillOrder[spellLevelSum+1]
+                Level_Spell(letter, spellLevelSum)
+                attempts = attempts+1
+                lastAttempt = GetTickCount()
+                lastSpellLevelSum = spellLevelSum
+            else
+                attempts = 0
+            end
+        end
+    end
+	send.tick()
+end
 ------------------------------------------------------------
-------------------End Of Miscellaneous Options--------------
+----------------End Of Miscellaneous Functions--------------
 ------------------------------------------------------------
 
 
