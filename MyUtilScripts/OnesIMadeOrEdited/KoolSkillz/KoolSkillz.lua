@@ -1,4 +1,4 @@
-if myHero.name == "Elise" or  myHero.name == "Jayce" or myHero.name == "gnar" or myHero.name == "Nidalee" then return end --Currently not supported champions. 
+if myHero.name == "Elise" or  myHero.name == "Jayce" or myHero.name == "Gnar" or myHero.name == "Nidalee" then return end --Currently not supported champions. 
 --[[
  ____  __.            .__      ___________   .__.__  .__                                             
 |    |/ _|____   ____ |  |    /   _____/  | _|__|  | |  | ________                                   
