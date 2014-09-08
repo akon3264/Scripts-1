@@ -19,6 +19,7 @@ require 'spell_damage'
 require 'winapi'
 require 'SKeys'
 require 'Utils'
+require 'vals_lib'
 local yayo = require 'yayo'
 local uiconfig = require 'uiconfig'
 local send = require 'SendInputScheduled'
@@ -299,7 +300,7 @@ end
 
 function UseDefensiveItems()
 	if IsBuffed(myHero, "FountainHeal") ~= true then
-	
+
 		if Cfg['4. Item Options'].ZH and myHero.health <= (myHero.maxHealth*(Cfg['4. Item Options'].ZHValue / 100)) then --If health is below the slider % value
 	        UseItemOnTarget(3157,myHero) -- Zhonya's Hourglass
 	        UseItemOnTarget(3090,myHero) -- Wooglet's Witchap
