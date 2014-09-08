@@ -1,4 +1,4 @@
-if myHero.name == "Elise" or  myHero.name == "Jayce" or myHero.name == "Nidalee" then return end --Currently not supported champions. 
+if myHero.name == "Elise" or  myHero.name == "Jayce" or myHero.name == "gnar" or myHero.name == "Nidalee" then return end --Currently not supported champions. 
 --[[
  ____  __.            .__      ___________   .__.__  .__                                             
 |    |/ _|____   ____ |  |    /   _____/  | _|__|  | |  | ________                                   
@@ -6666,35 +6666,35 @@ function UseQ()
 		CastSpellTarget('Q', target)
 	elseif	ChampInfo[champName].Q.spellType == 'skillShot' then
 		if ChampInfo[champName].Q.ssType == 'Line' then
-				CastPosition,  HitChance,  Position = YP:GetLineCastPosition(target, QInfo.delay, QInfo.width, QInfo.range, QInfo.speed, myHero, QInfo.collision)
-				if CastPosition and HitChance >= 2 then 
-					local x, y, z = CastPosition.x, CastPosition.y, CastPosition.z                
-					CastSpellXYZ('Q', x, y, z)
-				end
+			CastPosition,  HitChance,  Position = YP:GetLineCastPosition(target, QInfo.delay, QInfo.width, QInfo.range, QInfo.speed, myHero, QInfo.collision)
+			if CastPosition and HitChance >= 2 then 
+				local x, y, z = CastPosition.x, CastPosition.y, CastPosition.z                
+				CastSpellXYZ('Q', x, y, z)
+			end
 		elseif	ChampInfo[champName].Q.ssType == 'LineAOE' then 
-				CastPosition,  HitChance,  Position = YP:GetLineAOECastPosition(target, QInfo.delay, QInfo.width, QInfo.range, QInfo.speed, myHero)
-				if CastPosition and HitChance >= 2 then 
-					local x, y, z = CastPosition.x, CastPosition.y, CastPosition.z                
-					CastSpellXYZ('Q', x, y, z)
-				end
+			CastPosition,  HitChance,  Position = YP:GetLineAOECastPosition(target, QInfo.delay, QInfo.width, QInfo.range, QInfo.speed, myHero)
+			if CastPosition and HitChance >= 2 then 
+				local x, y, z = CastPosition.x, CastPosition.y, CastPosition.z                
+				CastSpellXYZ('Q', x, y, z)
+			end
 		elseif	ChampInfo[champName].Q.ssType == 'Circular' then 
-				CastPosition,  HitChance,  Position = YP:GetCircularCastPosition(target, QInfo.delay, QInfo.width, QInfo.range, QInfo.speed, myHero, QInfo.collision)
-				if CastPosition and HitChance >= 2 then 
-					local x, y, z = CastPosition.x, CastPosition.y, CastPosition.z                
-					CastSpellXYZ('Q', x, y, z)
-				end
+			CastPosition,  HitChance,  Position = YP:GetCircularCastPosition(target, QInfo.delay, QInfo.width, QInfo.range, QInfo.speed, myHero, QInfo.collision)
+			if CastPosition and HitChance >= 2 then 
+				local x, y, z = CastPosition.x, CastPosition.y, CastPosition.z                
+				CastSpellXYZ('Q', x, y, z)
+			end
 		elseif	ChampInfo[champName].Q.ssType == 'CircularAOE' then 
-				CastPosition,  HitChance,  Position = YP:GetCircularAOECastPosition(target, QInfo.delay, QInfo.width, QInfo.range, QInfo.speed, myHero, QInfo.collision)
-				if CastPosition and HitChance >= 2 then 
-					local x, y, z = CastPosition.x, CastPosition.y, CastPosition.z                
-					CastSpellXYZ('Q', x, y, z)
-				end
+			CastPosition,  HitChance,  Position = YP:GetCircularAOECastPosition(target, QInfo.delay, QInfo.width, QInfo.range, QInfo.speed, myHero, QInfo.collision)
+			if CastPosition and HitChance >= 2 then 
+				local x, y, z = CastPosition.x, CastPosition.y, CastPosition.z                
+				CastSpellXYZ('Q', x, y, z)
+			end
 		elseif	ChampInfo[champName].Q.ssType == 'ConeAOE' then 
-				CastPosition,  HitChance,  Position = YP:GetConeAOECastPosition(target, QInfo.delay, QInfo.width, QInfo.range, QInfo.speed, myHero, QInfo.collision)
-				if CastPosition and HitChance >= 2 then 
-					local x, y, z = CastPosition.x, CastPosition.y, CastPosition.z                
-					CastSpellXYZ('Q', x, y, z)
-				end
+			CastPosition,  HitChance,  Position = YP:GetConeAOECastPosition(target, QInfo.delay, QInfo.width, QInfo.range, QInfo.speed, myHero, QInfo.collision)
+			if CastPosition and HitChance >= 2 then 
+				local x, y, z = CastPosition.x, CastPosition.y, CastPosition.z                
+				CastSpellXYZ('Q', x, y, z)
+			end
 		end
 	end
 end
