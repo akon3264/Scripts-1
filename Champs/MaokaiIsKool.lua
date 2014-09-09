@@ -268,7 +268,7 @@ function TargetSelector()
 		end 
 -- TS Mode 2 (Get Weakest)
 	elseif Cfg['2. Target Selector'].TS_Mode == 2 then
-		target = GetWeakEnemy('Magic', tsRange)
+		target = GetWeakEnemy('MAGIC', tsRange)
 		yayo.ForceTarget(target)
 		if target ~= nil and (GetDistance(target, myHero) > tsRange or target.visible ~= 1) then target = nil end
 		if Cfg['2. Target Selector'].TS_Circles and target ~= nil then 
