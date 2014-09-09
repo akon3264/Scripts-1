@@ -32,7 +32,7 @@ local skillOrder = {}
 local qRange, wRange, eRange, rRange = 600, 525, 1100, 475
 local qSpeed, wSpeed, eSpeed, rSpeed = 1200, nil, 1750, nil
 local qDelay, wDelay, eDelay, rDelay = .5, .5, .5, .50
-local qWidth, wWidth, eWidth, rRange = 100, nil, 250, 575
+local qWidth, wWidth, eWidth, rWidth = 100, nil, 250, 575
 local qCollision, wCollision, eCollision, rCollision = false, false, false, false
 local targetPri, tsRange 
 
