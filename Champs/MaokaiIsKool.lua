@@ -322,7 +322,7 @@ function UseOffensiveItems(target)
 			if Cfg['4. Item Options'].RO and (GetDistance(myHero, target) < 400) then -- IR
 				UseItemOnTarget(3143, target) -- Randuin's Omen
 			end 
-			if Cfg['4. Item Options'].BFT and (GetDistance(myHero, target) < AttackRange+10) then -- IR
+			if Cfg['4. Item Options'].TWS and (GetDistance(myHero, target) < AttackRange+10) then -- IR
 				UseItemOnTarget(3023, target) -- Twin Shadows on Summoners Rift & Howling Abyss
 				UseItemOnTarget(3290, target) -- Twin Shadows on Crystal Scar & Twisted Treeline
 			end    			
