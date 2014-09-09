@@ -232,32 +232,7 @@ function TargetSelector()
 		else 
 			tsRange = 1100
 		end
---TS Mode (TS Only)	testing removed
---[[if Cfg['2. Target Selector'].TS_Mode == 1 then
-		if target == nil then
-			target = GetWeakEnemy('MAGIC', tsRange)
-			yayo.ForceTarget(target)
-		end
-		if Cfg['2. Target Selector'].TS then
-			for i = 1, objManager:GetMaxHeroes() do
-				local enemy = objManager:GetHero(i)
-				if enemy ~= nil and enemy.team ~= myHero.team and enemy.visible == 1 and GetDistance(enemy,mousePos) < 150 then
-					target = enemy
-					yayo.ForceTarget(target)
-				end
-			end
-		end
-		if target ~= nil and (GetDistance(target, myHero) > tsRange or target.visible ~= 1) then target = nil end
-		if target~=nil then
-			if target.dead==1 or myHero.dead==1 then 
-				target = nil 
-			else
-				if Cfg['2. Target Selector'].TS_Circles then 
-					CustomCircle(100,10,1,target)
-				end
-			end 
-		end ]]
-		
+
 --TS Mode 1 (TS Primary)		
 	if Cfg['2. Target Selector'].TS_Mode == 1 then
 		if Cfg['2. Target Selector'].TS then
