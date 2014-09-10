@@ -191,7 +191,7 @@ function UseW(targ)
 end
 
 function UseE(targ)
-		CastPosition,  HitChance,  Position = YP:GetCircularCastPosition(targ, eDelay, eWidth, eRange, wSpeed, myHero, eCollision)
+		CastPosition,  HitChance,  Position = YP:GetCircularCastPosition(targ, eDelay, eWidth, eRange, eSpeed, myHero, eCollision)
 		if CastPosition and HitChance >= 2 then 
 			local x, y, z = CastPosition.x, CastPosition.y, CastPosition.z                
 			CastSpellXYZ('E', x, y, z)
