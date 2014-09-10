@@ -113,10 +113,11 @@ submenu.checkbox('KSQ', 'KS with Q', true)
 submenu.checkbox('KSW', 'KS with W', true)
 submenu.checkbox('KSE', 'KS with E', true)
 submenu.checkbox('KSR', 'KS with R', true)
-submenu.checkbox('KSDFG', 'KS with DFG', true)
-submenu.checkbox('KSBFT', 'KS with BFT', true)
-submenu.checkbox('KSIGN', 'KS with Ignite', true)
-
+submenu.checkbox('KSBC', 'KS w/ Cutlass', true)
+submenu.checkbox('KST', 'KS w/ Tiamat', true)
+submenu.checkbox('KSRH', 'KS w/ Hydra', true)
+submenu.checkbox('KSBORK', 'KS w/ BORK', true)
+submenu.checkbox('KSIGN', 'KS w/ Ignite', true)
 local submenu = menu.submenu('8. Misc Options', 300)
 submenu.checkbox('ShowPHP', 'Show Your % of HP', true)
 submenu.label('lbM1', '--Auto Level--')
@@ -124,7 +125,7 @@ submenu.checkbox('ALevel_ON', 'Use Auto Leveler', true)
 submenu.slider('lvlOrder', 'Skill Leveling Order', 1, 6 , 2, {'RQWE', 'RQEW', 'RWQE', 'RWEQ','REQW', 'REWQ'})
 
 menu.label('lb01', ' ')
-menu.label('lb02', 'MaokaiIsKool Version '..tostring(Version) ..' by KoolKaracter')
+menu.label('lb02', 'Renekton Is Kool Version '..tostring(Version) ..' by KoolKaracter')
 ------------------------------------------------------------  
 ------------------------End Of Menu-------------------------
 ------------------------------------------------------------
@@ -575,8 +576,10 @@ function KillSteal()
 			if Cfg['7. Kill Steal Options'].KSW and ksTarg ~= nil and ksTarg.team ~= myHero.team and ksTarg.visible == 1 and GetDistance(myHero, ksTarg) < 900 and getDmg('W', ksTarg, myHero) >= ksTarg.health then UseQ(ksTarg) end
 			if Cfg['7. Kill Steal Options'].KSE and ksTarg ~= nil and ksTarg.team ~= myHero.team and ksTarg.visible == 1 and GetDistance(myHero, ksTarg) < 625 and getDmg('E', ksTarg, myHero) >= ksTarg.health then UseQ(ksTarg) end
 			if Cfg['7. Kill Steal Options'].KSR and ksTarg ~= nil and ksTarg.team ~= myHero.team and ksTarg.visible == 1 and GetDistance(myHero, ksTarg) < 690 and getDmg('R', ksTarg, myHero) >= ksTarg.health then UseQ(ksTarg) end
-			if Cfg['7. Kill Steal Options'].KSDFG and ksTarg ~= nil and ksTarg.team ~= myHero.team and ksTarg.visible == 1 and GetDistance(myHero, ksTarg) < 750 and getDmg('DFG', ksTarg, myHero) >= ksTarg.health then UseItemOnTarget(3128, ksTarg) end
-			if Cfg['7. Kill Steal Options'].KSBFT and ksTarg ~= nil and ksTarg.team ~= myHero.team and ksTarg.visible == 1 and GetDistance(myHero, ksTarg) < 750 and getDmg('BLACKFIRE', ksTarg, myHero) >= ksTarg.health then UseItemOnTarget(3188, ksTarg) end
+			if Cfg['7. Kill Steal Options'].KSBC and ksTarg ~= nil and ksTarg.team ~= myHero.team and ksTarg.visible == 1 and GetDistance(myHero, ksTarg) < 400 and getDmg('BWC', ksTarg, myHero) >= ksTarg.health then UseItemOnTarget(3144, ksTarg) end
+			if Cfg['7. Kill Steal Options'].KST and ksTarg ~= nil and ksTarg.team ~= myHero.team and ksTarg.visible == 1 and GetDistance(myHero, ksTarg) < 400 and getDmg('TIAMAT', ksTarg, myHero) >= ksTarg.health then UseItemOnTarget(3077, ksTarg) end
+			if Cfg['7. Kill Steal Options'].KSRH and ksTarg ~= nil and ksTarg.team ~= myHero.team and ksTarg.visible == 1 and GetDistance(myHero, ksTarg) < 400 and getDmg('HYDRA', ksTarg, myHero) >= ksTarg.health then UseItemOnTarget(3074, ksTarg) end
+			if Cfg['7. Kill Steal Options'].KSBORK and ksTarg ~= nil and ksTarg.team ~= myHero.team and ksTarg.visible == 1 and GetDistance(myHero, ksTarg) < 500 and getDmg('RUINEDKING', ksTarg, myHero) >= ksTarg.health then UseItemOnTarget(3153, ksTarg) end
 			if Cfg['7. Kill Steal Options'].KSIGN and ksTarg ~= nil and ksTarg.team ~= myHero.team and ksTarg.visible == 1 and GetDistance(myHero, ksTarg) < 600 and getDmg('IGNITE', ksTarg, myHero) >= ksTarg.health  and (Cfg['5. Summoner Spell Options'].Auto_Ignite_Self_ON ~= true) then CastSummonerIgn(ksTarg) end
 	end
 end
