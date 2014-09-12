@@ -1,5 +1,5 @@
 local ScriptName = 'MaokaiIsKool'
-local Version = '1.1'
+local Version = '1.2'
 local Author = 'Koolkaracter'
 --[[
  _______  _______  _______  _        _______ _________  _________ _______    _        _______  _______  _       
