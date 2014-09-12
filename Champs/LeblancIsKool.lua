@@ -1,5 +1,5 @@
 local ScriptName = 'LeblancIsKool'												
-local Version = '1.0'															
+local Version = '1.1'															
 local Author = 'Koolkaracter'													
 --[[	
  _       _______ ______  _       _______ _       _______   ________________    _       _______ _______ _       
