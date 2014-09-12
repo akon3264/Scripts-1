@@ -1,5 +1,5 @@
 local ScriptName = 'SwainIsKool'
-local Version = '1.1'
+local Version = '1.2'
 local Author = 'Koolkaracter'
 --[[____              _         _____       _  __           _ 
   / ____|            (_)       |_   _|     | |/ /          | |
@@ -24,6 +24,7 @@ local attempts = 0
 local lastAttempt = 0
 local Q,W,E,R = 'Q','W','E','R'
 local skillOrder = {}
+local tsRange = 700
 
 ------------------------------------------------------------  
 ---------------------------Menu-----------------------------
@@ -46,9 +47,10 @@ submenu.checkbox('W_LC_ON', 'Use W', true)
 submenu.checkbox('E_LC_ON', 'Use E', false)
 submenu.checkbox('R_LC_ON', 'Use R', true)
 
-local submenu = menu.submenu('2. Target Selector', 250)
-submenu.keytoggle('TS_ON', 'Use Target Selector', Keys.Z ,true)
-submenu.keydown('TS', 'Target Selector', 0x01)
+local submenu = menu.submenu('2. Target Selector', 300)
+submenu.slider('TS_Mode', 'Target Selector Mode', 1,2,1, {'TS Primary', 'Get Weakest'})
+submenu.checkbox('TS_Circles', 'Use Circles To ID Target(s)', true)
+submenu.keydown('TS', 'Target Selection Hotkey', 0x01)
 
 local submenu = menu.submenu('3. Draw Range', 150)
 submenu.checkbox('qRange', 'Show Q Range ', true)
@@ -204,29 +206,47 @@ end
 ------------------------Target Selector---------------------
 ------------------------------------------------------------
 function TargetSelector()
-	if Cfg['2. Target Selector'].TS_ON == false then
-		target = GetWeakEnemy('MAGIC', 1000)
-	elseif target ~= nil and GetDistance(target, myHero) > 1500 then 
-		target = nil	
-	else
-		if target == nil then
-				target = GetWeakEnemy('MAGIC', 1000)
-		end
-		if Cfg['2. Target Selector'].TS_ON and Cfg['2. Target Selector'].TS then
+--TS Mode 1 (TS Primary)		
+	if Cfg['2. Target Selector'].TS_Mode == 1 then
+		if Cfg['2. Target Selector'].TS then
 			for i = 1, objManager:GetMaxHeroes() do
 				local enemy = objManager:GetHero(i)
-				if enemy~=nil and enemy.team~=myHero.team and enemy.visible==1 and GetDistance(enemy,mousePos)<150 then
-					target = enemy
+				if enemy ~= nil and enemy.team ~= myHero.team and enemy.visible == 1 and GetDistance(enemy,mousePos) < 150 then
+					targetPri = enemy
 				end
 			end
 		end
-		if target~=nil then
-			if target.dead==1 or myHero.dead==1 then 
-				target = nil 
-			else
-				CustomCircle(100,10,Color.Yellow,target)
-			end 
+		if target ~= nil and (GetDistance(target, myHero) > tsRange or target.visible ~= 1) then target = nil end
+		if 	targetPri ~= nil and ValidTarget(targetPri, tsRange) then
+			target = targetPri
+			yayo.ForceTarget(target)
+		elseif target == nil or (targetPri ~= nil and ValidTarget(targetPri, tsRange) ~= 1) then
+			target = GetWeakEnemy('PHYS', tsRange)
+			target = target
+			yayo.ForceTarget(target)
+		end
+		if targetPri ~= nil and (targetPri.dead == 1 or myHero.dead == 1) then targetPri = nil end
+		if target ~= nil and (target.dead==1 or myHero.dead==1) then 
+				target = nil
+		end
+		if Cfg['2. Target Selector'].TS_Circles then 
+			if targetPri ~= nil and targetPri ~= target then
+				CustomCircle(100,10,9,targetPri)  --yellow
+			end
+			if target ~= nil then
+				CustomCircle(100,10,1,target) -- green
+			end
 		end 
+-- TS Mode 2 (Get Weakest)
+	elseif Cfg['2. Target Selector'].TS_Mode == 2 then
+		target = GetWeakEnemy('PHYS', tsRange)
+		yayo.ForceTarget(target)
+		if target ~= nil and (GetDistance(target, myHero) > tsRange or target.visible ~= 1) then target = nil end
+		if Cfg['2. Target Selector'].TS_Circles and target ~= nil then 
+			CustomCircle(100,10,1,target)
+		end
+	else
+		--Do nothing
 	end
 end
 ------------------------------------------------------------
@@ -520,10 +540,10 @@ function KillSteal()
 	for i = 1, objManager:GetMaxHeroes() do
           local ksTarg = objManager:GetHero(i)
 		  
-			if Cfg['7. Kill Steal Options'].KSQ and ksTarg ~= nil and ksTarg.team ~= myHero.team and ksTarg.visible == 1 and GetDistance(myHero, ksTarg) < 625 and getDmg('Q', ksTarg, myHero) >= ksTarg.health then UseQ(ksTarg) end
-			if Cfg['7. Kill Steal Options'].KSW and ksTarg ~= nil and ksTarg.team ~= myHero.team and ksTarg.visible == 1 and GetDistance(myHero, ksTarg) < 900 and getDmg('W', ksTarg, myHero) >= ksTarg.health then UseQ(ksTarg) end
-			if Cfg['7. Kill Steal Options'].KSE and ksTarg ~= nil and ksTarg.team ~= myHero.team and ksTarg.visible == 1 and GetDistance(myHero, ksTarg) < 625 and getDmg('E', ksTarg, myHero) >= ksTarg.health then UseQ(ksTarg) end
-			if Cfg['7. Kill Steal Options'].KSR and ksTarg ~= nil and ksTarg.team ~= myHero.team and ksTarg.visible == 1 and GetDistance(myHero, ksTarg) < 690 and getDmg('R', ksTarg, myHero) >= ksTarg.health then UseQ(ksTarg) end
+			if Cfg['7. Kill Steal Options'].KSQ and ksTarg ~= nil and ksTarg.team ~= myHero.team and ksTarg.visible == 1 and GetDistance(myHero, ksTarg) < qRange and getDmg('Q', ksTarg, myHero) >= ksTarg.health then UseQ(ksTarg) end
+			if Cfg['7. Kill Steal Options'].KSW and ksTarg ~= nil and ksTarg.team ~= myHero.team and ksTarg.visible == 1 and GetDistance(myHero, ksTarg) < wRange and getDmg('W', ksTarg, myHero) >= ksTarg.health then UseW(ksTarg) end
+			if Cfg['7. Kill Steal Options'].KSE and ksTarg ~= nil and ksTarg.team ~= myHero.team and ksTarg.visible == 1 and GetDistance(myHero, ksTarg) < eRange and getDmg('E', ksTarg, myHero) >= ksTarg.health then UseE(ksTarg) end
+			if Cfg['7. Kill Steal Options'].KSR and ksTarg ~= nil and ksTarg.team ~= myHero.team and ksTarg.visible == 1 and GetDistance(myHero, ksTarg) < rRange and getDmg('R', ksTarg, myHero) >= ksTarg.health then UseR(ksTarg) end
 			if Cfg['7. Kill Steal Options'].KSDFG and ksTarg ~= nil and ksTarg.team ~= myHero.team and ksTarg.visible == 1 and GetDistance(myHero, ksTarg) < 750 and getDmg('DFG', ksTarg, myHero) >= ksTarg.health then UseItemOnTarget(3128, ksTarg) end
 			if Cfg['7. Kill Steal Options'].KSBFT and ksTarg ~= nil and ksTarg.team ~= myHero.team and ksTarg.visible == 1 and GetDistance(myHero, ksTarg) < 750 and getDmg('BLACKFIRE', ksTarg, myHero) >= ksTarg.health then UseItemOnTarget(3188, ksTarg) end
 			if Cfg['7. Kill Steal Options'].KSIGN and ksTarg ~= nil and ksTarg.team ~= myHero.team and ksTarg.visible == 1 and GetDistance(myHero, ksTarg) < 600 and getDmg('IGNITE', ksTarg, myHero) >= ksTarg.health then CastSummonerIgn(ksTarg) end
