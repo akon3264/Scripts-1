@@ -15,10 +15,10 @@ __________          ____  __.            .__   ____  __.                        
 ]]--
 
 local ScriptName = 'KoolSkillz'
-local Version = '1.0'
+local Version = '2.0'
 local Author = Koolkaracter
 
--- yupdate = * 1.0 https://raw.githubusercontent.com/koolkaracter/Scripts/AutoKool/MyUtilScripts/OnesIMadeOrEdited/KoolSkillz/KoolSkillz.lua https://raw.githubusercontent.com/koolkaracter/Scripts/AutoKool/MyUtilScripts/OnesIMadeOrEdited/KoolItems/KoolItemsVersion.lua
+-- yupdate = * 2.0 https://raw.githubusercontent.com/koolkaracter/Scripts/AutoKool/MyUtilScripts/OnesIMadeOrEdited/KoolSkillz/KoolSkillz.lua https://raw.githubusercontent.com/koolkaracter/Scripts/AutoKool/MyUtilScripts/OnesIMadeOrEdited/KoolItems/KoolItemsVersion.lua
 
 --[[
 Champion that currently are not supported at all:
@@ -6562,11 +6562,14 @@ submenu.checkbox('rRange', 'Show R Range indicator', true)
 submenu.slider('rRangeColor', 'Color of R Indicator?', 1, 6, 1, {"Green","Red", "Aqua", "Light Purple", "Blue", "Dark Purple"})
 
 --Target Selector Menu
-local submenu = menu.submenu('2. Target Selector', 250)
-submenu.keytoggle('TS_ON', 'Use Target Selector', Keys.Z ,true)
-submenu.keydown('TS', 'Target Selector', 0x01)
+local submenu = menu.submenu('2. Target Selector', 300)
+submenu.slider('TS_Mode', 'Target Selector Mode', 1,2,1, {'TS Primary', 'Get Weakest'})
+submenu.checkbox('TS_Circles', 'Use Circles To ID Target(s)', true)
+submenu.keydown('TS', 'Target Selection Hotkey', 0x01)
+submenu.slider('tsRange', 'Target Selector Range', 1, 1200, 1100)
+submenu.checkbox('DrawtsRange', 'Draw TS Range', true)
+submenu.slider('DrawtsRangeColor', ' TS Range Color', 1, 6, 1, {"Green","Red", "Aqua", "Light Purple", "Blue", "Dark Purple"})
 submenu.slider('dmgType', 'Damage Type', 1, 2, 1, {'Physical', 'Magic'})
-submenu.permashow('TS_ON')
 ------------------------------------------------------------  
 ------------------------End Of Menu-------------------------
 ------------------------------------------------------------
@@ -6652,6 +6655,10 @@ function RangeIndicators()
 	if Cfg['1. Skill Options'].rRange then
 		DrawCircleObject(myHero, RInfo.range, Cfg['1. Skill Options'].rRangeColor)
 	end
+	if Cfg['2. Target Selector'].DrawtsRange then
+		DrawCircleObject(myHero, Cfg['2. Target Selector'].tsRange, Cfg['2. Target Selector'].DrawtsRangeColor)
+	end
+	
 end
 ------------------------------------------------------------
 --------------------End Of Range Indicators-----------------
@@ -6822,34 +6829,56 @@ end
 ------------------------Target Selector---------------------
 ------------------------------------------------------------
 function TargetSelector()
-	if Cfg['2. Target Selector'].TS_ON == false then
-			target = nil
-	else
-		if target == nil then
-			if Cfg['2. Target Selector'].dmgType == 1 then
-				target = GetWeakEnemy('PHYS', 1200)
-			elseif Cfg['2. Target Selector'].dmgType == 2 then
-				target = GetWeakEnemy('MAGIC', 1200)
-			end
-		end
-		if Cfg['2. Target Selector'].TS_ON and Cfg['2. Target Selector'].TS then
+	if Cfg['2. Target Selector'].TS_Mode == 1 then
+		if Cfg['2. Target Selector'].TS then
 			for i = 1, objManager:GetMaxHeroes() do
 				local enemy = objManager:GetHero(i)
-				if enemy~=nil and enemy.team~=myHero.team and enemy.visible==1 and GetDistance(enemy,mousePos)<150 then
-					target = enemy
-	--				printtext('\n'..target.name.. ' - '..GetTickCount())           
+				if enemy ~= nil and enemy.team ~= myHero.team and enemy.visible == 1 and GetDistance(enemy,mousePos) < 150 then
+					targetPri = enemy
 				end
 			end
 		end
-		if target~=nil then
-			if target.dead==1 or myHero.dead==1 then 
-				target = nil 
-			else
-				CustomCircle(100,10,Color.Yellow,target)
-			end 
+		if target ~= nil and (GetDistance(target, myHero) > Cfg['2. Target Selector'].tsRange or target.visible ~= 1) then target = nil end
+		if 	targetPri ~= nil and ValidTarget(targetPri, Cfg['2. Target Selector'].tsRange) then
+			target = targetPri
+			yayo.ForceTarget(target)
+		elseif target == nil or (targetPri ~= nil and ValidTarget(targetPri, Cfg['2. Target Selector'].tsRange) ~= 1) then
+			if Cfg['2. Target Selector'].dmgType == 1 then
+				target = GetWeakEnemy('PHYS', Cfg['2. Target Selector'].tsRange)
+			elseif Cfg['2. Target Selector'].dmgType == 2 then
+				target = GetWeakEnemy('MAGIC', Cfg['2. Target Selector'].tsRange)
+			end
+			yayo.ForceTarget(target)
+		end
+		if targetPri ~= nil and (targetPri.dead == 1 or myHero.dead == 1) then targetPri = nil end
+		if target ~= nil and (target.dead==1 or myHero.dead==1) then 
+				target = nil
+		end
+		if Cfg['2. Target Selector'].TS_Circles then 
+			if targetPri ~= nil and targetPri ~= target then
+				CustomCircle(100,10,9,targetPri)  --yellow
+			end
+			if target ~= nil then
+				CustomCircle(100,10,1,target) -- green
+			end
 		end 
+-- TS Mode 2 (Get Weakest)
+	elseif Cfg['2. Target Selector'].TS_Mode == 2 then
+			if Cfg['2. Target Selector'].dmgType == 1 then
+				target = GetWeakEnemy('PHYS', Cfg['2. Target Selector'].tsRange)
+			elseif Cfg['2. Target Selector'].dmgType == 2 then
+				target = GetWeakEnemy('MAGIC', Cfg['2. Target Selector'].tsRange)
+			end
+		yayo.ForceTarget(target)
+		if target ~= nil and (GetDistance(target, myHero) > Cfg['2. Target Selector'].tsRange or target.visible ~= 1) then target = nil end
+		if Cfg['2. Target Selector'].TS_Circles and target ~= nil then 
+			CustomCircle(100,10,1,target)
+		end
+	else
+		--Do nothing
 	end
 end
+
 
 ------------------------------------------------------------
 --------------------End Of Target Selector------------------
