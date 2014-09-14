@@ -486,11 +486,13 @@ function onTick()
             end
         end
         if still_valid then
-            if IsSpellReady(Summoners.Smite.Key) and Cfg['5. Summoner Spell Options'].AutoSmite then
-				if o.health <= smitedamage[myHero.selflevel] and GetDistance(o, myHero) < 750 then
-					CastSmite(o)
+			if Summoners.Smite.Key ~= nil then 
+				if IsSpellReady(Summoners.Smite.Key) and Cfg['5. Summoner Spell Options'].AutoSmite then
+					if o.health <= smitedamage[myHero.selflevel] and GetDistance(o, myHero) < 750 then
+						CastSmite(o)
+					end
 				end
-            end
+			end
         else
             track[key] = nil
         end
