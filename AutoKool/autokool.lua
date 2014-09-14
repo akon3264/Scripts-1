@@ -1,8 +1,8 @@
 local ScriptName = 'autokool'
-local Version = '2.10'
-local Author = Koolkaracter
+local Version = '2.11'
+local Author = 'Koolkaracter'
 
--- yupdate = * 2.10 https://raw.githubusercontent.com/koolkaracter/Scripts/AutoKool/AutoKool/autokool.lua https://raw.githubusercontent.com/koolkaracter/Scripts/AutoKool/AutoKool/AutoKoolVersion.lua
+-- yupdate = * 2.11 https://raw.githubusercontent.com/koolkaracter/Scripts/AutoKool/AutoKool/autokool.lua https://raw.githubusercontent.com/koolkaracter/Scripts/AutoKool/AutoKool/AutoKoolVersion.lua
 --!!!!!!!!!!!THE ABOVE IS FOR THE yUpdate.py !!!!!!!!!!!!!!DO NOT CHANGE ANYTHING ABOVE THIS LINE!!!!!!!!!!!!!!!!!!
 
 --[[      
@@ -19,6 +19,11 @@ local Author = Koolkaracter
 \____|__  /____/ |__|  \____/  |____|__ \____/ \____/|____/ /_______  /\___  >__|  |__|   __/|__|  
         \/                             \/                           \/     \/         |__|    
 
+ 
+ 
+ --Need to update potion and make sure ignite is good. 
+ 
+ 
  
 This script is version 2.0+.   This script does auto items, auto pots, and auto summoner spells.  
 So basically it makes you Auto-Kool!
@@ -73,6 +78,8 @@ Press Delete to toggle on or off AutoItems instead of having to go through menu(
  
 Code:
 Change Log:
+v2.11 - By request, I added the ability to only use Items on hotkey(if your useing a champ script you can bind this to the same hotkey as that script's combo key to use the items only when pressing combo.  (You must have Offensive Items turned on, and the checkbox to only use on keypress)
+
 v2.10 - Fixed summoners for new summoner name bug with latest patch. All summoners should work.  (thanks to yonder, I used what was in his utils  just updated names). 
 
 v2.9 - Added Support for Cleanse, QuickSilver Sash, Dervish Blade, and  Mercurial Scimitar.  Only known problem is IsBuffed() returns true if particle is within 150 of your champ.. because of this if you walk over/extremely near another champ that is CC'd it might use your cleanse/QSS items. 
@@ -224,11 +231,12 @@ local BadCC = {"Stun_glb",
 local uiconfig = require 'uiconfig'
 CfgKoolSettings, menu = uiconfig.add_menu('1. Auto Kool', 300)
  
-local submenuOItems = menu.submenu('1. Kool Offensive Items', 300)
+local submenuOItems = menu.submenu('1. Kool Offensive Items', 320)
 submenuOItems.checkbutton('External_Script_ON', 'External Script uses Items', false)
-submenuOItems.keytoggle('Kool_Offensive_Items_ON', 'Offensive Items', 46, true)--Delete to toggle
+submenuOItems.keytoggle('Kool_Offensive_Items_ON', 'Offensive Items', 46, true)
+submenuOItems.checkbox('Kool_O_Items_On_Keydown', 'Only Use Items On Keypress', true)
+submenuOItems.keydown('Kool_Offensive_Items_Keydown_ON', 'Use Items Key', true)
 submenuOItems.checkbox('BC', '---Bilgewater Cutlass---', true)
-submenuOItems.checkbox('BFT', '---Blackfire Torch---', true)
 submenuOItems.checkbox('BFT', '---Blackfire Torch---', true)
 submenuOItems.checkbox('BORK', '---Blade of the Ruined King---', true)
 submenuOItems.checkbox('DFG', '---Deathfire Grasp---', true)
@@ -298,7 +306,13 @@ function MainRun()
                 if IsBuffed(myHero, 'TeleportHome') ~= true then
 					KoolExternalChampScriptCheck()
 	                if CfgKoolSettings['1. Kool Offensive Items'].Kool_Offensive_Items_ON then 
-						UseOffensiveItems()
+						if CfgKoolSettings['1. Kool Offensive Items'].Kool_O_Items_On_Keydown and CfgKoolSettings['1. Kool Offensive Items'].Kool_Offensive_Items_Keydown_ON then
+							UseOffensiveItems()
+						elseif CfgKoolSettings['1. Kool Offensive Items'].Kool_O_Items_On_Keydown and CfgKoolSettings['1. Kool Offensive Items'].Kool_Offensive_Items_Keydown_ON ~= true then
+							--Do nothing
+						elseif CfgKoolSettings['1. Kool Offensive Items'].Kool_O_Items_On_Keydown ~= true then
+							UseOffensiveItems()
+						end
 					end
                     if CfgKoolSettings['2. Kool Defensive Items'].Kool_Defensive_Items_ON then 
 						UseDefensiveItems()
@@ -546,17 +560,17 @@ regen from items... Some day perhaps!
 		for i = 1, objManager:GetMaxHeroes() do
             		local targetIgnite = objManager:GetHero(i)
 			if targetIgnite ~= nil and targetIgnite.team ~= myHero.team and targetIgnite.visible == 1 and GetDistance(myHero, targetIgnite) < 700 then 
-                		local targetName = champdb[targetIgnite.name]
-                		local damage = (myHero.selflevel*20)+50
-                		local targetRegenPerSec = (targetName.healthRegenBase + (targetName.healthRegenLevel * targetIgnite.selflevel))
-                		local ignDamageAfterRegen = (damage-((targetRegenPerSec*5)/2))  
+				local targetName = champdb[targetIgnite.name]
+				local damage = (myHero.selflevel*20)+50
+				local targetRegenPerSec = (targetName.healthRegenBase + (targetName.healthRegenLevel * targetIgnite.selflevel))
+				local ignDamageAfterRegen = (damage-((targetRegenPerSec*5)/2))  
 				local targCircle = 0
 
 				if CfgKoolSettings['4. Kool Summoners'].Auto_Ignite_Self_ON then 
 					if (ignKey == Keys.D and myHero.SpellTimeD > 1) or (ignKey == Keys.F and myHero.SpellTimeF > 1 )then
 						if targetIgnite.health < ignDamageAfterRegen and GetDistance(myHero, targetIgnite) < 600 then
 							CustomCircle(100,8,2,targetIgnite)--RED
-									targCircle = 2	--Ready to Cast     	                       		
+							targCircle = 2	--Ready to Cast     	                       		
 						elseif targetIgnite.health < ignDamageAfterRegen and GetDistance(myHero, targetIgnite) > 599 and GetDistance(myHero, targetIgnite) < 700 then
 							CustomCircle(100,8,8,targetIgnite) --ORANGE
 							targCircle = 1 --Ready to cast but target is just out of range (100 away)
@@ -564,7 +578,7 @@ regen from items... Some day perhaps!
 							targCircle = 0
 						end
 					
-						if targCircle == 2 and KeyDown(ignKey) then CastSummonerIgn(targetIgnite) end --Cast ignite on killable target when ignite key is pressed
+						if targCircle == 2 and IsKeyDown(ignKey) then CastSummonerIgn(targetIgnite) end --Cast ignite on killable target when ignite key is pressed
 					end
 				else
 					if targetIgnite.health < ignDamageAfterRegen and GetDistance(myHero, targetIgnite) < 600 then CastSummonerIgn(targetIgnite) end
