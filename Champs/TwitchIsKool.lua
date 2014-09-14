@@ -231,7 +231,7 @@ end
 
 function UseR(targ)
 	if GetDistance(targ, myHero) <= rRange and CanUseSpell('R') and ValidTarget(targ) then 
-			CastSpellTarget('R'z, targ)
+			CastSpellTarget('R', targ)
 	end
 end
 
