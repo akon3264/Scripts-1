@@ -51,7 +51,7 @@ submenu.checkbox('E_M_ON', 'Use E', true)
 submenu.checkbox('R_M_ON', 'Use R', false)
 submenu.label('lbS4', '----E Options----')
 submenu.checkbox('EToKill_ON', 'Only Use E If Kills', true)
-submenu.checkbox('EToKillOrStacks_ON', 'Use E If Kills or 5 Stacks', false)
+submenu.checkbox('EToKillOrStacks_ON', 'Use E If Kills or 6 Stacks', false)
 submenu.checkbox('DrawEKillable', 'Draw \"Killable\" On Enemy', true)
 
 local submenu = menu.submenu('2. Target Selector', 300)
