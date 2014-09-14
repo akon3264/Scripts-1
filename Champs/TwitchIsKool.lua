@@ -1,5 +1,5 @@
 local ScriptName = 'TwitchIsKool'									
-local Version = '1.0'												
+local Version = '1.1'												
 local Author = 'Koolkaracter'												
 --[[	
  ___________       .__  __         .__      .___          ____  __.            .__   
@@ -51,7 +51,7 @@ submenu.checkbox('E_M_ON', 'Use E', true)
 submenu.checkbox('R_M_ON', 'Use R', false)
 submenu.label('lbS4', '----E Options----')
 submenu.checkbox('EToKill_ON', 'Only Use E If Kills', true)
-submenu.checkbox('EToKillOrStacks_ON', 'Use E If Kills or 5 Stacks', false)
+submenu.checkbox('EToKillOrStacks_ON', 'Use E If Kills or 6 Stacks', false)
 submenu.checkbox('DrawEKillable', 'Draw \"Killable\" On Enemy', true)
 
 local submenu = menu.submenu('2. Target Selector', 300)
@@ -231,14 +231,14 @@ end
 
 function UseR(targ)
 	if GetDistance(targ, myHero) <= rRange and CanUseSpell('R') and ValidTarget(targ) then 
-			CastSpellTarget('R', targ)
+			CastSpellTarget('R'z, targ)
 	end
 end
 
 function DrawKillables()
 	for i = 1, objManager:GetMaxHeroes() do
 		local ETarg = objManager:GetHero(i)
-		if ETarg ~= nil then 
+		if ETarg ~= nil and ValidTarget(ETarg) then 
 			local enemyEffectiveHealth3 = (ETarg.health)*(1+(((ETarg.armor*myHero.armorPenPercent)-myHero.armorPen)/100))
 			if CalcEDmg(ETarg) > enemyEffectiveHealth3 then 
 				DrawTextObject('KILLABLE',ETarg,Color.Red)
@@ -623,9 +623,13 @@ function KillSteal()
 		local ksTarg = objManager:GetHero(i)
 		local enemyEffectiveHealth2 = (ksTarg.health)*(1+(((ksTarg.armor*myHero.armorPenPercent)-myHero.armorPen)/100))
 		if Cfg['7. Kill Steal Options'].KSW and ksTarg ~= nil and ksTarg.team ~= myHero.team and ksTarg.visible == 1 and GetDistance(myHero, ksTarg) < wRange and getDmg('W', ksTarg, myHero) >= ksTarg.health then UseW(ksTarg) end
-		if CalcEDmg(kstarg) ~= nil and (IsBuffed(ksTarg, 'twitch_poison_counter_01.troy') or IsBuffed(ksTarg, 'twitch_poison_counter_02.troy') or IsBuffed(ksTarg, 'twitch_poison_counter_03.troy') or IsBuffed(ksTarg, 'twitch_poison_counter_04.troy') or IsBuffed(ksTarg, 'twitch_poison_counter_05.troy') or IsBuffed(ksTarg, 'twitch_poison_counter_06.troy')) then 
-			if Cfg['7. Kill Steal Options'].KSE and ksTarg ~= nil and ksTarg.team ~= myHero.team and ksTarg.visible == 1 and GetDistance(myHero, ksTarg) < eRange and CalcEDmg(ksTarg) >= enemyEffectiveHealth2 then UseE(ksTarg) end
+		
+		if Cfg['7. Kill Steal Options'].KSE and ValidTarget(ksTarg) and GetDistance(ksTarg, myHero) < eRange then 
+			if IsBuffed(ksTarg, 'twitch_poison_counter_01.troy') or IsBuffed(ksTarg, 'twitch_poison_counter_02.troy') or IsBuffed(ksTarg, 'twitch_poison_counter_03.troy') or IsBuffed(ksTarg, 'twitch_poison_counter_04.troy') or IsBuffed(ksTarg, 'twitch_poison_counter_05.troy') or IsBuffed(ksTarg, 'twitch_poison_counter_06.troy') then
+				if enemyEffectiveHealth2 < CalcEDmg(ksTarg) then CastSpellTarget('E', ksTarg) end
+			end
 		end
+		
 		if Cfg['7. Kill Steal Options'].KSBC and ksTarg ~= nil and ksTarg.team ~= myHero.team and ksTarg.visible == 1 and GetDistance(myHero, ksTarg) < 400 and getDmg('BWC', ksTarg, myHero) >= ksTarg.health then UseItemOnTarget(3144, ksTarg) end
 		if Cfg['7. Kill Steal Options'].KST and ksTarg ~= nil and ksTarg.team ~= myHero.team and ksTarg.visible == 1 and GetDistance(myHero, ksTarg) < 400 and getDmg('TIAMAT', ksTarg, myHero) >= ksTarg.health then UseItemOnTarget(3077, ksTarg) end
 		if Cfg['7. Kill Steal Options'].KSRH and ksTarg ~= nil and ksTarg.team ~= myHero.team and ksTarg.visible == 1 and GetDistance(myHero, ksTarg) < 400 and getDmg('HYDRA', ksTarg, myHero) >= ksTarg.health then UseItemOnTarget(3074, ksTarg) end
