@@ -1,5 +1,5 @@
 local ScriptName = 'TwitchIsKool'									
-local Version = '1.1'												
+local Version = '1.2'												
 local Author = 'Koolkaracter'												
 --[[	
  ___________       .__  __         .__      .___          ____  __.            .__   
@@ -622,7 +622,7 @@ function KillSteal()
 	for i = 1, objManager:GetMaxHeroes() do
 		local ksTarg = objManager:GetHero(i)
 		local enemyEffectiveHealth2 = (ksTarg.health)*(1+(((ksTarg.armor*myHero.armorPenPercent)-myHero.armorPen)/100))
-		if Cfg['7. Kill Steal Options'].KSW and ksTarg ~= nil and ksTarg.team ~= myHero.team and ksTarg.visible == 1 and GetDistance(myHero, ksTarg) < wRange and getDmg('W', ksTarg, myHero) >= ksTarg.health then UseW(ksTarg) end
+		if Cfg['7. Kill Steal Options'].KSW and ksTarg ~= nil and ValidTarget(ksTarg) and GetDistance(myHero, ksTarg) < wRange and getDmg('W', ksTarg, myHero) >= ksTarg.health then UseW(ksTarg) end
 		
 		if Cfg['7. Kill Steal Options'].KSE and ValidTarget(ksTarg) and GetDistance(ksTarg, myHero) < eRange then 
 			if IsBuffed(ksTarg, 'twitch_poison_counter_01.troy') or IsBuffed(ksTarg, 'twitch_poison_counter_02.troy') or IsBuffed(ksTarg, 'twitch_poison_counter_03.troy') or IsBuffed(ksTarg, 'twitch_poison_counter_04.troy') or IsBuffed(ksTarg, 'twitch_poison_counter_05.troy') or IsBuffed(ksTarg, 'twitch_poison_counter_06.troy') then
@@ -630,11 +630,11 @@ function KillSteal()
 			end
 		end
 		
-		if Cfg['7. Kill Steal Options'].KSBC and ksTarg ~= nil and ksTarg.team ~= myHero.team and ksTarg.visible == 1 and GetDistance(myHero, ksTarg) < 400 and getDmg('BWC', ksTarg, myHero) >= ksTarg.health then UseItemOnTarget(3144, ksTarg) end
-		if Cfg['7. Kill Steal Options'].KST and ksTarg ~= nil and ksTarg.team ~= myHero.team and ksTarg.visible == 1 and GetDistance(myHero, ksTarg) < 400 and getDmg('TIAMAT', ksTarg, myHero) >= ksTarg.health then UseItemOnTarget(3077, ksTarg) end
-		if Cfg['7. Kill Steal Options'].KSRH and ksTarg ~= nil and ksTarg.team ~= myHero.team and ksTarg.visible == 1 and GetDistance(myHero, ksTarg) < 400 and getDmg('HYDRA', ksTarg, myHero) >= ksTarg.health then UseItemOnTarget(3074, ksTarg) end
-		if Cfg['7. Kill Steal Options'].KSBORK and ksTarg ~= nil and ksTarg.team ~= myHero.team and ksTarg.visible == 1 and GetDistance(myHero, ksTarg) < 500 and getDmg('RUINEDKING', ksTarg, myHero) >= ksTarg.health then UseItemOnTarget(3153, ksTarg) end
-		if Cfg['7. Kill Steal Options'].KSIGN and ksTarg ~= nil and ksTarg.team ~= myHero.team and ksTarg.visible == 1 and GetDistance(myHero, ksTarg) < 600 and getDmg('IGNITE', ksTarg, myHero) >= ksTarg.health  and (Cfg['5. Summoner Spell Options'].Auto_Ignite_Self_ON ~= true) then CastSummonerIgn(ksTarg) end	
+		if Cfg['7. Kill Steal Options'].KSBC and ksTarg ~= nil and ValidTarget(ksTarg) and GetDistance(myHero, ksTarg) < 400 and getDmg('BWC', ksTarg, myHero) >= ksTarg.health then UseItemOnTarget(3144, ksTarg) end
+		if Cfg['7. Kill Steal Options'].KST and ksTarg ~= nil and ValidTarget(ksTarg) and GetDistance(myHero, ksTarg) < 400 and getDmg('TIAMAT', ksTarg, myHero) >= ksTarg.health then UseItemOnTarget(3077, ksTarg) end
+		if Cfg['7. Kill Steal Options'].KSRH and ksTarg ~= nil and ValidTarget(ksTarg) and GetDistance(myHero, ksTarg) < 400 and getDmg('HYDRA', ksTarg, myHero) >= ksTarg.health then UseItemOnTarget(3074, ksTarg) end
+		if Cfg['7. Kill Steal Options'].KSBORK and ksTarg ~= nil and ValidTarget(ksTarg) and GetDistance(myHero, ksTarg) < 500 and getDmg('RUINEDKING', ksTarg, myHero) >= ksTarg.health then UseItemOnTarget(3153, ksTarg) end
+		if Cfg['7. Kill Steal Options'].KSIGN and ksTarg ~= nil and ValidTarget(ksTarg) and GetDistance(myHero, ksTarg) < 600 and getDmg('IGNITE', ksTarg, myHero) >= ksTarg.health  and (Cfg['5. Summoner Spell Options'].Auto_Ignite_Self_ON ~= true) then CastSummonerIgn(ksTarg) end	
 	end
 end
 ------------------------------------------------------------
