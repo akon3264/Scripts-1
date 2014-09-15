@@ -148,7 +148,7 @@ function Main()
 	UseDefensiveItems()
 	AutoSummoners()
 	AutoPots()
---	DrawLastSkill()
+	DrawLastSkill()
 	if Cfg['7. Kill Steal Options'].KillSteal_ON then KillSteal() end
 	if Cfg['8. Misc Options'].ShowPHP then ShowPercentHP() end
 	if Cfg['8. Misc Options'].ALevel_ON then AutoLvl() end
@@ -225,7 +225,7 @@ function UseE(targ)
 end
 
 function UseR(targ)
-	if myHero.SpellTimeR > 1.0 then
+	if myHero.SpellTimeR >= 1.0 then
 		if Cfg['1. Skill Options'].Ult_Q_ON and myHero.SpellNameR == 'LeblancChaosOrbM' and GetDistance(targ, myHero) <= qRange then 
 			CastSpellTarget('R', targ)
 		end
@@ -242,10 +242,12 @@ function UseR(targ)
 	end
 end
 
-function UseQRCombo(targ)
-	if myHero.SpellTimeQ > 1 and myHero.SpellTimeR > 1 then
+function UseQRCombo(targ) 
+	if myHero.SpellTimeQ >= 1 and myHero.SpellTimeR >= 1 then
 		UseQ(targ)
-		if myHero.SpellNameR == 'LeblancChaosOrbM' and targ  ~= nil and targ.dead ~= 1 then UseR(targ) end
+		if myHero.SpellNameR == 'LeblancChaosOrbM' and targ ~= nil and targ.dead ~= 1 then 
+			UseR(targ) 
+		end
 	end
 end
 
@@ -597,12 +599,13 @@ function KillSteal()
 	for i = 1, objManager:GetMaxHeroes() do
           local ksTarg = objManager:GetHero(i)
 		  
-			if Cfg['7. Kill Steal Options'].KSQ and ksTarg ~= nil and ksTarg.team ~= myHero.team and ksTarg.visible == 1 and GetDistance(myHero, ksTarg) < qRange and getDmg('Q', ksTarg, myHero) >= ksTarg.health then UseQ(ksTarg) end
-			if Cfg['7. Kill Steal Options'].KSW and ksTarg ~= nil and ksTarg.team ~= myHero.team and ksTarg.visible == 1 and GetDistance(myHero, ksTarg) < wRange and getDmg('W', ksTarg, myHero) >= ksTarg.health then UseW(ksTarg) end
-			if Cfg['7. Kill Steal Options'].KSE and ksTarg ~= nil and ksTarg.team ~= myHero.team and ksTarg.visible == 1 and GetDistance(myHero, ksTarg) < eRange and getDmg('E', ksTarg, myHero) >= ksTarg.health then UseE(ksTarg) end
-			if Cfg['7. Kill Steal Options'].KSR and ksTarg ~= nil and ksTarg.team ~= myHero.team and ksTarg.visible == 1 and GetDistance(myHero, ksTarg) < rRange and getDmg('R', ksTarg, myHero) >= ksTarg.health then UseR(ksTarg) end			if Cfg['7. Kill Steal Options'].KSDFG and ksTarg ~= nil and ksTarg.team ~= myHero.team and ksTarg.visible == 1 and GetDistance(myHero, ksTarg) < 750 and getDmg('DFG', ksTarg, myHero) >= ksTarg.health then UseItemOnTarget(3128, ksTarg) end
-			if Cfg['7. Kill Steal Options'].KSBFT and ksTarg ~= nil and ksTarg.team ~= myHero.team and ksTarg.visible == 1 and GetDistance(myHero, ksTarg) < 750 and getDmg('BLACKFIRE', ksTarg, myHero) >= ksTarg.health then UseItemOnTarget(3188, ksTarg) end
-			if Cfg['7. Kill Steal Options'].KSIGN and ksTarg ~= nil and ksTarg.team ~= myHero.team and ksTarg.visible == 1 and GetDistance(myHero, ksTarg) < 600 and getDmg('IGNITE', ksTarg, myHero) >= ksTarg.health  and (Cfg['5. Summoner Spell Options'].Auto_Ignite_Self_ON ~= true) then CastSummonerIgn(ksTarg) end
+			if Cfg['7. Kill Steal Options'].KSQ and ksTarg ~= nil and ValidTarget(ksTarg) and GetDistance(myHero, ksTarg) < qRange and getDmg('Q', ksTarg, myHero) >= ksTarg.health then UseQ(ksTarg) end
+			if Cfg['7. Kill Steal Options'].KSW and ksTarg ~= nil and ValidTarget(ksTarg) and GetDistance(myHero, ksTarg) < wRange and getDmg('W', ksTarg, myHero) >= ksTarg.health then UseW(ksTarg) end
+			if Cfg['7. Kill Steal Options'].KSE and ksTarg ~= nil and ValidTarget(ksTarg) and GetDistance(myHero, ksTarg) < eRange and getDmg('E', ksTarg, myHero) >= ksTarg.health then UseE(ksTarg) end
+			if Cfg['7. Kill Steal Options'].KSR and ksTarg ~= nil and ValidTarget(ksTarg) and GetDistance(myHero, ksTarg) < rRange and getDmg('R', ksTarg, myHero) >= ksTarg.health then UseR(ksTarg) end			
+			if Cfg['7. Kill Steal Options'].KSDFG and ksTarg ~= nil and ValidTarget(ksTarg) and GetDistance(myHero, ksTarg) < 750 and getDmg('DFG', ksTarg, myHero) >= ksTarg.health then UseItemOnTarget(3128, ksTarg) end
+			if Cfg['7. Kill Steal Options'].KSBFT and ksTarg ~= nil and ValidTarget(ksTarg) and GetDistance(myHero, ksTarg) < 750 and getDmg('BLACKFIRE', ksTarg, myHero) >= ksTarg.health then UseItemOnTarget(3188, ksTarg) end
+			if Cfg['7. Kill Steal Options'].KSIGN and ksTarg ~= nil and ValidTarget(ksTarg) and GetDistance(myHero, ksTarg) < 600 and getDmg('IGNITE', ksTarg, myHero) >= ksTarg.health  and (Cfg['5. Summoner Spell Options'].Auto_Ignite_Self_ON ~= true) then CastSummonerIgn(ksTarg) end
 	end
 end
 ------------------------------------------------------------
@@ -670,12 +673,12 @@ function AutoLvl()
     end
 	send.tick()
 end
---[[    Used for testing purposes
+--   Used for testing purposes
 function DrawLastSkill()
 		--DrawText("Last Skill Used", 10, 910, Color.White)
 	DrawText(myHero.SpellNameR , 10, 910, Color.White)
 
-end]]
+end
 ------------------------------------------------------------
 ----------------End Of Miscellaneous Functions--------------
 ------------------------------------------------------------
