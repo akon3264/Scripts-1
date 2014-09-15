@@ -1,5 +1,5 @@
 local ScriptName = 'SwainIsKool'
-local Version = '1.2'
+local Version = '1.3'
 local Author = 'Koolkaracter'
 --[[____              _         _____       _  __           _ 
   / ____|            (_)       |_   _|     | |/ /          | |
@@ -15,7 +15,6 @@ require 'spell_damage'
 require 'winapi'
 require 'SKeys'
 require 'Utils'
-require 'vals_lib'
 local yayo = require 'yayo'
 local uiconfig = require 'uiconfig'
 local send = require 'SendInputScheduled'
@@ -541,13 +540,13 @@ function KillSteal()
 	for i = 1, objManager:GetMaxHeroes() do
           local ksTarg = objManager:GetHero(i)
 		  
-			if Cfg['7. Kill Steal Options'].KSQ and ksTarg ~= nil and ksTarg.team ~= myHero.team and ksTarg.visible == 1 and GetDistance(myHero, ksTarg) < qRange and getDmg('Q', ksTarg, myHero) >= ksTarg.health then UseQ(ksTarg) end
-			if Cfg['7. Kill Steal Options'].KSW and ksTarg ~= nil and ksTarg.team ~= myHero.team and ksTarg.visible == 1 and GetDistance(myHero, ksTarg) < wRange and getDmg('W', ksTarg, myHero) >= ksTarg.health then UseW(ksTarg) end
-			if Cfg['7. Kill Steal Options'].KSE and ksTarg ~= nil and ksTarg.team ~= myHero.team and ksTarg.visible == 1 and GetDistance(myHero, ksTarg) < eRange and getDmg('E', ksTarg, myHero) >= ksTarg.health then UseE(ksTarg) end
-			if Cfg['7. Kill Steal Options'].KSR and ksTarg ~= nil and ksTarg.team ~= myHero.team and ksTarg.visible == 1 and GetDistance(myHero, ksTarg) < rRange and getDmg('R', ksTarg, myHero) >= ksTarg.health then UseR(ksTarg) end
-			if Cfg['7. Kill Steal Options'].KSDFG and ksTarg ~= nil and ksTarg.team ~= myHero.team and ksTarg.visible == 1 and GetDistance(myHero, ksTarg) < 750 and getDmg('DFG', ksTarg, myHero) >= ksTarg.health then UseItemOnTarget(3128, ksTarg) end
-			if Cfg['7. Kill Steal Options'].KSBFT and ksTarg ~= nil and ksTarg.team ~= myHero.team and ksTarg.visible == 1 and GetDistance(myHero, ksTarg) < 750 and getDmg('BLACKFIRE', ksTarg, myHero) >= ksTarg.health then UseItemOnTarget(3188, ksTarg) end
-			if Cfg['7. Kill Steal Options'].KSIGN and ksTarg ~= nil and ksTarg.team ~= myHero.team and ksTarg.visible == 1 and GetDistance(myHero, ksTarg) < 600 and getDmg('IGNITE', ksTarg, myHero) >= ksTarg.health then CastSummonerIgn(ksTarg) end
+			if Cfg['7. Kill Steal Options'].KSQ and ksTarg ~= nil and ValidTarget(ksTarg) and GetDistance(myHero, ksTarg) < qRange and getDmg('Q', ksTarg, myHero) >= ksTarg.health then UseQ(ksTarg) end
+			if Cfg['7. Kill Steal Options'].KSW and ksTarg ~= nil and ValidTarget(ksTarg) and GetDistance(myHero, ksTarg) < wRange and getDmg('W', ksTarg, myHero) >= ksTarg.health then UseW(ksTarg) end
+			if Cfg['7. Kill Steal Options'].KSE and ksTarg ~= nil and ValidTarget(ksTarg) and GetDistance(myHero, ksTarg) < eRange and getDmg('E', ksTarg, myHero) >= ksTarg.health then UseE(ksTarg) end
+			if Cfg['7. Kill Steal Options'].KSR and ksTarg ~= nil and ValidTarget(ksTarg) and GetDistance(myHero, ksTarg) < rRange and getDmg('R', ksTarg, myHero) >= ksTarg.health then UseR(ksTarg) end
+			if Cfg['7. Kill Steal Options'].KSDFG and ksTarg ~= nil and ValidTarget(ksTarg) and GetDistance(myHero, ksTarg) < 750 and getDmg('DFG', ksTarg, myHero) >= ksTarg.health then UseItemOnTarget(3128, ksTarg) end
+			if Cfg['7. Kill Steal Options'].KSBFT and ksTarg ~= nil and ValidTarget(ksTarg) and GetDistance(myHero, ksTarg) < 750 and getDmg('BLACKFIRE', ksTarg, myHero) >= ksTarg.health then UseItemOnTarget(3188, ksTarg) end
+			if Cfg['7. Kill Steal Options'].KSIGN and ksTarg ~= nil and ValidTarget(ksTarg) and GetDistance(myHero, ksTarg) < 600 and getDmg('IGNITE', ksTarg, myHero) >= ksTarg.health then CastSummonerIgn(ksTarg) end
 	end
 end
 ------------------------------------------------------------
