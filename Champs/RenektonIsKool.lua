@@ -572,15 +572,15 @@ function KillSteal()
 	for i = 1, objManager:GetMaxHeroes() do
           local ksTarg = objManager:GetHero(i)
 		  
-			if Cfg['7. Kill Steal Options'].KSQ and ksTarg ~= nil and ksTarg.team ~= myHero.team and ksTarg.visible == 1 and GetDistance(myHero, ksTarg) < qRange and getDmg('Q', ksTarg, myHero) >= ksTarg.health then UseQ(ksTarg) end
-			if Cfg['7. Kill Steal Options'].KSW and ksTarg ~= nil and ksTarg.team ~= myHero.team and ksTarg.visible == 1 and GetDistance(myHero, ksTarg) < wRange and getDmg('W', ksTarg, myHero) >= ksTarg.health then UseW(ksTarg) end
-			if Cfg['7. Kill Steal Options'].KSE and ksTarg ~= nil and ksTarg.team ~= myHero.team and ksTarg.visible == 1 and GetDistance(myHero, ksTarg) < eRange and getDmg('E', ksTarg, myHero) >= ksTarg.health then UseE(ksTarg) end
-			if Cfg['7. Kill Steal Options'].KSR and ksTarg ~= nil and ksTarg.team ~= myHero.team and ksTarg.visible == 1 and GetDistance(myHero, ksTarg) < rRange and getDmg('R', ksTarg, myHero) >= ksTarg.health then UseR(ksTarg) end
-			if Cfg['7. Kill Steal Options'].KSBC and ksTarg ~= nil and ksTarg.team ~= myHero.team and ksTarg.visible == 1 and GetDistance(myHero, ksTarg) < 400 and getDmg('BWC', ksTarg, myHero) >= ksTarg.health then UseItemOnTarget(3144, ksTarg) end
-			if Cfg['7. Kill Steal Options'].KST and ksTarg ~= nil and ksTarg.team ~= myHero.team and ksTarg.visible == 1 and GetDistance(myHero, ksTarg) < 400 and getDmg('TIAMAT', ksTarg, myHero) >= ksTarg.health then UseItemOnTarget(3077, ksTarg) end
-			if Cfg['7. Kill Steal Options'].KSRH and ksTarg ~= nil and ksTarg.team ~= myHero.team and ksTarg.visible == 1 and GetDistance(myHero, ksTarg) < 400 and getDmg('HYDRA', ksTarg, myHero) >= ksTarg.health then UseItemOnTarget(3074, ksTarg) end
-			if Cfg['7. Kill Steal Options'].KSBORK and ksTarg ~= nil and ksTarg.team ~= myHero.team and ksTarg.visible == 1 and GetDistance(myHero, ksTarg) < 500 and getDmg('RUINEDKING', ksTarg, myHero) >= ksTarg.health then UseItemOnTarget(3153, ksTarg) end
-			if Cfg['7. Kill Steal Options'].KSIGN and ksTarg ~= nil and ksTarg.team ~= myHero.team and ksTarg.visible == 1 and GetDistance(myHero, ksTarg) < 600 and getDmg('IGNITE', ksTarg, myHero) >= ksTarg.health  and (Cfg['5. Summoner Spell Options'].Auto_Ignite_Self_ON ~= true) then CastSummonerIgn(ksTarg) end
+			if Cfg['7. Kill Steal Options'].KSQ and ksTarg ~= nil and ValidTarget(ksTarg) and GetDistance(myHero, ksTarg) < 625 and getDmg('Q', ksTarg, myHero) >= ksTarg.health then UseQ(ksTarg) end
+			if Cfg['7. Kill Steal Options'].KSW and ksTarg ~= nil and ValidTarget(ksTarg) and GetDistance(myHero, ksTarg) < 900 and getDmg('W', ksTarg, myHero) >= ksTarg.health then UseQ(ksTarg) end
+			if Cfg['7. Kill Steal Options'].KSE and ksTarg ~= nil and ValidTarget(ksTarg) and GetDistance(myHero, ksTarg) < 625 and getDmg('E', ksTarg, myHero) >= ksTarg.health then UseQ(ksTarg) end
+			if Cfg['7. Kill Steal Options'].KSR and ksTarg ~= nil and ValidTarget(ksTarg) and GetDistance(myHero, ksTarg) < 690 and getDmg('R', ksTarg, myHero) >= ksTarg.health then UseQ(ksTarg) end
+			if Cfg['7. Kill Steal Options'].KSBC and ksTarg ~= nil and ValidTarget(ksTarg) and GetDistance(myHero, ksTarg) < 400 and getDmg('BWC', ksTarg, myHero) >= ksTarg.health then UseItemOnTarget(3144, ksTarg) end
+			if Cfg['7. Kill Steal Options'].KST and ksTarg ~= nil and ValidTarget(ksTarg) and GetDistance(myHero, ksTarg) < 400 and getDmg('TIAMAT', ksTarg, myHero) >= ksTarg.health then UseItemOnTarget(3077, ksTarg) end
+			if Cfg['7. Kill Steal Options'].KSRH and ksTarg ~= nil and ValidTarget(ksTarg) and GetDistance(myHero, ksTarg) < 400 and getDmg('HYDRA', ksTarg, myHero) >= ksTarg.health then UseItemOnTarget(3074, ksTarg) end
+			if Cfg['7. Kill Steal Options'].KSBORK and ksTarg ~= nil and ValidTarget(ksTarg) and GetDistance(myHero, ksTarg) < 500 and getDmg('RUINEDKING', ksTarg, myHero) >= ksTarg.health then UseItemOnTarget(3153, ksTarg) end
+			if Cfg['7. Kill Steal Options'].KSIGN and ksTarg ~= nil and ValidTarget(ksTarg) and GetDistance(myHero, ksTarg) < 600 and getDmg('IGNITE', ksTarg, myHero) >= ksTarg.health  and (Cfg['5. Summoner Spell Options'].Auto_Ignite_Self_ON ~= true) then CastSummonerIgn(ksTarg) end
 	end
 end
 ------------------------------------------------------------
