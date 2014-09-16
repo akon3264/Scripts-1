@@ -1,6 +1,6 @@
-local ScriptName = 'RenektonIsKool'												--Change this
-local Version = '1.1'															--Change this
-local Author = 'Koolkaracter'													--Change this
+local ScriptName = 'RenektonIsKool'										
+local Version = '1.1'													
+local Author = 'Koolkaracter'											
 -- ____     ___  ____     ___  __  _ ______   ___   ____       ____ _____     __  _   ___    ___   _     
 --|    \   /  _]|    \   /  _]|  |/ ]      | /   \ |    \     |    / ___/    |  |/ ] /   \  /   \ | |    
 --|  D  ) /  [_ |  _  | /  [_ |  ' /|      ||     ||  _  |     |  (   \_     |  ' / |     ||     || |    
@@ -26,7 +26,7 @@ local attempts = 0
 local lastAttempt = 0
 local Q,W,E,R = 'Q','W','E','R'
 local skillOrder = {}
-local qRange, wRange, eRange, rRange = 225, 125, 450, 425      						 	
+local qRange, wRange, eRange, rRange = 225+75, myHero.range+75, 450, 425      						 	
 local qSpeed, wSpeed, eSpeed, rSpeed = nil, nil, 1400, nil     							
 local qDelay, wDelay, eDelay, rDelay = nil, nil, .5, nil          						
 local qWidth, wWidth, eWidth, rWidth = nil, nil, 50, nil								
@@ -56,6 +56,9 @@ submenu.checkbox('R_LC_ON', 'Use R', false)
 submenu.label('lbS4', '----Ult Options----')
 submenu.checkbox('R_Auto_ON', 'Auto Use R At %health', true)
 submenu.slider('Ult_Percent', 'Auto Ult Percent', 0, 100, 20)
+submenu.label('lbS5', '----Q Options----')
+submenu.checkbox('Q_Auto_On', 'Auto Harras with Q', false)
+
 
 local submenu = menu.submenu('2. Target Selector', 300)
 submenu.slider('TS_Mode', 'Target Selector Mode', 1,2,1, {'TS Primary', 'Get Weakest'})
@@ -141,6 +144,7 @@ function Main()
 	AutoSummoners()
 	AutoPots()
 	if Cfg['1. Skill Options'].R_Auto_ON then AutoUlt() end
+	if Cfg['1. Skill Options'].Q_Auto_On and target ~= nil then UseQ(target) end
 	if Cfg['7. Kill Steal Options'].KillSteal_ON then KillSteal() end
 	if Cfg['8. Misc Options'].ShowPHP then ShowPercentHP() end
 	if Cfg['8. Misc Options'].ALevel_ON then AutoLvl() end
@@ -148,17 +152,17 @@ function Main()
 	if yayo.Config.AutoCarry then 
 		if target ~= nil then 
 			if Cfg['4. Item Options'].ACItem_ON then UseOffensiveItems(target) end
---			if Cfg['1. Skill Options'].W_AC_ON then UseW(target) end
+			if Cfg['1. Skill Options'].W_AC_ON then UseW(target) end
 			if Cfg['1. Skill Options'].Q_AC_ON then UseQ(target) end
 			if Cfg['1. Skill Options'].E_AC_ON then UseE(target) end
 			if Cfg['1. Skill Options'].R_AC_ON then UseR(target) end
 		end
 	end
-	
+	                               
 	if yayo.Config.Mixed then 
 		if target ~= nil then 
 			if Cfg['4. Item Options'].MItem_ON then UseOffensiveItems(target) end
---			if Cfg['1. Skill Options'].W_M_ON then UseW(target) end
+			if Cfg['1. Skill Options'].W_M_ON then UseW(target) end
 			if Cfg['1. Skill Options'].Q_M_ON then UseQ(target) end
 			if Cfg['1. Skill Options'].E_M_ON then UseE(target) end
 			if Cfg['1. Skill Options'].R_M_ON then UseR(target) end
