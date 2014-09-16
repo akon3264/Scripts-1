@@ -1,5 +1,5 @@
 local ScriptName = 'RenektonIsKool'										
-local Version = '1.1'													
+local Version = '1.2'													
 local Author = 'Koolkaracter'											
 -- ____     ___  ____     ___  __  _ ______   ___   ____       ____ _____     __  _   ___    ___   _     
 --|    \   /  _]|    \   /  _]|  |/ ]      | /   \ |    \     |    / ___/    |  |/ ] /   \  /   \ | |    
