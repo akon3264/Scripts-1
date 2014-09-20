@@ -1,5 +1,5 @@
 local ScriptName = 'DariusIsKool'									
-local Version = '1.0'												
+local Version = '1.1'												
 local Author = 'Koolkaracter'												
 --[[	
  ,'|"\     .--.  ,---.  ,-..-. .-.   .---.  ,-.   .---.  ,-. .-..---.   .---.  ,-.     
