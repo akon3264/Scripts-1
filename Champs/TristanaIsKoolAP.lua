@@ -150,10 +150,10 @@ function Main()
 		if target ~= nil then 
 			if Cfg['1. Skill Options'].W_AC_ON then UseW(target) end
 			if Cfg['4. Item Options'].ACItem_ON then UseOffensiveItems(target) end
-			if Cfg['1. Skill Options'].Q_AC_ON then UseQ(target) end
 			if Cfg['1. Skill Options'].E_AC_ON then UseE(target) end
 			if Cfg['5. Summoner Spell Options'].Ign_Combo_ON then CastSummonerIgn(target) end 
 			if Cfg['1. Skill Options'].R_AC_ON then UseR(target) end
+			if Cfg['1. Skill Options'].Q_AC_ON then UseQ(target) end
 		end
 	end
 	
@@ -161,9 +161,9 @@ function Main()
 		if target ~= nil then 
 			if Cfg['1. Skill Options'].W_M_ON then UseW(target) end
 			if Cfg['4. Item Options'].MItem_ON then UseOffensiveItems(target) end
-			if Cfg['1. Skill Options'].Q_M_ON then UseQ(target) end
 			if Cfg['1. Skill Options'].E_M_ON then UseE(target) end
 			if Cfg['1. Skill Options'].R_M_ON then UseR(target) end
+			if Cfg['1. Skill Options'].Q_M_ON then UseQ(target) end
 		end
 	end
 	
