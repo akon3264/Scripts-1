@@ -1,3 +1,18 @@
+
+-- ************************** LBC META *****************************
+-- * lbc_name = TwitchIsKool.lua
+-- * lbc_version = 1.2
+-- * lbc_date = 09/13/2014 // use correct date format mm/dd/yyyy
+-- * lbc_status = 3 // 0 = unknowen; 1 = alpha/wip; 2 = beta; 3 = ready; 4 = required; 5 = outdated
+-- * lbc_type = 3 // 0 = others; 1 = binaries; 2 = libs; 3 = champion; 4 = hotkey; 5 = utility
+-- * lbc_creator = KoolKaracter
+-- * lbc_champion = Twitch // if this script is for a special champ
+-- * lbc_tags = Twitch, ADC, AD, AD, Kool, kool, iskool, koolkaracter
+-- * lbc_link = http://leaguebot.net/forum/Upload/showthread.php?tid=4323
+-- * lbc_source = https://raw.githubusercontent.com/koolkaracter/Scripts/AutoKool/Champs/TwitchIsKool.lua
+-- * lbc_update = // only if you have a new version on a new source
+-- ************************** LBC META *****************************
+
 local ScriptName = 'TwitchIsKool'									
 local Version = '1.2'												
 local Author = 'Koolkaracter'												
