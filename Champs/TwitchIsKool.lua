@@ -1,4 +1,3 @@
-
 -- ************************** LBC META *****************************
 -- * lbc_name = TwitchIsKool.lua
 -- * lbc_version = 1.2
