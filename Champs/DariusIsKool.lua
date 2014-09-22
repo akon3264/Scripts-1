@@ -1,5 +1,5 @@
 -- ************************** LBC META *****************************
--- * lbc_name = SwainIsKool.lua
+-- * lbc_name = DariusIsKool.lua
 -- * lbc_version = 1.2
 -- * lbc_date = 09/07/2014 // use correct date format mm/dd/yyyy
 -- * lbc_status = 3 // 0 = unknowen; 1 = alpha/wip; 2 = beta; 3 = ready; 4 = required; 5 = outdated
