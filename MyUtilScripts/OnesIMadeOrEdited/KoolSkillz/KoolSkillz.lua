@@ -8,7 +8,7 @@ if myHero.name == "Elise" or  myHero.name == "Jayce" or myHero.name == "Gnar" or
 -- * lbc_type = 5 // 0 = others; 1 = binaries; 2 = libs; 3 = champion; 4 = hotkey; 5 = utility
 -- * lbc_creator = KoolKaracter
 -- * lbc_champion = // if this script is for a special champ
--- * lbc_tags = aim, autoaim, auto aim, champions, Kool, kool, koolkaracter
+-- * lbc_tags = aim, autoaim, auto aim, skills, target, champions, Kool, kool, koolkaracter
 -- * lbc_link = http://leaguebot.net/forum/Upload/showthread.php?tid=4285
 -- * lbc_source = https://raw.githubusercontent.com/koolkaracter/Scripts/AutoKool/MyUtilScripts/OnesIMadeOrEdited/KoolSkillz/KoolSkillz.lua
 -- * lbc_update = // only if you have a new version on a new source
