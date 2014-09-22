@@ -6,7 +6,7 @@
 -- * lbc_type = 3 // 0 = others; 1 = binaries; 2 = libs; 3 = champion; 4 = hotkey; 5 = utility
 -- * lbc_creator = KoolKaracter
 -- * lbc_champion = Maokai // if this script is for a special champ
--- * lbc_tags = Maokai, support, tank,, jungler, AP, Kool, kool, iskool, koolkaracter
+-- * lbc_tags = Maokai, support, tank, jungler, AP, Kool, kool, iskool, koolkaracter
 -- * lbc_link = http://leaguebot.net/forum/Upload/showthread.php?tid=4289
 -- * lbc_source = https://raw.githubusercontent.com/koolkaracter/Scripts/AutoKool/Champs/MaokaiIsKool.lua
 -- * lbc_update = // only if you have a new version on a new source
