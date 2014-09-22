@@ -19,7 +19,7 @@ local Author = 'Koolkaracter'
 -- yupdate = * 2.11 https://raw.githubusercontent.com/koolkaracter/Scripts/AutoKool/AutoKool/autokool.lua https://raw.githubusercontent.com/koolkaracter/Scripts/AutoKool/AutoKool/AutoKoolVersion.lua
 --!!!!!!!!!!!THE ABOVE IS FOR THE yUpdate.py !!!!!!!!!!!!!!DO NOT CHANGE ANYTHING ABOVE THIS LINE!!!!!!!!!!!!!!!!!!
 
---[[      
+--[[       
  ____  __.            .__   __                               __                 /\                
 |    |/ _|____   ____ |  | |  | ______ ____________    _____/  |_  ___________  )/______          
 |      < /  _ \ /  _ \|  | |  |/ |__  \\_  __ \__  \ _/ ___\   __\/ __ \_  __ \  /  ___/          
