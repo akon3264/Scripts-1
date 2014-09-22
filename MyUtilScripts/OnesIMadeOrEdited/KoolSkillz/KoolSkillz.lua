@@ -1,4 +1,21 @@
 if myHero.name == "Elise" or  myHero.name == "Jayce" or myHero.name == "Gnar" or myHero.name == "Nidalee" then return end --Currently not supported champions. 
+
+-- ************************** LBC META *****************************
+-- * lbc_name = KoolSkills.lua
+-- * lbc_version = 2.0
+-- * lbc_date = 09/05/2014 // use correct date format mm/dd/yyyy
+-- * lbc_status = 3 // 0 = unknowen; 1 = alpha/wip; 2 = beta; 3 = ready; 4 = required; 5 = outdated
+-- * lbc_type = 5 // 0 = others; 1 = binaries; 2 = libs; 3 = champion; 4 = hotkey; 5 = utility
+-- * lbc_creator = KoolKaracter
+-- * lbc_champion = // if this script is for a special champ
+-- * lbc_tags = aim, autoaim, auto aim, champions, Kool, kool, koolkaracter
+-- * lbc_link = http://leaguebot.net/forum/Upload/showthread.php?tid=4285
+-- * lbc_source = https://raw.githubusercontent.com/koolkaracter/Scripts/AutoKool/MyUtilScripts/OnesIMadeOrEdited/KoolSkillz/KoolSkillz.lua
+-- * lbc_update = // only if you have a new version on a new source
+-- ************************** LBC META *****************************
+
+
+
 --[[
  ____  __.            .__      ___________   .__.__  .__                                             
 |    |/ _|____   ____ |  |    /   _____/  | _|__|  | |  | ________                                   
