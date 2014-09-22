@@ -1,3 +1,17 @@
+-- ************************** LBC META *****************************
+-- * lbc_name = TwitchIsKool.lua
+-- * lbc_version = 2.11
+-- * lbc_date = 06/22/2014 // use correct date format mm/dd/yyyy
+-- * lbc_status = 3 // 0 = unknowen; 1 = alpha/wip; 2 = beta; 3 = ready; 4 = required; 5 = outdated
+-- * lbc_type = 5 // 0 = others; 1 = binaries; 2 = libs; 3 = champion; 4 = hotkey; 5 = utility
+-- * lbc_creator = KoolKaracter
+-- * lbc_champion = // if this script is for a special champ
+-- * lbc_tags = autokool, auto, potions, summoners, spells, items, autoitems, auto items, ignite, pots, Kool, kool, iskool, koolkaracter
+-- * lbc_link = http://leaguebot.net/forum/Upload/showthread.php?tid=3921
+-- * lbc_source = https://raw.githubusercontent.com/koolkaracter/Scripts/AutoKool/AutoKool/autokool.lua
+-- * lbc_update = // only if you have a new version on a new source
+-- ************************** LBC META *****************************
+
 local ScriptName = 'autokool'
 local Version = '2.11'
 local Author = 'Koolkaracter'
