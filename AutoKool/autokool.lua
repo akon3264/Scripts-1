@@ -11,7 +11,7 @@
 -- * lbc_source = https://raw.githubusercontent.com/koolkaracter/Scripts/AutoKool/AutoKool/autokool.lua
 -- * lbc_update = // only if you have a new version on a new source
 -- ************************** LBC META *****************************
-
+ 
 local ScriptName = 'autokool'
 local Version = '2.11'
 local Author = 'Koolkaracter'
