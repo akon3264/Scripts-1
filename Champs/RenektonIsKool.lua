@@ -1,3 +1,17 @@
+-- ************************** LBC META *****************************
+-- * lbc_name = RenektonIsKool.lua
+-- * lbc_version = 1.4
+-- * lbc_date = 09/09/2014 // use correct date format mm/dd/yyyy
+-- * lbc_status = 3 // 0 = unknowen; 1 = alpha/wip; 2 = beta; 3 = ready; 4 = required; 5 = outdated
+-- * lbc_type = 3 // 0 = others; 1 = binaries; 2 = libs; 3 = champion; 4 = hotkey; 5 = utility
+-- * lbc_creator = KoolKaracter
+-- * lbc_champion = Renekton // if this script is for a special champ
+-- * lbc_tags = Renekton, tank, bruiser, jungler, AD, Kool, kool, iskool, koolkaracter
+-- * lbc_link = http://leaguebot.net/forum/Upload/showthread.php?tid=4303&pid=40928#pid40928
+-- * lbc_source = https://raw.githubusercontent.com/koolkaracter/Scripts/AutoKool/Champs/RenektonIsKool.lua
+-- * lbc_update = // only if you have a new version on a new source
+-- ************************** LBC META *****************************
+
 local ScriptName = 'RenektonIsKool'										
 local Version = '1.4'													
 local Author = 'Koolkaracter'											
