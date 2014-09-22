@@ -1,7 +1,7 @@
 if myHero.name == "Elise" or  myHero.name == "Jayce" or myHero.name == "Gnar" or myHero.name == "Nidalee" then return end --Currently not supported champions. 
 
 -- ************************** LBC META *****************************
--- * lbc_name = KoolSkills.lua
+-- * lbc_name = KoolSkillz.lua
 -- * lbc_version = 2.0
 -- * lbc_date = 09/05/2014 // use correct date format mm/dd/yyyy
 -- * lbc_status = 3 // 0 = unknowen; 1 = alpha/wip; 2 = beta; 3 = ready; 4 = required; 5 = outdated
