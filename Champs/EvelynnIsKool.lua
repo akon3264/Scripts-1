@@ -715,3 +715,17 @@ end
 
 
 SetTimerCallback('Main')
+
+-- ************************** LBC META *****************************
+-- * lbc_name = EvelynnIsKool.lua
+-- * lbc_version = 1.3
+-- * lbc_date = 09/17/2014 // use correct date format mm/dd/yyyy
+-- * lbc_status = 3 // 0 = unknowen; 1 = alpha/wip; 2 = beta; 3 = ready; 4 = required; 5 = outdated
+-- * lbc_type = 3 // 0 = others; 1 = binaries; 2 = libs; 3 = champion; 4 = hotkey; 5 = utility
+-- * lbc_creator = KoolKaracter
+-- * lbc_champion = Evelynn // if this script is for a special champ
+-- * lbc_tags = Evelynn, eve, Eve, Kool, kool, iskool, koolkaracter
+-- * lbc_link = http://leaguebot.net/forum/Upload/showthread.php?tid=4311
+-- * lbc_source = https://raw.githubusercontent.com/koolkaracter/Scripts/AutoKool/Champs/EvelynnIsKool.lua
+-- * lbc_update = // only if you have a new version on a new source
+-- ************************** LBC META *****************************
