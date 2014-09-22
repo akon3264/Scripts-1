@@ -1,5 +1,5 @@
 -- ************************** LBC META *****************************
--- * lbc_name = TwitchIsKool.lua
+-- * lbc_name = AutoKool.lua
 -- * lbc_version = 2.11
 -- * lbc_date = 06/22/2014 // use correct date format mm/dd/yyyy
 -- * lbc_status = 3 // 0 = unknowen; 1 = alpha/wip; 2 = beta; 3 = ready; 4 = required; 5 = outdated
