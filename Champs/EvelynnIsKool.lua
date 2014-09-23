@@ -1,3 +1,17 @@
+-- ************************** LBC META *****************************
+-- * lbc_name = EvelynnIsKool.lua
+-- * lbc_version = 1.3
+-- * lbc_date = 09/22/2014 // use correct date format mm/dd/yyyy
+-- * lbc_status = 3 // 0 = unknowen; 1 = alpha/wip; 2 = beta; 3 = ready; 4 = required; 5 = outdated
+-- * lbc_type = 3 // 0 = others; 1 = binaries; 2 = libs; 3 = champion; 4 = hotkey; 5 = utility
+-- * lbc_creator = koolkaracter
+-- * lbc_champion = Evelynn // if this script is for a special champ
+-- * lbc_tags = evelynn, eve, stealth, assassin, AP, jungler, Kool, kool, iskool, koolkaracter
+-- * lbc_link = http://leaguebot.net/forum/Upload/showthread.php?tid=4311
+-- * lbc_source = https://raw.githubusercontent.com/koolkaracter/Scripts/AutoKool/Champs/EvelynnIsKool.lua
+-- * lbc_update = // only if you have a new version on a new source
+-- ************************** LBC META *****************************
+
 local ScriptName = 'EvelynnIsKool'									
 local Version = '1.3'												
 local Author = 'Koolkaracter'												
