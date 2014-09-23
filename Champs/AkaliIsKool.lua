@@ -137,7 +137,7 @@ local submenu = menu.submenu('8. Misc Options', 300)
 submenu.checkbox('ShowPHP', 'Show Your % of HP', true)
 submenu.label('lbM1', '--Auto Level--')
 submenu.checkbox('ALevel_ON', 'Use Auto Leveler', true)
-submenu.label('lbM2', 'Order: Q,W,Q,E,Q,R,Q,E,Q,E,R,E,E,W,W,R,W,W')
+submenu.label('lbM2', 'Order: Q,W,E,Q,Q,R,Q,E,Q,E,R,E,E,W,W,R,W,W')
 
 menu.label('lb01', ' ')
 menu.label('lb02', 'AkaliIsKool Version '..tostring(Version) ..' by KoolKaracter')
@@ -617,7 +617,7 @@ function Level_Spell(letter)
 end
 
 function GetSkillOrder()
-		skillOrder = {Q,W,Q,E,Q,R,Q,E,Q,E,R,E,E,W,W,R,W,W}
+		skillOrder = {Q,W,E,Q,Q,R,Q,E,Q,E,R,E,E,W,W,R,W,W}
 end
 
 function AutoLvl()
