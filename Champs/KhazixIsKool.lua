@@ -7,8 +7,8 @@
 -- * lbc_creator = KoolKaracter
 -- * lbc_champion = Khazix // if this script is for a special champ
 -- * lbc_tags = Khazix, assassin, bug, kha'zix, kha, AD, Kool, kool, iskool, koolkaracter
--- * lbc_link = http://leaguebot.net/forum/Upload/showthread.php?tid=4316
--- * lbc_source = https://raw.githubusercontent.com/koolkaracter/Scripts/AutoKool/Champs/DariusIsKool.lua
+-- * lbc_link = http://leaguebot.net/forum/Upload/showthread.php?tid=4443
+-- * lbc_source = https://raw.githubusercontent.com/koolkaracter/Scripts/AutoKool/Champs/KhazixIsKool.lua
 -- * lbc_update = // only if you have a new version on a new source
 -- ************************** LBC META *****************************
 
