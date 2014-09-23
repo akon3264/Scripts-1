@@ -24,8 +24,6 @@ local Author = 'Koolkaracter'
 ]]
 
 
-
-require 'yprediction'
 require 'spell_damage'
 require 'winapi'
 require 'SKeys'
@@ -34,7 +32,6 @@ require 'vals_lib'
 local yayo = require 'yayo'
 local uiconfig = require 'uiconfig'
 local send = require 'SendInputScheduled'
-local YP = YPrediction()
 local target = nil
 local attempts = 0
 local lastAttempt = 0
