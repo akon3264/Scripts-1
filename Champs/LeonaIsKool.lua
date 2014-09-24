@@ -228,7 +228,7 @@ end
 function UseR(targ)
 	if Cfg['1. Skill Options'].Ult_Stun_ON then
 		if IsBuffed(targ, "LOC_Stun") then 
-			CastPosition,  HitChance,  Position = YP:GetCircularCastPosition(targ rDelay, rWidth, rRange, rSpeed, myHero, rCollision)
+			CastPosition,  HitChance,  Position = YP:GetCircularCastPosition(targ, rDelay, rWidth, rRange, rSpeed, myHero, rCollision)
 			if CastPosition and HitChance >= 2 then 
 				local x, y, z = CastPosition.x, CastPosition.y, CastPosition.z                
 				CastSpellXYZ('R', x, y, z)
