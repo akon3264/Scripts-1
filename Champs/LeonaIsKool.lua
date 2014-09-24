@@ -1,6 +1,6 @@
 -- ************************** LBC META *****************************
 -- * lbc_name = LeonaIsKool.lua
--- * lbc_version = 1.0
+-- * lbc_version = 1.1
 -- * lbc_date = 09/18/2014 // use correct date format mm/dd/yyyy
 -- * lbc_status = 3 // 0 = unknowen; 1 = alpha/wip; 2 = beta; 3 = ready; 4 = required; 5 = outdated
 -- * lbc_type = 3 // 0 = others; 1 = binaries; 2 = libs; 3 = champion; 4 = hotkey; 5 = utility
@@ -13,7 +13,7 @@
 -- ************************** LBC META *****************************
 
 local ScriptName = 'Leona Is Kool'									
-local Version = '1.0'												
+local Version = '1.1'												
 local Author = 'Koolkaracter'												
 --[[	
 .____                                .___          ____  __.            .__   
@@ -53,7 +53,7 @@ local tsRange
 ---------------------------Menu-----------------------------
 ------------------------------------------------------------
 Cfg, menu = uiconfig.add_menu('Leona Is Kool', 250)
-local submenu = menu.submenu('1. Skill Options', 150)
+local submenu = menu.submenu('1. Skill Options', 180)
 submenu.label('lbS1', '--AutoCarry Mode--')
 submenu.checkbox('Q_AC_ON', 'Use Q', true)
 submenu.checkbox('W_AC_ON', 'Use W', true)
@@ -70,6 +70,7 @@ submenu.checkbox('W_LC_ON', 'Use W', true)
 submenu.checkbox('R_LC_ON', 'Use R', false)
 submenu.label('lbS4', '----Ult Options----')
 submenu.checkbox('Ult_Stun_ON', 'Only Ult When Stunned', false)
+submenu.keydown('Ult_Man_ON', 'Manual Ult Key', Keys.R)
 
 local submenu = menu.submenu('2. Target Selector', 300)
 submenu.slider('TS_Mode', 'Target Selector Mode', 1,2,1, {'TS Primary', 'Get Weakest'})
@@ -165,9 +166,11 @@ function Main()
 	UseDefensiveItems()
 	AutoSummoners()
 	AutoPots()
+	if target ~= nil and Cfg['1. Skill Options'].Ult_Man_ON then UseRMEC(target) end
 	if Cfg['7. Kill Steal Options'].KillSteal_ON then KillSteal() end
 	if Cfg['8. Misc Options'].ShowPHP then ShowPercentHP() end
 	if Cfg['8. Misc Options'].ALevel_ON then AutoLvl() end
+	
 	
 	if yayo.Config.AutoCarry then 
 		if target ~= nil then 
@@ -201,7 +204,7 @@ end
 ------------------------------------------------------------
 function UseQ(targ)
 
-			if GetDistance(targ, myHero) <= qRange and ValidTarget(targ) then CastSpellTarget('Q', myHero) end
+	if GetDistance(targ, myHero) <= qRange and ValidTarget(targ) then CastSpellTarget('Q', myHero) end
 	
 end
 
@@ -222,7 +225,6 @@ function UseE(targ)
 end
 
 function UseR(targ)
-
 	if Cfg['1. Skill Options'].Ult_Stun_ON then
 		if IsBuffed(targ, "LOC_Stun") then 
 			CastPosition,  HitChance,  Position = YP:GetCircularCastPosition(target, rDelay, rWidth, rRange, rSpeed, myHero, rCollision)
@@ -239,6 +241,16 @@ function UseR(targ)
 		end
 	end	
 end
+
+function UseRMEC(targ)
+	if ValidTarget(targ) and GetDistance(targ) <= rRange then
+		rPos = GetMEC(230, rRange, targ)
+		if rPos then
+			CastSpellXYZ('R', rPos.x, 0, rPos.z)
+		end
+	end
+end
+
 
 function UseRKS(targ)
 	CastPosition,  HitChance,  Position = YP:GetCircularCastPosition(target, rDelay, rWidth, rRange, rSpeed, myHero, rCollision)
