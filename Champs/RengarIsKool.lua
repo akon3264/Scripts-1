@@ -7,7 +7,7 @@
 -- * lbc_creator = KoolKaracter
 -- * lbc_champion = Rengar // if this script is for a special champ
 -- * lbc_tags = Rengar, assassin, cat, AD, jungler, Kool, kool, iskool, koolkaracter
--- * lbc_link = http://leaguebot.net/forum/Upload/showthread.php?tid=4443
+-- * lbc_link = http://leaguebot.net/forum/Upload/showthread.php?tid=4444
 -- * lbc_source = https://raw.githubusercontent.com/koolkaracter/Scripts/AutoKool/Champs/RengarIsKool.lua
 -- * lbc_update = // only if you have a new version on a new source
 -- ************************** LBC META *****************************
