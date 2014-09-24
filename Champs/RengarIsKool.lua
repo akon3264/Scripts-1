@@ -1,22 +1,27 @@
 -- ************************** LBC META *****************************
 -- * lbc_name = RengarIsKool.lua
--- * lbc_version = 1.01
--- * lbc_date = 09/07/2014 // use correct date format mm/dd/yyyy
+-- * lbc_version = 1.0
+-- * lbc_date = 09/23/2014 // use correct date format mm/dd/yyyy
 -- * lbc_status = 3 // 0 = unknowen; 1 = alpha/wip; 2 = beta; 3 = ready; 4 = required; 5 = outdated
 -- * lbc_type = 3 // 0 = others; 1 = binaries; 2 = libs; 3 = champion; 4 = hotkey; 5 = utility
 -- * lbc_creator = KoolKaracter
 -- * lbc_champion = Rengar // if this script is for a special champ
 -- * lbc_tags = Rengar, assassin, cat, AD, jungler, Kool, kool, iskool, koolkaracter
 -- * lbc_link = http://leaguebot.net/forum/Upload/showthread.php?tid=4443
--- * lbc_source = https://raw.githubusercontent.com/koolkaracter/Scripts/AutoKool/Champs/KhazixIsKool.lua
+-- * lbc_source = https://raw.githubusercontent.com/koolkaracter/Scripts/AutoKool/Champs/RengarIsKool.lua
 -- * lbc_update = // only if you have a new version on a new source
 -- ************************** LBC META *****************************
 
 local ScriptName = 'RengarIsKool'									
-local Version = '1.01'												
+local Version = '1.0'												
 local Author = 'Koolkaracter'												
 --[[	
- 
+__________                                    .___          ____  __.            .__   
+\______   \ ____   ____    _________ _______  |   | ______ |    |/ _|____   ____ |  |  
+ |       _// __ \ /    \  / ___\__  \\_  __ \ |   |/  ___/ |      < /  _ \ /  _ \|  |  
+ |    |   \  ___/|   |  \/ /_/  > __ \|  | \/ |   |\___ \  |    |  (  <_> |  <_> )  |__
+ |____|_  /\___  >___|  /\___  (____  /__|    |___/____  > |____|__ \____/ \____/|____/
+        \/     \/     \//_____/     \/                 \/          \/                  
 ]]
 
 require 'yprediction'
