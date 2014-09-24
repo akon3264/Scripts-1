@@ -1,6 +1,6 @@
 -- ************************** LBC META *****************************
 -- * lbc_name = KhazixIsKool.lua
--- * lbc_version = 1.0
+-- * lbc_version = 1.01
 -- * lbc_date = 09/07/2014 // use correct date format mm/dd/yyyy
 -- * lbc_status = 3 // 0 = unknowen; 1 = alpha/wip; 2 = beta; 3 = ready; 4 = required; 5 = outdated
 -- * lbc_type = 3 // 0 = others; 1 = binaries; 2 = libs; 3 = champion; 4 = hotkey; 5 = utility
@@ -13,7 +13,7 @@
 -- ************************** LBC META *****************************
 
 local ScriptName = 'KhazixIsKool'									
-local Version = '1.0'												
+local Version = '1.01'												
 local Author = 'Koolkaracter'												
 --[[	
  ____  __.__                  .__         .___          ____  __.            .__   
@@ -38,7 +38,7 @@ local target = nil
 local attempts = 0
 local lastAttempt = 0
 local Q,W,E,R = 'Q','W','E','R'
-local qRange, wRange, eRange, rRange = 325, 1000, 600, nil      						
+local qRange, wRange, eRange, rRange = 325, 925, 600, nil      						
 local qSpeed, wSpeed, eSpeed, rSpeed = nil, 828, 1250, nil     						
 local qDelay, wDelay, eDelay, rDelay = .5, .5, .5, .5
 local qWidth, wWidth, eWidth, rWidth = nil, 60, 300, nil							
