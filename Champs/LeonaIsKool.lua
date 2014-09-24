@@ -67,6 +67,7 @@ submenu.checkbox('R_M_ON', 'Use R', false)
 submenu.label('lbS3', '----Lane Clear----')
 submenu.checkbox('Q_LC_ON', 'Use Q', false)
 submenu.checkbox('W_LC_ON', 'Use W', true)
+submenu.checkbox('E_LC_ON', 'Use E', false)
 submenu.checkbox('R_LC_ON', 'Use R', false)
 submenu.label('lbS4', '----Ult Options----')
 submenu.checkbox('Ult_Stun_ON', 'Only Ult When Stunned', false)
@@ -227,14 +228,14 @@ end
 function UseR(targ)
 	if Cfg['1. Skill Options'].Ult_Stun_ON then
 		if IsBuffed(targ, "LOC_Stun") then 
-			CastPosition,  HitChance,  Position = YP:GetCircularCastPosition(target, rDelay, rWidth, rRange, rSpeed, myHero, rCollision)
+			CastPosition,  HitChance,  Position = YP:GetCircularCastPosition(targ rDelay, rWidth, rRange, rSpeed, myHero, rCollision)
 			if CastPosition and HitChance >= 2 then 
 				local x, y, z = CastPosition.x, CastPosition.y, CastPosition.z                
 				CastSpellXYZ('R', x, y, z)
 			end
 		end
 	else
-		CastPosition,  HitChance,  Position = YP:GetCircularCastPosition(target, rDelay, rWidth, rRange, rSpeed, myHero, rCollision)
+		CastPosition,  HitChance,  Position = YP:GetCircularCastPosition(targ, rDelay, rWidth, rRange, rSpeed, myHero, rCollision)
 		if CastPosition and HitChance >= 2 then 
 			local x, y, z = CastPosition.x, CastPosition.y, CastPosition.z                
 			CastSpellXYZ('R', x, y, z)
@@ -253,7 +254,7 @@ end
 
 
 function UseRKS(targ)
-	CastPosition,  HitChance,  Position = YP:GetCircularCastPosition(target, rDelay, rWidth, rRange, rSpeed, myHero, rCollision)
+	CastPosition,  HitChance,  Position = YP:GetCircularCastPosition(targ, rDelay, rWidth, rRange, rSpeed, myHero, rCollision)
 	if CastPosition and HitChance >= 2 then 
 		local x, y, z = CastPosition.x, CastPosition.y, CastPosition.z                
 		CastSpellXYZ('R', x, y, z)
@@ -268,9 +269,9 @@ function SpellClear()
 	--W Farm
 	if Cfg['1. Skill Options'].W_LC_ON and minionTarget ~= nil then UseW(minionTarget) end
 	--E Farm
---	if Cfg['1. Skill Options'].E_LC_ON and minionTarget ~= nil then UseE(minionTarget) end
+	if Cfg['1. Skill Options'].E_LC_ON and minionTarget ~= nil then UseE(minionTarget) end
 	--R Farm
-	if Cfg['1. Skill Options'].R_LC_ON and minionTarget ~= nil then UseR(minionTarget) end
+	if Cfg['1. Skill Options'].R_LC_ON and minionTarget ~= nil then UseRKS(minionTarget) end
 end
 ------------------------------------------------------------
 ------------------------End Of Skills-----------------------
