@@ -1,6 +1,6 @@
 -- ************************** LBC META *****************************
 -- * lbc_name = AkaliIsKool.lua
--- * lbc_version = 1.0
+-- * lbc_version = 1.1
 -- * lbc_date = 09/22/2014 // use correct date format mm/dd/yyyy
 -- * lbc_status = 3 // 0 = unknowen; 1 = alpha/wip; 2 = beta; 3 = ready; 4 = required; 5 = outdated
 -- * lbc_type = 3 // 0 = others; 1 = binaries; 2 = libs; 3 = champion; 4 = hotkey; 5 = utility
@@ -13,7 +13,7 @@
 -- ************************** LBC META *****************************
 
 local ScriptName = 'AkaliIsKool'									
-local Version = '1.0'												
+local Version = '1.1'												
 local Author = 'Koolkaracter'												
 --[[	
     _   _        _ _   ___      _  __         _ 
@@ -37,7 +37,7 @@ local attempts = 0
 local lastAttempt = 0
 local Q,W,E,R = 'Q','W','E','R'
 local skillOrder = {}
-local qRange, wRange, eRange, rRange = 600, 700, 325, 800      						
+local qRange, wRange, eRange, rRange = 600, 700, 325, 800      			 --600			
 local qSpeed, wSpeed, eSpeed, rSpeed = nil, nil, nil, nil     						
 local qDelay, wDelay, eDelay, rDelay = .5, .5, .5, .50          						  
 local qWidth, wWidth, eWidth, rWidth = nil, nil, nil, nil								
@@ -50,7 +50,7 @@ local qAirBorne = false
 ---------------------------Menu-----------------------------
 ------------------------------------------------------------
 Cfg, menu = uiconfig.add_menu('Akali Is Kool', 250)
-local submenu = menu.submenu('1. Skill Options', 150)
+local submenu = menu.submenu('1. Skill Options', 200)
 submenu.label('lbS1', '--AutoCarry Mode--')
 submenu.checkbox('Q_AC_ON', 'Use Q', true)
 submenu.checkbox('W_AC_ON', 'Use W', true)
@@ -65,6 +65,10 @@ submenu.label('lbS3', '----Lane Clear----')
 submenu.checkbox('Q_LC_ON', 'Use Q', false)
 submenu.checkbox('E_LC_ON', 'Use E', false)
 submenu.checkbox('R_LC_ON', 'Use R', false)
+submenu.label('lbS4', '----Last Hit----')
+submenu.checkbox('Q_LH_ON', 'Use Q', true)
+submenu.checkbox('E_LH_ON', 'Use E', false)
+submenu.checkbox('R_LH_ON', 'Use R', false)
 submenu.label('lbS4', '----W Options----')
 submenu.checkbox('W_InPlace_ON', 'Cast W On You', false)
 submenu.keydown('W_InPlace_Btn', 'W Inplace Button', Keys.W)
@@ -182,6 +186,8 @@ function Main()
 	end
 	
 	if yayo.Config.LaneClear then SpellClear() end
+	
+	if yayo.Config.LastHit then SpellLastHit() end
 end
 ------------------------------------------------------------
 --------------------End Of Main Function--------------------
@@ -226,6 +232,27 @@ function SpellClear()
 	if Cfg['1. Skill Options'].E_LC_ON and minionTarget ~= nil then UseE(minionTarget) end
 	--R Farm
 	if Cfg['1. Skill Options'].R_LC_ON and minionTarget ~= nil then UseR(minionTarget) end
+end
+
+function SpellLastHit()
+	local minionTarget = GetLowestHealthEnemyMinion(800)
+	if minionTarget ~= nil and GetDistance(minionTarget, myHero) > 190 then 
+		--Q Farm
+		if Cfg['1. Skill Options'].Q_LH_ON and minionTarget ~= nil and minionTarget.dead ~= 1 and getDmg('Q', minionTarget, myHero) >= minionTarget.health then 
+			CustomCircle(50,1,2,minionTarget)
+			UseQ(minionTarget) 
+		end
+		--E Farm
+		if Cfg['1. Skill Options'].E_LH_ON and minionTarget ~= nil and minionTarget.dead ~= 1 and getDmg('W', minionTarget, myHero) >= minionTarget.health then 
+			CustomCircle(50,1,2,minionTarget)
+			UseE(minionTarget) 
+		end
+		--R Farm
+		if Cfg['1. Skill Options'].R_LH_ON and minionTarget ~= nil and minionTarget.dead ~= 1 and getDmg('R', minionTarget, myHero) >= minionTarget.health then 
+			CustomCircle(50,1,2,minionTarget)
+			UseR(minionTarget) 
+		end
+	end  
 end
 
 function QCheck(targ)
@@ -530,7 +557,7 @@ end
 --------------------------Use Potions-------------------------
 ------------------------------------------------------------
 function AutoPots()
-        if IsBuffed(myHero, "FountainHeal") ~= true then
+        if IsBuffed(myHero, "FountainHeal") ~= true and IsBuffed(myHero, 'TeleportHome.troy') ~= true then
                 if Cfg['6. Potion Options'].Health_Potion_ON and myHero.health < myHero.maxHealth * (Cfg['6. Potion Options'].Health_Potion_Value / 100) and IsBuffed(myHero, 'Global_Item_HealthPotion') ~= true and IsBuffed(myHero, 'GLOBAL_Item_HealthPotion') ~= true then
                         usePotion()
                 end
