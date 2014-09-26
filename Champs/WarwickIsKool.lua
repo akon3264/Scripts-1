@@ -7,8 +7,8 @@
 -- * lbc_creator = KoolKaracter
 -- * lbc_champion = Warwick // if this script is for a special champ
 -- * lbc_tags = warwick, WW, bruiser, jungler, tank, AP, AD, Kool, kool, iskool, koolkaracter
--- * lbc_link = http://leaguebot.net/forum/Upload/showthread.php?tid=4443
--- * lbc_source = https://raw.githubusercontent.com/koolkaracter/Scripts/AutoKool/Champs/KhazixIsKool.lua
+-- * lbc_link = http://leaguebot.net/forum/Upload/showthread.php?tid=4452
+-- * lbc_source = https://raw.githubusercontent.com/koolkaracter/Scripts/AutoKool/Champs/WarwickIsKool.lua
 -- * lbc_update = // only if you have a new version on a new source
 -- ************************** LBC META *****************************
 
@@ -91,6 +91,7 @@ submenu.checkbox('BC', '---Bilgewater Cutlass---', true)
 submenu.checkbox('BORK', '---Blade Of The Ruined King---', true)
 submenu.checkbox('BFT', '---Blackfire Torch---', true)
 submenu.checkbox('DFG', '---Deathfire Grasp---', true)
+submenu.checkbox('HG', '---Hextech Gunblade---', true)
 submenu.checkbox('RO', '---Randuins Omen---', true)
 submenu.checkbox('RH', '---Ravenous Hydra---', true)
 submenu.checkbox('T', '---Tiamat---', true)
@@ -135,6 +136,7 @@ submenu.checkbox('KSQ', 'KS with Q', true)
 submenu.checkbox('KSR', 'KS with R', false)
 submenu.checkbox('KSDFG', 'KS with DFG', true)
 submenu.checkbox('KSBFT', 'KS with BFT', true)
+submenu.checkbox('KSHG', 'KS w/ Hextech', true)
 submenu.checkbox('KSBC', 'KS w/ Cutlass', true)
 submenu.checkbox('KST', 'KS w/ Tiamat', true)
 submenu.checkbox('KSRH', 'KS w/ Hydra', true)
@@ -212,6 +214,11 @@ end
 
 function SpellClear()
 	local minionTarget = GetLowestHealthEnemyMinion(900)
+	
+	if Cfg['4. Item Options'].LCItem_ON and minionTarget ~= nil and GetDistance(minionTarget, myHero) < 400 then 
+		UseItemOnTarget(3074, myHero) -- Ravenous Hydra
+		UseItemOnTarget(3077, myHero) -- Tiamat
+	end
 	--Q Farm
 	if Cfg['1. Skill Options'].Q_LC_ON and minionTarget ~= nil then UseQ(minionTarget) end
 	--W Farm
@@ -331,6 +338,9 @@ function UseOffensiveItems(target)
 			if Cfg['4. Item Options'].DFG and (GetDistance(myHero, target) < 750) then -- IR
 				UseItemOnTarget(3128, target) -- Deathfire Grasp
 			end   
+			if Cfg['4. Item Options'].HG and (GetDistance(myHero, target) < 700) then -- IR
+				UseItemOnTarget(3146, target) -- Hextech Gunblade
+			end  
 			if Cfg['4. Item Options'].RO and (GetDistance(myHero, target) < 400) then -- IR
 				UseItemOnTarget(3143, target) -- Randuin's Omen
 			end
@@ -662,6 +672,7 @@ function KillSteal()
 			if Cfg['7. Kill Steal Options'].KSDFG and ksTarg ~= nil and ksTarg.team ~= myHero.team and ValidTarget(ksTarg) and GetDistance(myHero, ksTarg) < 750 and getDmg('DFG', ksTarg, myHero) >= ksTarg.health then UseItemOnTarget(3128, ksTarg) end
 			if Cfg['7. Kill Steal Options'].KSBFT and ksTarg ~= nil and ksTarg.team ~= myHero.team and ValidTarget(ksTarg) and GetDistance(myHero, ksTarg) < 750 and getDmg('BLACKFIRE', ksTarg, myHero) >= ksTarg.health then UseItemOnTarget(3188, ksTarg) end
 			if Cfg['7. Kill Steal Options'].KSBC and ksTarg ~= nil and ValidTarget(ksTarg) and ksTarg.team ~= myHero.team and GetDistance(myHero, ksTarg) < 400 and getDmg('BWC', ksTarg, myHero) >= ksTarg.health then UseItemOnTarget(3144, ksTarg) end
+			if Cfg['7. Kill Steal Options'].KSHG and ksTarg ~= nil and ksTarg.team ~= myHero.team and ValidTarget(ksTarg) and GetDistance(myHero, ksTarg) < 750 and getDmg('HXG', ksTarg, myHero) >= ksTarg.health then UseItemOnTarget(3146, ksTarg) end
 			if Cfg['7. Kill Steal Options'].KST and ksTarg ~= nil and ValidTarget(ksTarg) and ksTarg.team ~= myHero.team and GetDistance(myHero, ksTarg) < 400 and getDmg('TIAMAT', ksTarg, myHero) >= ksTarg.health then UseItemOnTarget(3077, ksTarg) end
 			if Cfg['7. Kill Steal Options'].KSRH and ksTarg ~= nil and ValidTarget(ksTarg) and ksTarg.team ~= myHero.team and GetDistance(myHero, ksTarg) < 400 and getDmg('HYDRA', ksTarg, myHero) >= ksTarg.health then UseItemOnTarget(3074, ksTarg) end
 			if Cfg['7. Kill Steal Options'].KSBORK and ksTarg ~= nil and ValidTarget(ksTarg) and ksTarg.team ~= myHero.team and GetDistance(myHero, ksTarg) < 500 and getDmg('RUINEDKING', ksTarg, myHero) >= ksTarg.health then UseItemOnTarget(3153, ksTarg) end
