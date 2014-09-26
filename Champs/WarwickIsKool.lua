@@ -1,6 +1,6 @@
 -- ************************** LBC META *****************************
 -- * lbc_name = WarwickIsKool.lua
--- * lbc_version = 1.00
+-- * lbc_version = 1.1
 -- * lbc_date = 09/25/2014 // use correct date format mm/dd/yyyy
 -- * lbc_status = 3 // 0 = unknowen; 1 = alpha/wip; 2 = beta; 3 = ready; 4 = required; 5 = outdated
 -- * lbc_type = 3 // 0 = others; 1 = binaries; 2 = libs; 3 = champion; 4 = hotkey; 5 = utility
@@ -13,7 +13,7 @@
 -- ************************** LBC META *****************************
 
 local ScriptName = 'WarwickIsKool'									
-local Version = '1.0'												
+local Version = '1.1'												
 local Author = 'Koolkaracter'												
 --[[	
      
@@ -56,7 +56,7 @@ local prefixes = { 'Worm', 'Dragon', 'AncientGolem', 'LizardElder' }
 ---------------------------Menu-----------------------------
 ------------------------------------------------------------
 Cfg, menu = uiconfig.add_menu('Warwick Is Kool', 250)
-local submenu = menu.submenu('1. Skill Options', 150)
+local submenu = menu.submenu('1. Skill Options', 200)
 submenu.label('lbS1', '--AutoCarry Mode--')
 submenu.checkbox('Q_AC_ON', 'Use Q', true)
 submenu.checkbox('W_AC_ON', 'Use W', true)
@@ -70,6 +70,9 @@ submenu.checkbox('Q_LC_ON', 'Use Q', false)
 submenu.checkbox('W_LC_ON', 'Use W', true)
 submenu.label('lbS4', '----Last Hit----')
 submenu.checkbox('Q_LH_ON', 'Use Q', false)
+submenu.label('lbS5', '----Misc----')
+submenu.keytoggle('Q_Auto_ON', 'Auto Harrass w/ Q', Keys.Z, false)
+submenu.permashow('Q_Auto_ON')
 
 local submenu = menu.submenu('2. Target Selector', 300)
 submenu.slider('TS_Mode', 'Target Selector Mode', 1,2,1, {'TS Primary', 'Get Weakest'})
@@ -99,6 +102,7 @@ submenu.checkbox('TWS', '----Twin  Shadows----', true)
 submenu.checkbox('YG', '---Youmuu\'s Goshtblade---', true)
 submenu.checkbox('ACItem_ON', 'Use Items in A/C mode', true)
 submenu.checkbox('MItem_ON', 'Use Items in Mixed mode', true)
+submenu.checkbox('LCItem_ON', 'Use Hydra/Tiamat in L/C mode', true)
 submenu.label('lbI1', '--Defensive Items--')
 submenu.checkbox('ZH', 'Auto Use Zhonyas/Witchcap', true)
 submenu.slider('ZHValue', 'Use Zhonyas/Witchcap at X% health', 0, 100, 20)
@@ -166,6 +170,7 @@ function Main()
 	AutoSummoners()
 	AutoPots()
 	onTick()
+	if Cfg['1. Skill Options'].Q_Auto_ON and target ~= nil then UseQ(target) end
 	if Cfg['7. Kill Steal Options'].KillSteal_ON then KillSteal() end
 	if Cfg['8. Misc Options'].ShowPHP then ShowPercentHP() end
 	if Cfg['8. Misc Options'].ALevel_ON then AutoLvl() end
