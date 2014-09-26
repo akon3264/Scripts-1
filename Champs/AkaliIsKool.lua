@@ -1,6 +1,6 @@
 -- ************************** LBC META *****************************
 -- * lbc_name = AkaliIsKool.lua
--- * lbc_version = 1.1
+-- * lbc_version = 1.2
 -- * lbc_date = 09/22/2014 // use correct date format mm/dd/yyyy
 -- * lbc_status = 3 // 0 = unknowen; 1 = alpha/wip; 2 = beta; 3 = ready; 4 = required; 5 = outdated
 -- * lbc_type = 3 // 0 = others; 1 = binaries; 2 = libs; 3 = champion; 4 = hotkey; 5 = utility
@@ -13,7 +13,7 @@
 -- ************************** LBC META *****************************
 
 local ScriptName = 'AkaliIsKool'									
-local Version = '1.1'												
+local Version = '1.2'												
 local Author = 'Koolkaracter'												
 --[[	
     _   _        _ _   ___      _  __         _ 
@@ -37,6 +37,8 @@ local attempts = 0
 local lastAttempt = 0
 local Q,W,E,R = 'Q','W','E','R'
 local skillOrder = {}
+local Enemies = {}
+local EnemyIndex = 1
 local qRange, wRange, eRange, rRange = 600, 700, 325, 800      			 --600			
 local qSpeed, wSpeed, eSpeed, rSpeed = nil, nil, nil, nil     						
 local qDelay, wDelay, eDelay, rDelay = .5, .5, .5, .50          						  
@@ -143,6 +145,15 @@ submenu.label('lbM1', '--Auto Level--')
 submenu.checkbox('ALevel_ON', 'Use Auto Leveler', true)
 submenu.label('lbM2', 'Order: Q,W,E,Q,Q,R,Q,E,Q,E,R,E,E,W,W,R,W,W')
 
+local submenu = menu.submenu('9. Burst Info Beta', 300)
+submenu.checkbox('Burst_Info_ON', 'Display Burst Info', true)
+submenu.slider('Executioner_Level_Value', 'Points In Executioner', 0,3,0)
+submenu.slider('Havoc_Level_Value', 'Points In Executioner', 0,1,0)
+submenu.slider('Burst_Info_Method', 'Use Which Display Method?', 1, 3, 1, {'Circle', 'Kill', 'XXX'})
+submenu.slider('Burst_Info_After_Color', 'Color For Not Killable Display', 1, 8, 1, {"Yellow","Green", "Red", "Cyan", "Magenta", "Blue", 'DarkGreen', 'Orange'})
+submenu.slider('Burst_Info_Kill_Color', 'Color For Killable Display', 1, 9, 3, {"Yellow","Green", "Red", "Cyan", "Magenta", "Blue", 'Purple', 'DarkGreen', 'Orange'})
+submenu.checkbox('Real_Time_ON', 'Track in real time', true)
+
 menu.label('lb01', ' ')
 menu.label('lb02', 'AkaliIsKool Version '..tostring(Version) ..' by KoolKaracter')
 ------------------------------------------------------------  
@@ -159,11 +170,12 @@ function Main()
 	UseDefensiveItems()
 	AutoSummoners()
 	AutoPots()
-	
+
 	if Cfg['1. Skill Options'].W_InPlace_ON and Cfg['1. Skill Options'].W_InPlace_Btn then CastSpellTarget(W, myHero) end
 	if Cfg['7. Kill Steal Options'].KillSteal_ON then KillSteal() end
 	if Cfg['8. Misc Options'].ShowPHP then ShowPercentHP() end
 	if Cfg['8. Misc Options'].ALevel_ON then AutoLvl() end
+	if Cfg['9. Burst Info Beta'].Burst_Info_ON then BurstInfo() end
 	
 	if yayo.Config.AutoCarry then 
 		if target ~= nil then 
@@ -670,6 +682,259 @@ end
 ------------------------------------------------------------
 ----------------End Of Miscellaneous Functions--------------
 ------------------------------------------------------------
+
+
+------------------------------------------------------------
+----------------------Burst Information---------------------
+------------------------------------------------------------
+function FillEnemiesTable()
+	local tableFull = false
+	if Enemies[objManager:GetMaxHeroes()/2] == nil then 
+		for i = 1, objManager:GetMaxHeroes(), 1 do
+			Champ = objManager:GetHero(i)
+			if Champ ~= nil and Champ.team ~= myHero.team then
+				if Enemies[Champ.name] == nil then
+					Enemies[Champ.name] = { Unit = Champ, Number = EnemyIndex }
+					EnemyIndex = EnemyIndex + 1
+					tableFull = false
+				end
+			end
+		end
+	else
+		tableFull = true
+	end
+	
+	return tableFull
+end
+
+
+
+function BurstInfo()
+	if not FillEnemiesTable() then FillEnemiesTable() end
+	for i, Enemy in pairs(Enemies) do
+		if Enemy ~= nil then
+			enemyChamp = Enemy.Unit
+		
+			local PositionX = (13.3/16) * GetScreenX()
+
+			local Damage
+			Damage = GetDamageInfo(enemyChamp)
+			futurePercent = (enemyChamp.health - Damage)/ enemyChamp.maxHealth * 100
+			futurePercent = string.format('%d%%', futurePercent)
+--			currentPercent = (enemyChamp.health / enemyChamp.maxHealth) * 100
+--			currentPercent = string.format('%d%%', currentPercent)
+			local notKillableColor = 0xFFFFFF00
+			local killableColor = Cfg['9. Burst Info Beta'].Burst_Info_Kill_Color
+			
+			if Cfg['9. Burst Info Beta'].Burst_Info_After_Color -1 == 0 then notKillableColor = Color.Yellow
+			elseif Cfg['9. Burst Info Beta'].Burst_Info_After_Color-1  == 1 then notKillableColor = Color.Green
+			elseif Cfg['9. Burst Info Beta'].Burst_Info_After_Color-1  == 2 then notKillableColor = Color.Red
+			elseif Cfg['9. Burst Info Beta'].Burst_Info_After_Color-1  == 3 then notKillableColor = Color.Cyan
+			elseif Cfg['9. Burst Info Beta'].Burst_Info_After_Color-1  == 4 then notKillableColor = Color.Purple
+			elseif Cfg['9. Burst Info Beta'].Burst_Info_After_Color-1  == 5 then notKillableColor = Color.Blue
+			elseif Cfg['9. Burst Info Beta'].Burst_Info_After_Color-1  == 6 then notKillableColor = Color.Olive
+			elseif Cfg['9. Burst Info Beta'].Burst_Info_After_Color-1  == 7 then notKillableColor = Color.Orange
+			else
+				notKillableColor = Color.Yellow --Should never happen
+			end
+			
+			if Cfg['9. Burst Info Beta'].Burst_Info_Method == 1 then 
+				killableColor = Cfg['9. Burst Info Beta'].Burst_Info_Kill_Color - 1
+			elseif Cfg['9. Burst Info Beta'].Burst_Info_Kill_Color == 1 then killableColor = Color.Yellow
+			elseif Cfg['9. Burst Info Beta'].Burst_Info_Kill_Color == 2 then killableColor = Color.Green
+			elseif Cfg['9. Burst Info Beta'].Burst_Info_Kill_Color == 3 then killableColor = Color.Red
+			elseif Cfg['9. Burst Info Beta'].Burst_Info_Kill_Color == 4 then killableColor = Color.Cyan
+			elseif Cfg['9. Burst Info Beta'].Burst_Info_Kill_Color == 5 then killableColor = Color.Purple
+			elseif Cfg['9. Burst Info Beta'].Burst_Info_Kill_Color == 6 then killableColor = Color.Blue
+			elseif Cfg['9. Burst Info Beta'].Burst_Info_Kill_Color == 7 then killableColor = Color.Purple
+			elseif Cfg['9. Burst Info Beta'].Burst_Info_Kill_Color == 8 then killableColor = Color.Olive
+			elseif Cfg['9. Burst Info Beta'].Burst_Info_Kill_Color == 9 then killableColor = Color.Orange
+			else
+				KillableColor = Color.Yellow --Should never happen
+			end	
+							
+			if enemyChamp.visible == 1 and enemyChamp.dead ~= 1 then
+				if Damage < enemyChamp.health then
+					DrawTextObject(futurePercent, enemyChamp, notKillableColor)
+				elseif Damage >= enemyChamp.health then	
+					if Cfg['9. Burst Info Beta'].Burst_Info_Method == 1 then 
+						CustomCircle(0,50,killableColor, "", enemyChamp.x, enemyChamp.y, enemyChamp.z+25)
+					elseif Cfg['9. Burst Info Beta'].Burst_Info_Method == 2 then 
+						DrawTextObject('KILL',enemyChamp, killableColor)
+					elseif Cfg['9. Burst Info Beta'].Burst_Info_Method == 3 then 
+						DrawTextObject('XXXXX',enemyChamp, killableColor)	
+					end
+				end
+			end
+		end
+	end
+end
+
+--[[
+To Do list:
+- Add check for items, if so then if they are on CD, then add item damage, (Hextech, Bilgewater, Deathfire
+- Add Ignite
+- Add items such as Lichbane/Triforce/Iceborn
+- Add AA damage
+- Add Champ Specific damage, like Akalis 2nd proc of Q, and Leblancs 2nd proc of q... 
+]]--
+
+function GetDamageInfo(targ)
+
+	local qDMG = GetQDmg(targ)	
+	local wDMG = GetWDmg(targ)
+	local eDMG = GetEDmg(targ)	
+	local rDMG = GetRDmg(targ)
+	local combo_Damage = 0
+	if Cfg['9. Burst Info Beta'].Real_Time_ON then   --This will display the damage you are capable of doing right now with the current spells you have on CD
+	
+		if myHero.SpellLevelQ > 0 and myHero.SpellTimeQ > 1 and (qDMG ~= nil or qDMG ~= 0) then 
+			combo_Damage = combo_Damage + qDMG
+		end
+		if myHero.SpellLevelW > 0 and myHero.SpellTimeW > 1 and (wDMG ~= nil or wDMG ~= 0) then 
+			combo_Damage = combo_Damage + wDMG
+		end
+		if myHero.SpellLevelE > 0 and myHero.SpellTimeE > 1 and (eDMG ~= nil or eDMG ~= 0) then 
+			combo_Damage = combo_Damage + eDMG
+		end
+		if myHero.SpellLevelR > 0 and myHero.SpellTimeR > 1 and (rDMG ~= nil or rDMG ~= 0) then 
+			combo_Damage = combo_Damage + rDMG
+		end
+
+	else
+	
+		if (qDMG ~= nil or qDMG ~= 0) and myHero.SpellLevelQ > 0 then 
+			combo_Damage = combo_Damage + qDMG
+		end
+		if (wDMG ~= nil or wDMG ~= 0) and myHero.SpellLevelW > 0 then 
+			combo_Damage = combo_Damage + wDMG
+		end
+		if (eDMG ~= nil or eDMG ~= 0) and myHero.SpellLevelE > 0 then 
+			combo_Damage = combo_Damage + eDMG
+		end
+		if (rDMG ~= nil or rDMG ~= 0) and myHero.SpellLevelR > 0 then 
+			combo_Damage = combo_Damage + rDMG
+		end
+
+	end	
+
+	return combo_Damage
+end
+
+function GetExecAmt()
+
+	local ExVal = 0 --Excutioner Value
+ 	
+	if Cfg['9. Burst Info Beta'].Executioner_Level_Value == 0 then 
+		ExVal = 0
+	elseif Cfg['9. Burst Info Beta'].Executioner_Level_Value == 1 then 
+		ExVal = .2
+	elseif Cfg['9. Burst Info Beta'].Executioner_Level_Value == 2 then 
+		ExVal = .35
+	elseif Cfg['9. Burst Info Beta'].Executioner_Level_Value == 3 then 
+		ExVal = .5
+	else
+		ExVal = 0 --Should never be anything else... but Just incase.
+	end
+	
+	return ExVal
+end
+
+function GetHavocAmt()
+
+	local HavVal = 0 --Havoc Value
+ 	
+	if Cfg['9. Burst Info Beta'].Havoc_Level_Value == 0 then 
+		HavVal = 0
+	elseif Cfg['9. Burst Info Beta'].Havoc_Level_Value == 1 then 
+		HavVal = .3
+	else
+		HavVal = 0
+	end
+	
+	return HavVal
+end
+
+function GetQDmg(targ)
+	if targ ~= nil then 
+		local qDmg = 0
+		local HavocAmt = GetHavocAmt() 
+		local ExecAmt = GetExecAmt()
+
+		if getDmg('Q', targ, myHero) ~= nil and getDmg('Q', targ, myHero) > 0 then 
+			if ExecAmt > 0 and (targ.health < (targ.maxHealth * ExecAmt)) then 
+				qDmg = getDmg('Q', targ, myHero) + (getDmg('Q', targ, myHero) * HavocAmt) + (getDmg('Q', targ, myHero) * .05)
+			else
+				qmg = getDmg('Q', targ, myHero) + (getDmg('Q',targ,myHero) * HavocAmt)	
+			end
+		end
+		
+		return qDmg
+	end
+end
+
+function GetWDmg(targ)
+	if targ ~= nil then 
+		local wDmg = 0
+		local HavocAmt = GetHavocAmt() 
+		local ExecAmt = GetExecAmt()
+
+		if getDmg('W', targ, myHero) ~= nil and getDmg('W', targ, myHero) > 0 then 
+			if ExecAmt > 0 and (targ.health < (targ.maxHealth * ExecAmt)) then 
+				wDmg = getDmg('W', targ, myHero) + (getDmg('W',targ,myHero) * HavocAmt) + (getDmg('W',targ,myHero) * .05)
+			else
+				wDmg = getDmg('W', targ, myHero) + (getDmg('W',targ,myHero) * HavocAmt)	
+			end
+		end
+		
+		return wDmg
+	end
+end
+
+function GetEDmg(targ)
+	if targ ~= nil then 
+		local eDmg = 0
+		local HavocAmt = GetHavocAmt() 
+		local ExecAmt = GetExecAmt()
+
+		if getDmg('E', targ, myHero) ~= nil and getDmg('E', targ, myHero) > 0 then 
+			if ExecAmt > 0 and (targ.health < (targ.maxHealth * ExecAmt)) then 
+				eDmg = getDmg('E', targ, myHero) + (getDmg('E',targ,myHero) * HavocAmt) + (getDmg('E',targ,myHero) * .05)
+			else
+				eDmg = getDmg('E', targ, myHero) + (getDmg('E',targ,myHero) * HavocAmt)
+			end
+		end
+		
+		return eDmg
+	end
+end
+
+function GetRDmg(targ)
+	if targ ~= nil then 
+		local rDmg = 0
+		local HavocAmt = GetHavocAmt() 
+		local ExecAmt = GetExecAmt()
+
+		if getDmg('R', targ, myHero) ~= nil and getDmg('R', targ, myHero) > 0 then 
+			if ExecAmt > 0 and (targ.health < (targ.maxHealth * ExecAmt)) then 
+				rDmg = getDmg('R', targ, myHero) + (getDmg('R',targ,myHero) * HavocAmt) + (getDmg('R',targ,myHero) * .05)
+			else
+				rDmg = getDmg('R', targ, myHero) + (getDmg('R',targ,myHero) * HavocAmt)	
+			end
+		end
+		
+		return rDmg
+	end
+end
+
+------------------------------------------------------------
+------------------End Of Burst Information------------------
+------------------------------------------------------------
+
+
+
+
+
 
 
 SetTimerCallback('Main')
