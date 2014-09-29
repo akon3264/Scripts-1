@@ -7,8 +7,8 @@
 -- * lbc_creator = KoolKaracter
 -- * lbc_champion = Shaco // if this script is for a special champ
 -- * lbc_tags = Shaco, Clown, stealth, jungler, tank, AP, AD, Kool, kool, iskool, koolkaracter
--- * lbc_link =
--- * lbc_source = 
+-- * lbc_link = http://leaguebot.net/forum/Upload/showthread.php?tid=4460
+-- * lbc_source = https://raw.githubusercontent.com/koolkaracter/Scripts/AutoKool/Champs/ShacoIsKool.lua
 -- * lbc_update = // only if you have a new version on a new source
 -- ************************** LBC META *****************************
 
@@ -17,6 +17,12 @@ local Version = '1.0'
 local Author = 'Koolkaracter'												
 --[[	
      
+  _________.__                          .___          ____  __.            .__   
+ /   _____/|  |__ _____    ____  ____   |   | ______ |    |/ _|____   ____ |  |  
+ \_____  \ |  |  \\__  \ _/ ___\/  _ \  |   |/  ___/ |      < /  _ \ /  _ \|  |  
+ /        \|   |  \/ __ \\  \__(  <_> ) |   |\___ \  |    |  (  <_> |  <_> )  |__
+/_______  /|___|  (____  /\___  >____/  |___/____  > |____|__ \____/ \____/|____/
+        \/      \/     \/     \/                 \/          \/                  
                                                                                                   
 ]]
 
@@ -473,7 +479,7 @@ function AutoSummoners()
 end
  
 function SummonerIgnite()
---print( Cfg['5. Summoner Spell Options'].Auto_Ignite_Self_ON)
+
 --[[
 This Ignite scripts calculates the targets health regen and
 determines if you can kill the target taking in account their
@@ -670,7 +676,6 @@ function CastSummonerBar()
 end
 
 function CastSmite(targ)
-printtext('\nGets here\n')
 	CastSpellTarget(Summoners.Smite.Key, targ)
 end
 ------------------------------------------------------------
