@@ -11,7 +11,7 @@
 -- * lbc_source = https://raw.githubusercontent.com/koolkaracter/Scripts/AutoKool/MyUtilScripts/OnesIMadeOrEdited/JumpToMe.lua
 -- * lbc_update = // only if you have a new version on a new source
 -- ************************** LBC META *****************************
-
+ 
 local Allies = {}
 local AlliesIndex = 1
 
