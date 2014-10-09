@@ -7,7 +7,7 @@
 -- * lbc_creator = KoolKaracter
 -- * lbc_champion = Morgana // if this script is for a special champ
 -- * lbc_tags = Morgana, AP, Mage, Kool, kool, iskool, koolkaracter
--- * lbc_link = 
+-- * lbc_link = http://leaguebot.net/forum/Upload/showthread.php?tid=4493
 -- * lbc_source = https://raw.githubusercontent.com/koolkaracter/Scripts/AutoKool/Champs/MorganaIsKool.lua
 -- * lbc_update = // only if you have a new version on a new source
 -- ************************** LBC META *****************************
@@ -17,9 +17,13 @@ local ScriptName = 'MorganaIsKool'
 local Version = '1.0'												
 local Author = 'Koolkaracter'												
 --[[	
-     
-  
-                                                                                                         
+   _____                                            .___          ____  __.            .__   
+  /     \   ___________  _________    ____ _____    |   | ______ |    |/ _|____   ____ |  |  
+ /  \ /  \ /  _ \_  __ \/ ___\__  \  /    \\__  \   |   |/  ___/ |      < /  _ \ /  _ \|  |  
+/    Y    (  <_> )  | \/ /_/  > __ \|   |  \/ __ \_ |   |\___ \  |    |  (  <_> |  <_> )  |__
+\____|__  /\____/|__|  \___  (____  /___|  (____  / |___/____  > |____|__ \____/ \____/|____/
+        \/            /_____/     \/     \/     \/           \/          \/                  
+                                                                                                       
 ]]
 
 
@@ -66,7 +70,7 @@ local CCList = {"Stun_glb",
 ---------------------------Menu-----------------------------
 ------------------------------------------------------------
 Cfg, menu = uiconfig.add_menu('Morgana Is Kool', 250)
-local submenu = menu.submenu('1. Skill Options', 150)
+local submenu = menu.submenu('1. Skill Options', 300)
 submenu.label('lbS1', '--AutoCarry Mode--')
 submenu.checkbox('Q_AC_ON', 'Use Q', true)
 submenu.checkbox('W_AC_ON', 'Use W', true)
