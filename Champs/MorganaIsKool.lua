@@ -209,7 +209,6 @@ function UseQ(targ)
 end
  
 function UseW(targ)
-print(EnemyIsCCed(targ))
 	if targ ~= nil and ValidTarget(targ) and GetDistance(targ, myHero) < wRange and targ.dead ~= 1 and IsSpellReady('W') and EnemyIsCCed(targ) then
 		wPos = GetMEC(wWidth, wRange, targ)
 		if wPos ~= nil then
