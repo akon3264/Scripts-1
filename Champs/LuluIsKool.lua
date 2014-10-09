@@ -7,7 +7,7 @@
 -- * lbc_creator = KoolKaracter
 -- * lbc_champion = Lulu // if this script is for a special champ
 -- * lbc_tags = Lulu, support, mage, yordle, AP, Kool, kool, iskool, koolkaracter
--- * lbc_link = 
+-- * lbc_link = http://leaguebot.net/forum/Upload/showthread.php?tid=4494
 -- * lbc_source = https://raw.githubusercontent.com/koolkaracter/Scripts/AutoKool/Champs/LuluIsKool.lua
 -- * lbc_update = // only if you have a new version on a new source
 -- ************************** LBC META *****************************
@@ -16,7 +16,12 @@ local ScriptName = 'Lulu Is Kool'
 local Version = '1.0'												
 local Author = 'Koolkaracter'												
 --[[	
-                   
+.____          .__          .___          ____  __.            .__   
+|    |    __ __|  |  __ __  |   | ______ |    |/ _|____   ____ |  |  
+|    |   |  |  \  | |  |  \ |   |/  ___/ |      < /  _ \ /  _ \|  |  
+|    |___|  |  /  |_|  |  / |   |\___ \  |    |  (  <_> |  <_> )  |__
+|_______ \____/|____/____/  |___/____  > |____|__ \____/ \____/|____/
+        \/                           \/          \/                            
                                                                                                          
 ]]
 
@@ -68,11 +73,11 @@ submenu.checkbox('E_LC_ON', 'Use E', false)
 submenu.label('lbS4', '----Misc Options----')
 submenu.checkbox('Auto_Ult_ON', 'Auto Ult under x% Health', false)
 submenu.slider('Auto_Ult_Value', 'Auto Ult % Value', 0, 100, 75)
-submenu.keydown('Mode_Switch', 'Switch Mode Key', Keys.L, false) --if press then switch slider. 
-submenu.slider('Mode_Selector', 'Current Mode ', 1, 2, 1, {'Support', 'Damage'})   
 submenu.checkbox('Auto_E_ON', 'Auto E for shield at %hp', true)
 submenu.slider('Auto_E_Value', 'Auto E % Value', 0, 100, 75)
 submenu.checkbox('Pixy_Sphere_ON', 'Draw Sphere at Pixy location', true)
+submenu.keydown('Mode_Switch', 'Switch Mode Key', Keys.L, false) --if press then switch slider. 
+submenu.slider('Mode_Selector', 'Current Mode ', 1, 2, 1, {'Support', 'Damage'})   
 --test below for eq
 --submenu.keydown('EQ_ON', 'Test EQ', Keys.Y)
 submenu.permashow('Mode_Selector')
