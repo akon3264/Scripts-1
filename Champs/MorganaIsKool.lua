@@ -1,6 +1,6 @@
 -- ************************** LBC META *****************************
 -- * lbc_name = MorganaIsKool.lua
--- * lbc_version = 1.0
+-- * lbc_version = 1.1
 -- * lbc_date = 10/08/2014 // use correct date format mm/dd/yyyy
 -- * lbc_status = 3 // 0 = unknowen; 1 = alpha/wip; 2 = beta; 3 = ready; 4 = required; 5 = outdated
 -- * lbc_type = 3 // 0 = others; 1 = binaries; 2 = libs; 3 = champion; 4 = hotkey; 5 = utility
@@ -14,7 +14,7 @@
 
 
 local ScriptName = 'MorganaIsKool'									
-local Version = '1.0'												
+local Version = '1.1'												
 local Author = 'Koolkaracter'												
 --[[	
    _____                                            .___          ____  __.            .__   
@@ -102,6 +102,7 @@ local submenu = menu.submenu('4. Item Options', 225)
 submenu.label('lbI1', '--Offensive Items--')
 submenu.checkbox('BFT', '---Blackfire Torch---', true)
 submenu.checkbox('DFG', '---Deathfire Grasp---', true)
+submenu.checkbox('FQC', '---Frost Queens Claim---', true)
 submenu.checkbox('TWS', '----Twin  Shadows----', true)
 submenu.label('lbI1', '--Defensive Items--')
 submenu.checkbox('ZH', 'Auto Use Zhonyas/Witchcap', true)
@@ -401,7 +402,10 @@ function UseOffensiveItems(target)
 			end        
 			if Cfg['4. Item Options'].BFT and (GetDistance(myHero, target) < 750) then -- IR
 				UseItemOnTarget(3188, target) -- Blackfire Torch
-			end    
+			end  
+			if CfgKoolSettings['1. Kool Offensive Items'].DFG and (GetDistance(myHero, target) < 750) then -- IR
+				UseItemOnTarget(3128, target) -- Deathfire Grasp
+			end 			
 			if Cfg['4. Item Options'].TWS and (GetDistance(myHero, target) < AttackRange+10) then -- IR
 				UseItemOnTarget(3023, target) -- Twin Shadows on Summoners Rift & Howling Abyss
 				UseItemOnTarget(3290, target) -- Twin Shadows on Crystal Scar & Twisted Treeline
