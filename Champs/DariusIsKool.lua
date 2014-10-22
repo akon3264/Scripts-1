@@ -73,7 +73,7 @@ submenu.label('lbS4', '----Ult Options----')
 submenu.checkbox('UltToKill_ON', 'Only Use Ult If Kills', true)
 submenu.checkbox('ShowUltCD', 'Show Ult CD', true)
 submenu.label('lbS5', '----Q Options----')
-submenu.keytoggle('Q_Harrass_ON', 'Auto Harrass w/Q', Keys.L, true)
+submenu.keytoggle('Q_Harass_ON', 'Auto Harass w/Q', Keys.L, true)
 submenu.checkbox('Q_Anyone_On', 'Q Anyone In Range', true)
 
 local submenu = menu.submenu('2. Target Selector', 300)
@@ -165,7 +165,7 @@ function Main()
 	if Cfg['7. Kill Steal Options'].KillSteal_ON then KillSteal() end
 	if Cfg['8. Misc Options'].ShowPHP then ShowPercentHP() end
 	if Cfg['8. Misc Options'].ALevel_ON then AutoLvl() end
-	if Cfg['1. Skill Options'].Q_Harrass_ON then AutoQHarrass() end
+	if Cfg['1. Skill Options'].Q_Harass_ON then AutoQHarass() end
 	if yayo.Config.AutoCarry then 
 		if target ~= nil then 
 			if Cfg['4. Item Options'].ACItem_ON then UseOffensiveItems(target) end
@@ -277,7 +277,7 @@ function SpellClear()
 	if Cfg['1. Skill Options'].E_LC_ON and minionTarget ~= nil then UseE(minionTarget) end
 end
 
-function AutoQHarrass()
+function AutoQHarass()
 	if Cfg['1. Skill Options'].Q_Anyone_On then 
 		for i = 1, objManager:GetMaxHeroes() do
 			local autoQTarg = objManager:GetHero(i)
