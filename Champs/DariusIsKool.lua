@@ -1,6 +1,6 @@
 -- ************************** LBC META *****************************
 -- * lbc_name = DariusIsKool.lua
--- * lbc_version = 1.1
+-- * lbc_version = 1.2
 -- * lbc_date = 09/07/2014 // use correct date format mm/dd/yyyy
 -- * lbc_status = 3 // 0 = unknowen; 1 = alpha/wip; 2 = beta; 3 = ready; 4 = required; 5 = outdated
 -- * lbc_type = 3 // 0 = others; 1 = binaries; 2 = libs; 3 = champion; 4 = hotkey; 5 = utility
@@ -13,7 +13,7 @@
 -- ************************** LBC META *****************************
 
 local ScriptName = 'DariusIsKool'									
-local Version = '1.1'												
+local Version = '1.2'												
 local Author = 'Koolkaracter'												
 --[[	
  ,'|"\     .--.  ,---.  ,-..-. .-.   .---.  ,-.   .---.  ,-. .-..---.   .---.  ,-.     
@@ -54,7 +54,7 @@ local ultTimer = nil
 ---------------------------Menu-----------------------------
 ------------------------------------------------------------
 Cfg, menu = uiconfig.add_menu('Darius Is Kool', 250)
-local submenu = menu.submenu('1. Skill Options', 150)
+local submenu = menu.submenu('1. Skill Options', 250)
 submenu.label('lbS1', '--AutoCarry Mode--')
 submenu.checkbox('Q_AC_ON', 'Use Q', true)
 submenu.checkbox('W_AC_ON', 'Use W', true)
@@ -72,6 +72,9 @@ submenu.checkbox('E_LC_ON', 'Use E', false)
 submenu.label('lbS4', '----Ult Options----')
 submenu.checkbox('UltToKill_ON', 'Only Use Ult If Kills', true)
 submenu.checkbox('ShowUltCD', 'Show Ult CD', true)
+submenu.label('lbS5', '----Q Options----')
+submenu.keytoggle('Q_Harrass_ON', 'Auto Harrass w/Q', Keys.L, true)
+submenu.checkbox('Q_Anyone_On', 'Q Anyone in range', true)
 
 local submenu = menu.submenu('2. Target Selector', 300)
 submenu.slider('TS_Mode', 'Target Selector Mode', 1,2,1, {'TS Primary', 'Get Weakest'})
@@ -162,7 +165,7 @@ function Main()
 	if Cfg['7. Kill Steal Options'].KillSteal_ON then KillSteal() end
 	if Cfg['8. Misc Options'].ShowPHP then ShowPercentHP() end
 	if Cfg['8. Misc Options'].ALevel_ON then AutoLvl() end
-	
+	if Cfg['1. Skill Options'].Q_Harrass_ON then AutoQHarrass() end
 	if yayo.Config.AutoCarry then 
 		if target ~= nil then 
 			if Cfg['4. Item Options'].ACItem_ON then UseOffensiveItems(target) end
@@ -273,6 +276,26 @@ function SpellClear()
 	--E Farm
 	if Cfg['1. Skill Options'].E_LC_ON and minionTarget ~= nil then UseE(minionTarget) end
 end
+
+function AutoQHarrass()
+	if Cfg['1. Skill Options'].Q_Anyone_On then 
+		for i = 1, objManager:GetMaxHeroes() do
+			local autoQTarg = objManager:GetHero(i)
+			if autoQTarg ~= nil and autoQTarg.team ~= myHero.team and autoQTarg.dead ~= 1 and autoQTarg.visible == 1 and ValidTarget(autoQTarg) and GetDistance(autoQTarg, myHero) < qRange then 
+				UseQ(autoQTarg)
+			end
+		end
+	else
+		if targetPri ~= nil and targetPri .dead ~= 1 and ValidTarget(targetPri ) and targetPri .visible == 1 and GetDistance(targetPri , myHero) < qRange then 
+			UseQ(targetPri)
+		elseif targetPri == nil then 
+			if target ~= nil and target.dead ~= 1 and ValidTarget(target) and target.visible == 1 and GetDistance(target, myHero) < qRange then 
+				UseQ(target)
+			end
+		end
+	end
+end
+
 ------------------------------------------------------------
 ------------------------End Of Skills-----------------------
 ------------------------------------------------------------
@@ -535,7 +558,7 @@ end
 --------------------------Use Potions-------------------------
 ------------------------------------------------------------
 function AutoPots()
-        if IsBuffed(myHero, "FountainHeal") ~= true then
+        if IsBuffed(myHero, "FountainHeal") ~= true and IsBuffed(myHero, 'TeleportHome.troy') ~= true  and IsBuffed(myHero, 'TeleportHomeImproved.troy') ~= true then
                 if Cfg['6. Potion Options'].Health_Potion_ON and myHero.health < myHero.maxHealth * (Cfg['6. Potion Options'].Health_Potion_Value / 100) and IsBuffed(myHero, 'Global_Item_HealthPotion') ~= true and IsBuffed(myHero, 'GLOBAL_Item_HealthPotion') ~= true then
                         usePotion()
                 end
