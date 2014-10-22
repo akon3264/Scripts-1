@@ -74,7 +74,7 @@ submenu.checkbox('UltToKill_ON', 'Only Use Ult If Kills', true)
 submenu.checkbox('ShowUltCD', 'Show Ult CD', true)
 submenu.label('lbS5', '----Q Options----')
 submenu.keytoggle('Q_Harrass_ON', 'Auto Harrass w/Q', Keys.L, true)
-submenu.checkbox('Q_Anyone_On', 'Q Anyone in range', true)
+submenu.checkbox('Q_Anyone_On', 'Q Anyone In Range', true)
 
 local submenu = menu.submenu('2. Target Selector', 300)
 submenu.slider('TS_Mode', 'Target Selector Mode', 1,2,1, {'TS Primary', 'Get Weakest'})
