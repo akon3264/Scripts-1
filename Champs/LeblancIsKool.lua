@@ -1,6 +1,6 @@
 -- ************************** LBC META *****************************
 -- * lbc_name = LeblancIsKool.lua
--- * lbc_version = 1.3
+-- * lbc_version = 1.3.1
 -- * lbc_date = 09/11/2014 // use correct date format mm/dd/yyyy
 -- * lbc_status = 3 // 0 = unknowen; 1 = alpha/wip; 2 = beta; 3 = ready; 4 = required; 5 = outdated
 -- * lbc_type = 3 // 0 = others; 1 = binaries; 2 = libs; 3 = champion; 4 = hotkey; 5 = utility
@@ -13,7 +13,7 @@
 -- ************************** LBC META *****************************
 
 local ScriptName = 'LeblancIsKool'												
-local Version = '1.3'															
+local Version = '1.3.1'															
 local Author = 'Koolkaracter'													
 --[[	
  _       _______ ______  _       _______ _       _______   ________________    _       _______ _______ _       
