@@ -1,6 +1,6 @@
 -- ************************** LBC META *****************************
 -- * lbc_name = TwitchIsKool.lua
--- * lbc_version = 1.2
+-- * lbc_version = 1.2.1
 -- * lbc_date = 09/13/2014 // use correct date format mm/dd/yyyy
 -- * lbc_status = 3 // 0 = unknowen; 1 = alpha/wip; 2 = beta; 3 = ready; 4 = required; 5 = outdated
 -- * lbc_type = 3 // 0 = others; 1 = binaries; 2 = libs; 3 = champion; 4 = hotkey; 5 = utility
@@ -13,7 +13,7 @@
 -- ************************** LBC META *****************************
 
 local ScriptName = 'TwitchIsKool'									
-local Version = '1.2'												
+local Version = '1.2.1'												
 local Author = 'Koolkaracter'												
 --[[	
  ___________       .__  __         .__      .___          ____  __.            .__   
@@ -195,13 +195,13 @@ function UseE(targ)
 	local enemyEffectiveHealth = (targ.health)*(1+(((targ.armor*myHero.armorPenPercent)-myHero.armorPen)/100))
 	if GetDistance(targ, myHero) < eRange and ValidTarget(targ) then
 		if Cfg['1. Skill Options'].EToKill_ON and Cfg['1. Skill Options'].EToKillOrStacks_ON ~= true then
- 			if enemyEffectiveHealth < CalcEDmg(targ) then CastSpellTarget('E', targ) end	
+ 			if enemyEffectiveHealth < CalcEDmg(targ) then CastSpellTarget('E', myHero) end	
 		elseif Cfg['1. Skill Options'].EToKillOrStacks_ON == true then 
-			if enemyEffectiveHealth <= CalcEDmg(targ) or stackNum == 6 then CastSpellTarget('E', targ) end
+			if enemyEffectiveHealth <= CalcEDmg(targ) or stackNum == 6 then CastSpellTarget('E', myHero) end
 		elseif Cfg['1. Skill Options'].EToKill_ON ~= true and Cfg['1. Skill Options'].EToKillOrStacks_ON ~= true then
-			CastSpellTarget('E', targ)
+			CastSpellTarget('E', myHero)
 		else 
-			CastSpellTarget('E', targ)
+			CastSpellTarget('E', myHero)
 		end	 
 	 end
 end
@@ -245,7 +245,7 @@ end
 
 function UseR(targ)
 	if GetDistance(targ, myHero) <= rRange and CanUseSpell('R') and ValidTarget(targ) then 
-			CastSpellTarget('R', targ)
+			CastSpellTarget('R', myHero)
 	end
 end
 
