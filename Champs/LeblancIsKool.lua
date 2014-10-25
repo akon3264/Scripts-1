@@ -224,7 +224,7 @@ end
 
 function UseW2(targ)
 	if myHero.SpellNameW == 'leblancslidereturn' then 
-		CastSpellTarget('W', targ) 
+		CastSpellTarget('W', myHero) 
 	end
 end
 
