@@ -1,6 +1,6 @@
 -- ************************** LBC META *****************************
 -- * lbc_name = RengarIsKool.lua
--- * lbc_version = 1.0
+-- * lbc_version = 1.1
 -- * lbc_date = 09/23/2014 // use correct date format mm/dd/yyyy
 -- * lbc_status = 3 // 0 = unknowen; 1 = alpha/wip; 2 = beta; 3 = ready; 4 = required; 5 = outdated
 -- * lbc_type = 3 // 0 = others; 1 = binaries; 2 = libs; 3 = champion; 4 = hotkey; 5 = utility
@@ -13,7 +13,7 @@
 -- ************************** LBC META *****************************
 
 local ScriptName = 'RengarIsKool'									
-local Version = '1.0'												
+local Version = '1.1'												
 local Author = 'Koolkaracter'												
 --[[	
 __________                                    .___          ____  __.            .__   
@@ -211,7 +211,7 @@ function UseQ(targ)
 end
 
 function UseW(targ)
-	if GetDistance(targ, myHero) <= wRange and ValidTarget(targ) then CastSpellTarget('W', targ) end	
+	if GetDistance(targ, myHero) <= wRange and ValidTarget(targ) then CastSpellTarget('W', myHero) end	
 end
 
 function UseE(targ)
