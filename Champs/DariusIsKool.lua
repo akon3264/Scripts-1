@@ -198,7 +198,7 @@ end
 ------------------------------------------------------------
 
 function UseQ(targ)
-	if GetDistance(targ, myHero) <= qRange and ValidTarget(targ) then CastSpellTarget('Q', targ) end
+	if GetDistance(targ, myHero) <= qRange and ValidTarget(targ) then CastSpellTarget('Q', myHero) end
 end
 
 function UseW(targ)
