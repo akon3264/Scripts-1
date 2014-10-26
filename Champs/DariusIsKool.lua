@@ -1,6 +1,6 @@
 -- ************************** LBC META *****************************
 -- * lbc_name = DariusIsKool.lua
--- * lbc_version = 1.2
+-- * lbc_version = 1.2.1
 -- * lbc_date = 09/07/2014 // use correct date format mm/dd/yyyy
 -- * lbc_status = 3 // 0 = unknowen; 1 = alpha/wip; 2 = beta; 3 = ready; 4 = required; 5 = outdated
 -- * lbc_type = 3 // 0 = others; 1 = binaries; 2 = libs; 3 = champion; 4 = hotkey; 5 = utility
@@ -13,7 +13,7 @@
 -- ************************** LBC META *****************************
 
 local ScriptName = 'DariusIsKool'									
-local Version = '1.2'												
+local Version = '1.2.1'												
 local Author = 'Koolkaracter'												
 --[[	
  ,'|"\     .--.  ,---.  ,-..-. .-.   .---.  ,-.   .---.  ,-. .-..---.   .---.  ,-.     
