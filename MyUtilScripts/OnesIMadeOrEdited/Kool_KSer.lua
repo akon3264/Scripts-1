@@ -7,8 +7,8 @@
 -- * lbc_creator = koolkaracter
 -- * lbc_champion =  // if this script is for a special champ
 -- * lbc_tags = Killsteal, kill steal, kill, steal, ks, kser, Kool, kool, iskool, koolkaracter
--- * lbc_link = 
--- * lbc_source = 
+-- * lbc_link = http://leaguebot.net/forum/Upload/showthread.php?tid=4577
+-- * lbc_source = https://raw.githubusercontent.com/koolkaracter/Scripts/AutoKool/MyUtilScripts/OnesIMadeOrEdited/Kool_KSer.lua
 -- * lbc_update = // only if you have a new version on a new source
 -- ************************** LBC META *****************************
 
