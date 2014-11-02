@@ -1,6 +1,6 @@
 -- ************************** LBC META *****************************
 -- * lbc_name = TwitchIsKool.lua
--- * lbc_version = 1.2.1
+-- * lbc_version = 1.2.2
 -- * lbc_date = 09/13/2014 // use correct date format mm/dd/yyyy
 -- * lbc_status = 3 // 0 = unknowen; 1 = alpha/wip; 2 = beta; 3 = ready; 4 = required; 5 = outdated
 -- * lbc_type = 3 // 0 = others; 1 = binaries; 2 = libs; 3 = champion; 4 = hotkey; 5 = utility
@@ -13,7 +13,7 @@
 -- ************************** LBC META *****************************
 
 local ScriptName = 'TwitchIsKool'									
-local Version = '1.2.1'												
+local Version = '1.2.2'												
 local Author = 'Koolkaracter'												
 --[[	
  ___________       .__  __         .__      .___          ____  __.            .__   
@@ -352,13 +352,13 @@ function UseOffensiveItems(target)
 				UseItemOnTarget(3153, target) -- Blade of the Ruined King
 			end    
 			if Cfg['4. Item Options'].RO and (GetDistance(myHero, target) < 400) then -- IR
-				UseItemOnTarget(3143, target) -- Randuin's Omen
+				UseItemOnTarget(3143, myHero) -- Randuin's Omen
 			end
 			if Cfg['4. Item Options'].SOD and (GetDistance(myHero, target) < AttackRange+10) then -- In AA Range (AR)
-				UseItemOnTarget(3131, target) -- Sword of the Divine
+				UseItemOnTarget(3131, myHero) -- Sword of the Divine
 			end    
 			if Cfg['4. Item Options'].YG and (GetDistance(myHero, target) < AttackRange+10) then -- AR
-				UseItemOnTarget(3142, target) -- Youmuu's Ghostblade
+				UseItemOnTarget(3142, myHero) -- Youmuu's Ghostblade
 			end
      end
 end
