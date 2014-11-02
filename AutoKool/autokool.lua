@@ -449,10 +449,10 @@ function UseDefensiveItems(target)
 
 		elseif CfgKoolSettings['2. Kool Defensive Items'].Require_Targ_For_D_I_ON ~= true and ally ~= nil and ally.team == myHero.team and ally.visible == 1 and GetDistance(myHero, ally) < 600 then
 		
-	        if CfgKoolSettings['1. Kool Offensive Items'].Locket and ally.health <= (ally.maxHealth*(CfgKoolSettings['2. Kool Defensive Items'].LocketValue / 100)) then --If health is below the slider % value
+	        if CfgKoolSettings['1. Kool Defensive Items'].Locket and ally.health <= (ally.maxHealth*(CfgKoolSettings['2. Kool Defensive Items'].LocketValue / 100)) then --If health is below the slider % value
 	            UseItemOnTarget(3190,myHero) -- Locket of Iron Solari
 	        end
-	        if CfgKoolSettings['1. Kool Offensive Items'].FOM and ally.health <= (ally.maxHealth*(CfgKoolSettings['2. Kool Defensive Items'].FOMValue / 100)) then --If health is below the slider % value
+	        if CfgKoolSettings['1. Kool Defensive Items'].FOM and ally.health <= (ally.maxHealth*(CfgKoolSettings['2. Kool Defensive Items'].FOMValue / 100)) then --If health is below the slider % value
 	            UseItemOnTarget(3401,ally) -- Face of the Mountain
 	        end
 		end
