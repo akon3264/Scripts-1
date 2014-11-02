@@ -35,9 +35,6 @@ local Author = 'Koolkaracter'
 
   
  
- --Need to update potion and make sure ignite is good. 
- 
- 
  
 This script is version 2.0+.   This script does auto items, auto pots, and auto summoner spells.  
 So basically it makes you Auto-Kool!
@@ -484,7 +481,7 @@ end
  
 --Use Potions functions
 function AutoPots()
-        if IsBuffed(myHero, "FountainHeal") ~= true then
+        if IsBuffed(myHero, "FountainHeal") ~= true and IsBuffed(myHero, 'TeleportHome.troy') ~= true  and IsBuffed(myHero, 'TeleportHomeImproved.troy') ~= true then
                 if myHero.health < myHero.maxHealth * (CfgKoolSettings['3. Kool Potions'].Health_Potion_Value / 100) and IsBuffed(myHero, 'Global_Item_HealthPotion') ~= true and IsBuffed(myHero, 'GLOBAL_Item_HealthPotion') ~= true then
                         usePotion()
                 end
