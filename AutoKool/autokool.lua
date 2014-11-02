@@ -1,6 +1,6 @@
 -- ************************** LBC META *****************************
 -- * lbc_name = AutoKool.lua
--- * lbc_version = 2.11
+-- * lbc_version = 2.12
 -- * lbc_date = 06/22/2014 // use correct date format mm/dd/yyyy
 -- * lbc_status = 3 // 0 = unknowen; 1 = alpha/wip; 2 = beta; 3 = ready; 4 = required; 5 = outdated
 -- * lbc_type = 5 // 0 = others; 1 = binaries; 2 = libs; 3 = champion; 4 = hotkey; 5 = utility
@@ -13,7 +13,7 @@
 -- ************************** LBC META *****************************
  
 local ScriptName = 'autokool'
-local Version = '2.11'
+local Version = '2.12'
 local Author = 'Koolkaracter'
 
 -- yupdate = * 2.11 https://raw.githubusercontent.com/koolkaracter/Scripts/AutoKool/AutoKool/autokool.lua https://raw.githubusercontent.com/koolkaracter/Scripts/AutoKool/AutoKool/AutoKoolVersion.lua
@@ -404,28 +404,28 @@ function UseOffensiveItems(target)
 				UseItemOnTarget(3188, target) -- Blackfire Torch
 			end    
 			if CfgKoolSettings['1. Kool Offensive Items'].OV and (GetDistance(myHero, target) < 525) then -- IR
-				UseItemOnTarget(3180, target) -- Odyn's Veil
+				UseItemOnTarget(3180, myHero) -- Odyn's Veil
 			end        
 			if CfgKoolSettings['1. Kool Offensive Items'].RO and (GetDistance(myHero, target) < 400) then -- IR
-				UseItemOnTarget(3143, target) -- Randuin's Omen
+				UseItemOnTarget(3143, myHero) -- Randuin's Omen
 			end        
 			if CfgKoolSettings['1. Kool Offensive Items'].RH and (GetDistance(myHero, target) < 400) then -- IR
-				UseItemOnTarget(3074, target) -- Ravenous Hydra
+				UseItemOnTarget(3074, myHero) -- Ravenous Hydra
 			end    
 			if CfgKoolSettings['1. Kool Offensive Items'].T and (GetDistance(myHero, target) < 400) then -- IR
-				UseItemOnTarget(3077, target) -- Tiamat
+				UseItemOnTarget(3077, myHero) -- Tiamat
 			end    
 			if CfgKoolSettings['1. Kool Offensive Items'].SOD and (GetDistance(myHero, target) < AttackRange+10) then -- In AA Range (AR)
-				UseItemOnTarget(3131, target) -- Sword of the Divine
+				UseItemOnTarget(3131, myHero) -- Sword of the Divine
 			end        
 			if CfgKoolSettings['1. Kool Offensive Items'].YG and (GetDistance(myHero, target) < AttackRange+10) then -- AR
-				UseItemOnTarget(3142, target) -- Youmuu's Ghostblade
+				UseItemOnTarget(3142, myHero) -- Youmuu's Ghostblade
 			end
 			if CfgKoolSettings['1. Kool Offensive Items'].En and (GetDistance(myHero, target) < AttackRange+10) then -- AR
-				UseItemOnTarget(3184, target) -- Entropy
+				UseItemOnTarget(3184, myHero) -- Entropy
 			end
 			if CfgKoolSettings['1. Kool Offensive Items'].GH and (GetDistance(myHero, target) < AttackRange+10) then -- AR
-				UseItemOnTarget(3142, target) -- Guardians Horn
+				UseItemOnTarget(3142, myHero) -- Guardians Horn
 			end
 		end
      end
@@ -444,7 +444,7 @@ function UseDefensiveItems(target)
 		local ally = objManager:GetHero(i)
 		if CfgKoolSettings['2. Kool Defensive Items'].Require_Targ_For_D_I_ON and ally ~= nil and ally.team == myHero.team and ally.visible == 1 and GetDistance(myHero, ally) < 600 then
 	        if target ~= nil and CfgKoolSettings['2. Kool Defensive Items'].Locket and ally.health <= (ally.maxHealth*(CfgKoolSettings['2. Kool Defensive Items'].LocketValue / 100)) and GetDistance(ally, target) < 900 then --If health is below the slider % value
-	            UseItemOnTarget(3190,ally) -- Locket of Iron Solari
+	            UseItemOnTarget(3190, myHero) -- Locket of Iron Solari
 	        end
 	        if target ~= nil and CfgKoolSettings['2. Kool Defensive Items'].FOM and ally.health <= (ally.maxHealth*(CfgKoolSettings['2. Kool Defensive Items'].FOMValue / 100)) and GetDistance(ally, target) < 900 then --If health is below the slider % value
 	            UseItemOnTarget(3401,ally) -- Face of the Mountain
@@ -453,7 +453,7 @@ function UseDefensiveItems(target)
 		elseif CfgKoolSettings['2. Kool Defensive Items'].Require_Targ_For_D_I_ON ~= true and ally ~= nil and ally.team == myHero.team and ally.visible == 1 and GetDistance(myHero, ally) < 600 then
 		
 	        if CfgKoolSettings['1. Kool Offensive Items'].Locket and ally.health <= (ally.maxHealth*(CfgKoolSettings['2. Kool Defensive Items'].LocketValue / 100)) then --If health is below the slider % value
-	            UseItemOnTarget(3190,ally) -- Locket of Iron Solari
+	            UseItemOnTarget(3190,myHero) -- Locket of Iron Solari
 	        end
 	        if CfgKoolSettings['1. Kool Offensive Items'].FOM and ally.health <= (ally.maxHealth*(CfgKoolSettings['2. Kool Defensive Items'].FOMValue / 100)) then --If health is below the slider % value
 	            UseItemOnTarget(3401,ally) -- Face of the Mountain
