@@ -7,8 +7,8 @@
 -- * lbc_creator = KoolKaracter
 -- * lbc_champion = Urgot // if this script is for a special champ
 -- * lbc_tags = Urgot, ADC, AD, muramana, Kool, kool, iskool, koolkaracter
--- * lbc_link = http://leaguebot.net/forum/Upload/showthread.php?tid=4323
--- * lbc_source = https://raw.githubusercontent.com/koolkaracter/Scripts/AutoKool/Champs/TwitchIsKool.lua
+-- * lbc_link = http://leaguebot.net/forum/Upload/showthread.php?tid=4585
+-- * lbc_source = https://raw.githubusercontent.com/koolkaracter/Scripts/AutoKool/Champs/UrgotIsKool.lua
 -- * lbc_update = // only if you have a new version on a new source
 -- ************************** LBC META *****************************
 
