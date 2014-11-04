@@ -1,7 +1,31 @@
+-- ************************** LBC META *****************************
+-- * lbc_name = UrgotIsKool.lua
+-- * lbc_version = 3.0
+-- * lbc_date = 11/03/2014 // use correct date format mm/dd/yyyy
+-- * lbc_status = 3 // 0 = unknowen; 1 = alpha/wip; 2 = beta; 3 = ready; 4 = required; 5 = outdated
+-- * lbc_type = 3 // 0 = others; 1 = binaries; 2 = libs; 3 = champion; 4 = hotkey; 5 = utility
+-- * lbc_creator = KoolKaracter
+-- * lbc_champion = Urgot // if this script is for a special champ
+-- * lbc_tags = Urgot, ADC, AD, muramana, Kool, kool, iskool, koolkaracter
+-- * lbc_link = http://leaguebot.net/forum/Upload/showthread.php?tid=4323
+-- * lbc_source = https://raw.githubusercontent.com/koolkaracter/Scripts/AutoKool/Champs/TwitchIsKool.lua
+-- * lbc_update = // only if you have a new version on a new source
+-- ************************** LBC META *****************************
+
+
+
 local ScriptName = 'UrgotIsKool'									
 local Version = '3.0'												
 local Author = 'Koolkaracter'												
-
+--[[
+  _    _ _____   _____  ____ _______   _____  _____   _  ______   ____  _      
+ | |  | |  __ \ / ____|/ __ \__   __| |_   _|/ ____| | |/ / __ \ / __ \| |     
+ | |  | | |__) | |  __| |  | | | |      | | | (___   | ' / |  | | |  | | |     
+ | |  | |  _  /| | |_ | |  | | | |      | |  \___ \  |  <| |  | | |  | | |     
+ | |__| | | \ \| |__| | |__| | | |     _| |_ ____) | | . \ |__| | |__| | |____ 
+  \____/|_|  \_\\_____|\____/  |_|    |_____|_____/  |_|\_\____/ \____/|______|
+                                                                                                                                                         
+]]--
 
 require 'yprediction'
 require 'spell_damage'
