@@ -12,8 +12,6 @@
 -- * lbc_update = // only if you have a new version on a new source
 -- ************************** LBC META *****************************
 
-
-
 local ScriptName = 'UrgotIsKool'									
 local Version = '3.0'												
 local Author = 'Koolkaracter'												
